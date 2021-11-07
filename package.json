@@ -1,78 +1,65 @@
 {
   "name": "apiker",
-  "version": "0.0.1",
-  "description": "Typescript Minimal Starter Kit for building libraries",
-  "main": "build/index.js",
-  "types": "build/types/index.d.ts",
+  "version": "1.0.1",
+  "description": "API for Cloudflare Workers & Wrangler",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts",
   "scripts": {
-    "start": "webpack serve --config webpack.config.demo.js",
-    "build": "webpack && tsc",
-    "build:demo": "webpack --config webpack.config.demo.js",
     "test": "jest --silent",
     "coverage": "npm run test -- --coverage",
+    "clean": "rimraf dist",
+    "build": "npm run clean && rollup -c",
     "prepare": "npm run build",
     "trypublish": "npm publish || true"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/hodgef/ts-library-boilerplate-basic"
+    "url": "https://github.com/hodgef/apiker"
   },
   "author": "Francisco Hodge <hello@franciscohodge.com> (https://github.com/hodgef)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hodgef/ts-library-boilerplate-basic/issues"
+    "url": "https://github.com/hodgef/apiker/issues"
   },
-  "homepage": "https://github.com/hodgef/ts-library-boilerplate-basic",
+  "homepage": "https://github.com/hodgef/apiker",
   "keywords": [
     "library",
-    "starter",
-    "es6"
+    "api",
+    "cloudflare",
+    "workers"
   ],
   "devDependencies": {
-    "@babel/cli": "^7.16.0",
-    "@babel/core": "^7.15.8",
     "@babel/plugin-proposal-class-properties": "^7.16.0",
-    "@babel/plugin-transform-typescript": "^7.15.8",
-    "@babel/polyfill": "^7.12.1",
+    "@babel/plugin-transform-typescript": "^7.16.1",
     "@babel/preset-env": "^7.16.0",
-    "@types/jest": "^27.0.2",
-    "@typescript-eslint/eslint-plugin": "^4.32.0",
-    "@typescript-eslint/parser": "^4.33.0",
-    "babel-eslint": "^10.1.0",
-    "babel-loader": "^8.2.3",
-    "babel-preset-minify": "^0.5.0",
-    "css-loader": "^6.5.0",
-    "eslint": "^7.32.0",
-    "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.5.0",
+    "@babel/preset-typescript": "^7.16.0",
+    "@rollup/plugin-commonjs": "^20.0.0",
+    "@rollup/plugin-eslint": "^8.0.1",
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "@rollup/plugin-typescript": "^8.2.5",
+    "@typescript-eslint/eslint-plugin": "^5.3.0",
+    "@typescript-eslint/parser": "^5.3.0",
     "jest": "^27.3.1",
-    "mini-css-extract-plugin": "^2.4.3",
-    "optimize-css-assets-webpack-plugin": "^6.0.1",
+    "path-to-regexp": "^6.2.0",
     "prettier": "^2.4.1",
-    "prettier-webpack-plugin": "^1.2.0",
-    "style-loader": "^3.3.1",
-    "terser-webpack-plugin": "^5.2.4",
-    "typescript": "^4.4.4",
-    "url-loader": "^4.1.1",
-    "webpack": "^5.61.0",
-    "webpack-cli": "^4.9.1",
-    "webpack-dev-server": "4.4.0"
+    "rimraf": "^3.0.2",
+    "rollup": "^2.56.2",
+    "rollup-plugin-dts": "^3.0.2",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-prettier": "^2.2.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "tslib": "^2.3.1",
+    "typescript": "^4.3.5"
   },
   "jest": {
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/scripts/testMock.js",
-      "\\.(css|less)$": "<rootDir>/scripts/testMock.js"
-    },
     "moduleFileExtensions": [
-      "web.js",
       "js",
-      "web.ts",
       "ts",
-      "web.tsx",
-      "tsx",
       "json",
-      "web.jsx",
-      "jsx",
       "node"
     ]
   }

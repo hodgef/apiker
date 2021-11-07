@@ -1,17 +1,17 @@
 {
-    "compilerOptions": {
-      "noImplicitAny": true,
-      "outDir": "build/types",
-      "module": "esnext",
-      "target": "es5",
-      "allowJs": true,
-      "sourceMap": true,
-      "declaration": true,
-      "emitDeclarationOnly": true,
-      "suppressImplicitAnyIndexErrors": true,
-      "lib": ["es2018", "dom"],
-      "moduleResolution": "node",
-    },
-    "include": ["src/lib"],
-    "exclude": ["src/lib/**/tests"],
+  "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
+    "declaration": true,
+    "declarationDir": "types",
+    "sourceMap": true,
+    "outDir": "dist",
+    "strict": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "emitDeclarationOnly": true
+  }
 }
