@@ -3,7 +3,7 @@ import { match } from "path-to-regexp";
 import { res_404 } from "../Response";
 
 /**
- * Handle request
+ * Handles incoming Cloudflare Worker requests
  */
 const handleRequest = async (request: any) => {
   const url = new URL(request.url);
@@ -13,6 +13,9 @@ const handleRequest = async (request: any) => {
   let method!: string;
   let params = { state: apiker.state, request } as any;
 
+  /**
+   * Check if path matches with a defined route
+   */
   Object.keys(apiker.routes).some((routeName) => {
     const fn = match(routeName, { decode: decodeURIComponent });
     const matches = fn(pathname);
