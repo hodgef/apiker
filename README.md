@@ -7,7 +7,7 @@
 - Config-based routing
 - Auth (TBD)
 
-## 📦 Install
+## Install
 
 ```
 npm install apiker
@@ -52,9 +52,16 @@ import { res } from "apiker";
 
 class MyController {
   getUserCounter = async ({ state }) => {
+    // Get counter
     const initialCount = (await state.storage.get("counter")) ?? 0;
+
+    // Increase count
     const count = initialCount + 1;
+    
+    // Save new value
     await state.storage.put("counter", count);
+    
+    // Return response
     return res({ count });
   };
 }
