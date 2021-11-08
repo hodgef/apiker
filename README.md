@@ -10,7 +10,7 @@
 ## Install
 
 ```
-npm install apiker
+npm install apiker --save-dev
 ```
 
 ## 🚀 Usage
