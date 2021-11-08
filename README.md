@@ -2,6 +2,12 @@
  <img alt="Apiker" src="https://user-images.githubusercontent.com/25509135/140666135-42a79ae3-8e0a-4b83-a3f8-c9593a85eea7.png">
 </div>
 
+<div>
+  <blockquote>Create APIs using Durable Objects & Wrangler</blockquote>
+
+ <a href="https://www.npmjs.com/package/apiker"><img src="https://badgen.net/npm/v/apiker?color=blue" alt="npm version"></a> <a href="https://github.com/hodgef/apiker"><img src="https://img.shields.io/github/last-commit/hodgef/apiker" alt="latest commit"></a></a>
+</div>
+
 ## Features
 
 - Config-based routing
