@@ -8,6 +8,8 @@
  <a href="https://www.npmjs.com/package/apiker"><img src="https://badgen.net/npm/v/apiker?color=blue" alt="npm version"></a> <a href="https://github.com/hodgef/apiker"><img src="https://img.shields.io/github/last-commit/hodgef/apiker" alt="latest commit"></a></a>
 </div>
 
+> NOTE: In early development. Usage might change from one version to the next
+
 ## Features
 
 - Config-based routing
