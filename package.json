@@ -1,6 +1,6 @@
 {
   "name": "apiker",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "description": "API for Cloudflare Workers & Wrangler",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
