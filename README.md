@@ -1,6 +1,6 @@
  <div>
  <p align="center">
-  <img alt="Apiker" src="https://user-images.githubusercontent.com/25509135/142377781-436b79a1-31ec-4d26-8e21-b0b4f9bbba24.gif">
+  <a href="https://github.com/hodgef/apiker" title="View Documentation"><img src="https://user-images.githubusercontent.com/25509135/140669365-cf273968-7dc8-4457-8c56-0bff1b2346a6.png" /></a>
  </p>
  
  <div align="center">
