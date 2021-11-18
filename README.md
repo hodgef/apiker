@@ -1,83 +1,69 @@
  <div>
- <img alt="Apiker" src="https://user-images.githubusercontent.com/25509135/140666135-42a79ae3-8e0a-4b83-a3f8-c9593a85eea7.png">
+ <p align="center">
+  <img alt="Apiker" src="https://user-images.githubusercontent.com/25509135/142377781-436b79a1-31ec-4d26-8e21-b0b4f9bbba24.gif">
+ </p>
+ 
+ <div align="center">
+  <p>Create Serverless APIs using Cloudflare Durable Objects & Wrangler</p>
+
+ <a href="https://www.npmjs.com/package/apiker"><img src="https://badgen.net/npm/v/apiker?color=blue" alt="npm version"></a> <a href="https://github.com/hodgef/apiker"><img src="https://img.shields.io/github/last-commit/hodgef/apiker" alt="latest commit"></a> <a href="https://discord.com/invite/SJexsCG"><img src="https://img.shields.io/discord/498978399801573396.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" alt="join our chat"></a>
+</div>
+ 
 </div>
 
-<div>
-  <blockquote>Create APIs using Durable Objects & Wrangler</blockquote>
-
- <a href="https://www.npmjs.com/package/apiker"><img src="https://badgen.net/npm/v/apiker?color=blue" alt="npm version"></a> <a href="https://github.com/hodgef/apiker"><img src="https://img.shields.io/github/last-commit/hodgef/apiker" alt="latest commit"></a></a>
-</div>
-
-> NOTE: In early development. Usage might change from one version to the next
 
 ## Features
 
-- Config-based routing
-- Auth (TBD)
+- Easy routing & state management
+- Basic JWT-based Auth (register, login, refresh token, delete user)
+- Automatically updates [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) migrations, classes and bindings so you don't have to.
 
 ## Install
+To get started with your Apiker project, run:
 
 ```
-npm install apiker --save-dev
+npx apiker your-site-name
 ```
 
 ## 🚀 Usage
-#### api.js (Durable Object)
+
+Once your project is created, you can edit the [`app.toml`](https://github.com/hodgef/apiker-demo/blob/master/app.toml) and [`src/`](https://github.com/hodgef/apiker-demo/tree/master/src) files as desired :
+
+> ### Counter Example
+
+#### src/index.js
 
 ```js
-import { apiker, handleRequest } from "apiker";
-import MyController from "./controllers/MyController";
-
-const handlers = {
-  MyController
-};
+import { apiker } from "apiker";
+import { getUserCounter } from "./controllers/counter";
+import objects from "./objects.json";
 
 const routes = {
-  "/users/:id/counter": "MyController.getUserCounter"
-}
+  "/users/:id/counter": getUserCounter
+};
 
-class API {
-  constructor(state) {
-    state.blockConcurrencyWhile(async () => {
-      apiker.init({ routes, handlers, state });
-    });
-  }
-
-  /**
-   * Handle HTTP requests
-   */
-  fetch = handleRequest;
-}
-
-export default API;
-
+apiker.init({
+  routes,
+  objects,
+  exports,
+  auth: true
+});
 ```
 
-#### MyController.js
+#### controllers/counter
 
 ```js
 import { res } from "apiker";
 
-class MyController {
-  getUserCounter = async ({ state }) => {
-    // Get counter
-    const initialCount = (await state.storage.get("counter")) ?? 0;
-
-    // Increase count
-    const count = initialCount + 1;
-    
-    // Save new value
-    await state.storage.put("counter", count);
-    
-    // Return response
-    return res({ count });
-  };
-}
-
-export default MyController;
+export const getUserCounter = async ({ state }) => {
+  const initialCount = (await state().get("counter")) ?? 0;
+  const count = initialCount + 1;
+  await state().put("counter", count);
+  return res({ count });
+};
 ```
 
-#### \> GET example.com/users/test/counter
+#### \> GET /users/test/counter
 
 ```
 {"count":1}
@@ -85,4 +71,34 @@ export default MyController;
 ...
 ```
 
-> Full example: https://github.com/hodgef/apiker-demo
+## 🔓 Auth
+
+When the **auth** option is set to true, Apiker will register the following default routes:
+
+`/auth/register`
+`/auth/login`
+`/auth/refresh`
+`/auth/delete`
+
+#### \> POST [/auth/register](https://github.com/hodgef/apiker/blob/86033015a3f320a35867db01e277189e6b109378/src/components/Auth/Auth.ts#L10)
+> Request body:
+```
+email: xxxxx
+password: xxxxx
+```
+> Response (example):
+```json
+{
+    "userId": "6e9a13f1577f397b9989c4a856f2524cfb9093b4e3d7feea728e6ec24aa0663c",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiPiI2ZTlhMTNmMTU3N2YzOTdiOTk4OWM0YTg1NmYyNTc0Y2ZiOTA5M2I0ZTNkN2ZlZWE3MjhlNmVjMjRhYTA2NjNjIiwiY2xpZW50SWQiOiJYQ0VxT1FsSTllWjIwV1lwTmhwRjdGZ0pwQWhuamlHTTU2cHE0NW5iYnFJPSIsImV4cCI6MTYzNzIyNjY3MzU3OH0=.TRfp8bJeb9VBDobm8MAu4GirCCLwL+Cq+W+mIgSSizY=",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZTlhSTNmMTU3N2YzOTdiOTk4OWM0YTg1NmYyNTc0Y2ZiOTA5M2I0ZTNkN2ZlZWE3MjhlNmVjMjRhYTA2NjNjIiwiY2xpZW50SWQiOiJYQ0VxT1FsSTllWjIwV1lwTmhwRjdGZ0pwQWhuamlHTTU2cHE0NW5iYnFJPSJ9.Q535MhFUb4WhfsZPcxpAa18WzN4I1xKllT+2WHXyg7M="
+}
+```
+For the implementation details, check out the source at [Auth.ts](https://github.com/hodgef/apiker/blob/master/src/components/Auth/Auth.ts)
+
+If you would like to implement your own auth, you can always copy Auth.ts to your project and edit the authentication flow as needed.
+
+## ✅ Contributing
+
+PRs and issues are always welcome. Feel free to submit any issues you have at:
+[https://github.com/hodgef/apiker/issues](https://github.com/hodgef/apiker/issues)
