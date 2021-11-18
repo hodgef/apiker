@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "module": "esnext",
     "declaration": true,
     "declarationDir": "types",
@@ -12,6 +12,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "noImplicitAny": false
   }
 }

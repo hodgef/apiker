@@ -1,16 +1,23 @@
 export interface Routes {
-  [route: string]: string
+  [route: string]: any;
 }
 
-export interface Handlers {
-  [className: string]: Handler;
+export interface Controllers {
+  [className: string]: Controller;
 }
 
 export interface Options {
   routes?: Routes;
-  handlers?: Handlers;
+  controllers?: Controllers;
   debug?: boolean;
   state?: any;
+  enableAuth?: boolean;
+  objectVersion?: string;
+  exports?: any;
+  objects?: string[];
+  env?: any;
+  auth?: boolean;
+  headers?: Headers;
 }
 
-export type Handler = new (...args: any[]) => any;
+export type Controller = new (...args: any[]) => any;

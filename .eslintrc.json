@@ -22,7 +22,8 @@
         "@typescript-eslint/quotes": ["warn", "double"],
         "quote-props": ["warn", "as-needed"],
         "semi": "warn",
-        "indent": ["warn", 2]
+        "no-prototype-builtins": 0,
+        "no-empty": 0
     },
     "settings": {},
     "env": {
