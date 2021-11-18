@@ -104,7 +104,7 @@ If you would like to implement your own auth, you can always copy Auth.ts to you
 2. `npm run build`
 3. `wrangler publish`
 
-> Note: Make sure you've read the [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) documentation if you need to install `wrangler` or have any doubts about `app.toml` (also known as wranger.toml).
+> Note: Make sure you've read the [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) documentation if you need to install `wrangler` or have any doubts about `app.toml` (also known as wrangler.toml).
 
 ## ✅ Contributing
 
