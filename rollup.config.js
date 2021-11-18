@@ -2,6 +2,7 @@ import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import dts from "rollup-plugin-dts";
+import copy from "rollup-plugin-copy";
 
 const packageJson = require("./package.json");
 
@@ -25,7 +26,12 @@ export default [
     plugins: [
       resolve(),
       commonjs(),
-      typescript({ tsconfig: "./tsconfig.json" })
+      typescript({ tsconfig: "./tsconfig.json" }),
+      copy({
+        targets: [
+          { src: "plugins/PostBuild.js", dest: "dist/plugins" }
+        ]
+      })
     ],
   },
   {
