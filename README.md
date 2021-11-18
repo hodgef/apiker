@@ -25,7 +25,7 @@ To get started with your Apiker project, run:
 npx apiker your-site-name
 ```
 
-## 🚀 Usage
+## 📦 Usage
 
 Once your project is created, you can edit the [`app.toml`](https://github.com/hodgef/apiker-demo/blob/master/app.toml) and [`src/`](https://github.com/hodgef/apiker-demo/tree/master/src) files as desired :
 
@@ -97,6 +97,14 @@ password: xxxxx
 For the implementation details, check out the source at [Auth.ts](https://github.com/hodgef/apiker/blob/master/src/components/Auth/Auth.ts)
 
 If you would like to implement your own auth, you can always copy Auth.ts to your project and edit the authentication flow as needed.
+
+## 🚀 Deployment
+
+1. Edit app.toml
+2. `npm run build`
+3. `wrangler publish`
+
+> Note: Make sure you've read the [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) documentation if you need to install `wrangler` or have any doubts about `app.toml` (also known as wranger.toml).
 
 ## ✅ Contributing
 
