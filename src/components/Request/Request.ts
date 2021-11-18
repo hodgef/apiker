@@ -31,7 +31,7 @@ export const handleEntryRequest = async (request: Request, env: any) => {
 
         if(typeof handler === "string") {
           const [handlerClass, handlerMethod] = handler.split(".");
-          handlerFn = (new apiker.controllers[handlerClass]?.())?.[handlerMethod];
+          handlerFn = (new apiker.controllers[handlerClass]())[handlerMethod];
   
         } else if(typeof handler === "function") {
           handlerFn = handler;
