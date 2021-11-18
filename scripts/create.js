@@ -1,12 +1,13 @@
-#!/usr/bin/env node
-
 const process = require("process");
 const { execSync } = require("child_process");
 const fs = require("fs");
 
+const execOptions = {stdio : "pipe" };
+
 if(process.argv[2]){
   const dirName = process.argv[2];
-  execSync(`git clone https://github.com/hodgef/apiker-demo.git ${dirName}`);
+  console.log("\n> Clone Apiker demo project\n");
+  execSync(`git clone https://github.com/hodgef/apiker-demo.git ${dirName}`, execOptions);
 
   if(fs.existsSync(`./${dirName}/`)){
     process.chdir(`./${dirName}`);
@@ -24,7 +25,7 @@ if(process.argv[2]){
     const packageJson = JSON.parse(fs.readFileSync("./package.json"));
     
     if(!packageJson){
-      console.error("Could not find package.json");
+      console.error("\n> Could not find package.json \n");
       return;
     }
 
@@ -38,15 +39,17 @@ if(process.argv[2]){
     /**
      * Install package
      */
-    execSync("npm install");
+    console.log("\n> Install project\n");
+    execSync("npm install", execOptions);
     
 
-    console.log(`Project ${dirName} created. Consult documentation at https://hge.to/apiker for next steps`);
+    console.log(`\n> Project ${dirName} created. Consult documentation at https://github.com/hodgef/apiker for next steps\n`);
+
   } else {
-    console.log(`Could not create directory ${dirName}`);
+    console.log(`\n> Could not create directory ${dirName}\n`);
   }
 
 } else {
-  console.log("Directory name must be provided");
+  console.log("\n> Directory name must be provided\n");
 }
 

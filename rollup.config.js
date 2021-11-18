@@ -29,7 +29,8 @@ export default [
       typescript({ tsconfig: "./tsconfig.json" }),
       copy({
         targets: [
-          { src: "plugins/PostBuild.js", dest: "dist/plugins" }
+          { src: "plugins/PostBuild.js", dest: "dist/plugins" },
+          { src: "scripts/create.js", dest: "dist/scripts" }
         ]
       })
     ],
