@@ -24,12 +24,12 @@ class Apiker {
       /**
        * Extract options
        */
-      const { routes, controllers, objects, exports, auth = false } = options;
+      const { routes, controllers = {} as Controllers, objects, exports, auth = false } = options;
 
       /**
        * Check for requires params
        */
-      if(!(routes && controllers && objects && exports)){
+      if(!(routes && objects && exports)){
         throw new Error("Missing required parameters, please consult the Apiker documentation");
       }
 
