@@ -50,7 +50,7 @@ apiker.init({
 });
 ```
 
-#### controllers/counter
+#### controllers/counter.js
 
 ```js
 import { res } from "apiker";
