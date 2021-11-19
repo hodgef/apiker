@@ -69,6 +69,7 @@ export const getUserCounter = async ({ state }) => {
 {"count":2}
 ...
 ```
+Take a look at the [Apiker Demo](https://github.com/hodgef/apiker-demo) for an example.
 
 ## 🔓 Auth
 
