@@ -1,6 +1,6 @@
  <div>
  <p align="center">
-  <a href="https://github.com/hodgef/apiker" title="View Documentation"><img src="https://user-images.githubusercontent.com/25509135/140669365-cf273968-7dc8-4457-8c56-0bff1b2346a6.png" /></a>
+  <a href="https://github.com/hodgef/apiker" title="View Documentation"><img width="110" src="https://user-images.githubusercontent.com/25509135/142580530-07c335a7-5a11-47dd-8acc-b45842e8da32.png" /></a>
  </p>
  
  <div align="center">
@@ -10,7 +10,6 @@
 </div>
  
 </div>
-
 
 ## Features
 
