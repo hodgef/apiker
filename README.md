@@ -46,7 +46,7 @@ apiker.init({
   routes,
   objects,
   exports,
-  auth: true
+  auth: false
 });
 ```
 
