@@ -16,6 +16,7 @@
 - Easy routing & state management
 - Basic JWT-based Auth (register, login, refresh token, delete user)
 - Automatically updates [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) migrations, classes and bindings so you don't have to.
+- Get and set object state easily. e.g: `await state().get(paramInCommonObj);` or `await state("MyObjectName").put({ myParam });`
 
 ## Install
 To get started with your Apiker project, run:
