@@ -50,24 +50,24 @@ apiker.init({
 });
 ```
 
-#### controllers/counter.js
+#### controllers/counter.ts
 
-```js
-import { res } from "apiker";
+```ts
+import { Handler, res } from "apiker";
 
-export const getUserCounter = async ({ state }) => {
+export const getUserCounter: Handler = async ({ state }) => {
   const initialCount = (await state().get("counter")) ?? 0;
-  const count = initialCount + 1;
-  await state().put("counter", count);
-  return res({ count });
+  const counter = initialCount + 1;
+  await state().put({ counter });
+  return res({ counter });
 };
 ```
 
 #### \> GET /users/test/counter
 
 ```
-{"count":1}
-{"count":2}
+{"counter":1}
+{"counter":2}
 ...
 ```
 Take a look at the [Apiker Demo](https://github.com/hodgef/apiker-demo) for an example.
