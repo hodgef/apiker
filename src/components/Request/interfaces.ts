@@ -7,3 +7,5 @@ export interface RequestParams {
   body: any;
   headers: Headers;
 }
+
+export type Handler = ((params: RequestParams) => Response | Promise<Response>);

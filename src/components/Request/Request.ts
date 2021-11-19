@@ -2,7 +2,7 @@ import { apiker } from "../Apiker";
 import { match } from "path-to-regexp";
 import { res_404 } from "../Response";
 import { getStateMethods } from "../State";
-import { RequestParams } from "./interfaces";
+import { Handler, RequestParams } from "./interfaces";
 
 /**
  * Handles incoming Cloudflare Worker requests
@@ -14,7 +14,7 @@ export const handleEntryRequest = async (request: Request, env: any) => {
     const url = new URL(request.url);
     const { pathname } = url;
   
-    let handlerFn: ((params: RequestParams) => Response) | undefined;
+    let handlerFn: Handler | undefined;
     let params = { request } as Partial<RequestParams>;
     const body = await readRequestBody(request);
     const headers = request.headers;
