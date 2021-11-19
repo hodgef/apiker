@@ -14,7 +14,7 @@ export const handleEntryRequest = async (request: Request, env: any) => {
     const url = new URL(request.url);
     const { pathname } = url;
   
-    let handlerFn: any;
+    let handlerFn: ((params: RequestParams) => Response) | undefined;
     let params = { request } as Partial<RequestParams>;
     const body = await readRequestBody(request);
     const headers = request.headers;
