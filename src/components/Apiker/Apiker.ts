@@ -39,6 +39,16 @@ class Apiker {
       this.setProps({ routes, controllers, objects, auth });
 
       /**
+       * If auth route has been provided, get auth routes
+       */
+      if(auth){
+        this.routes = {
+          ...this.routes,
+          ...getAuthRoutes()
+        };
+      }
+
+      /**
        * Prepare worker exports
        */
       const workerExports = {
@@ -65,16 +75,6 @@ class Apiker {
    */
    setProps = (options: Options = {}) => {
      Object.assign(this, options);
-
-     /**
-     * If auth route has been provided, get auth routes
-     */
-     if(this.auth){
-       this.routes = {
-         ...this.routes,
-         ...getAuthRoutes()
-       };
-     }
    }
 
   /**
