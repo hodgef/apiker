@@ -1,6 +1,6 @@
 import { apiker } from "../Apiker";
-import crypto from "../Vendor/crypto";
-const CryptoJS = crypto();
+import cryptojs from "../Vendor/crypto";
+const CryptoJS = cryptojs();
 
 export const encodeString = (inputStr) => {
   const wordArr = CryptoJS.enc.Utf8.parse(inputStr);
