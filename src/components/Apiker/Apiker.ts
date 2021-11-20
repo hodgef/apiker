@@ -39,7 +39,7 @@ class Apiker {
       this.setProps({ routes, controllers, objects, auth });
 
       /**
-       * If auth route has been provided, get auth routes
+       * If auth option is set to true, set auth routes
        */
       if(auth){
         this.routes = {
