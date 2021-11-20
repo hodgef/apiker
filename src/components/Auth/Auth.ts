@@ -3,6 +3,7 @@ import { res, res_200, res_400 } from "../Response";
 import { createJWT, getClientId, parseJWT, randomHash, sign } from "./utils";
 import { AUTH_TOKEN_DURATION_MINS_DEFAULT } from "./constants";
 import { OBN } from "../ObjectBase";
+import { isEmail, isRequiredLength } from "../Validation";
 
 /**
  * Responses
@@ -33,7 +34,7 @@ export const extractToken = (headers: Headers) => {
 export const registerUser = async ({ body, state }: RequestParams) => {
   const { email, password } = body;
 
-  if(!email || !password) {
+  if(!isEmail(email) || !isRequiredLength(password)) {
     return res_400();
   }
 
@@ -69,7 +70,7 @@ export const registerUser = async ({ body, state }: RequestParams) => {
 export const loginUser = async ({ body, state }: RequestParams) => {
   const { email, password } = body;
 
-  if(!email || !password) {
+  if(!isEmail(email) || !isRequiredLength(password)) {
     return res_400();
   }
 
