@@ -47,13 +47,31 @@ module.exports = class PostBuild {
 
             // Get list of objects to register
             const newTomlParams = this.registerMissingObjects(missingObjects, deletedObjects, {...tomlParsed, vars: env });
+            const newTomlAppParams = { ...newTomlParams };
+            delete newTomlAppParams.vars;
 
             /**
              * Build wrangler toml
              */
-            const tomlOutputString = this.createTomlContents(newTomlParams);
+             const prependedContents =
+             "# ----------------------------------------------------------------------------------\n" +
+             "# Wrangler.toml\n" +
+             "# Auto-generated file. Do not commit this file! Edit .env and app.toml files instead.\n"+
+             "# ----------------------------------------------------------------------------------\n\n";
+            const tomlOutputString = this.createTomlContents(newTomlParams, prependedContents);
             fs.writeFileSync(path.join(this.curDir, "wrangler.toml"), tomlOutputString);
 
+            /**
+             * Build app.toml
+             */
+             const prependedAppContents =
+             "# ----------------------------------------------------------------------------------\n" +
+             "# App.toml\n" +
+             "# NOTE: Can be committed. Do not add secrets to this file. Use .env for this purpose.\n"+
+             "# ----------------------------------------------------------------------------------\n\n";
+             const tomlAppOutputString = this.createTomlContents(newTomlAppParams, prependedAppContents);
+             fs.writeFileSync(path.join(this.curDir, "app.toml"), tomlAppOutputString);
+            
             /**
              * Build shim.mjs
              */
@@ -123,13 +141,7 @@ module.exports = class PostBuild {
         return prependedContents + newSimContents;
     }
 
-    createTomlContents(newTomlParams) {
-        const prependedContents =
-            "# ----------------------------------------------------------------------\n" +
-            "# Wrangler.toml\n" +
-            "# Auto-generated file. Do not commit this file! Edit .env and app.toml files instead.\n"+
-            "# ----------------------------------------------------------------------\n\n";
-
+    createTomlContents(newTomlParams, prependedContents) {
         const newTomlContents = this.TOML.stringify(newTomlParams);
         return prependedContents + newTomlContents;
     }
