@@ -70,7 +70,9 @@ export const getUserCounter: Handler = async ({ state }) => {
 {"counter":2}
 ...
 ```
-Take a look at the [Apiker Demo](https://github.com/hodgef/apiker-demo) for an example.
+Demo: https://apiker-demo.spv.workers.dev/users/test/counter
+
+Full example: [Apiker Demo](https://github.com/hodgef/apiker-demo)
 
 ## 🔓 Auth
 
