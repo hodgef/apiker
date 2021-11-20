@@ -20,6 +20,13 @@ if(process.argv[2]){
     }
 
     /**
+     * Delete .github dir
+     */
+     if (fs.existsSync("./.github")) {
+      fs.rmdirSync("./.github", { recursive: true });
+    }
+
+    /**
      * Amend package.json
      */
     const packageJson = JSON.parse(fs.readFileSync("./package.json"));
