@@ -101,7 +101,7 @@ For the implementation details, check out the source at [Auth.ts](https://github
 
 If you would like to implement your own auth, you can always copy Auth.ts to your project and edit the authentication flow as needed.
 
-> ⚠️ **Note:** Auth routes are still in active development. PRs are always welcome!
+> ⚠️ **Note:** More auth routes are in development. PRs or suggestions are always welcome!
 
 ## 🚀 Development & Deployment
 
