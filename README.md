@@ -4,7 +4,7 @@
  </p>
  
  <div align="center">
-  <p>Create Serverless APIs using Cloudflare Durable Objects & Wrangler</p>
+  <p>Create Serverless APIs using Cloudflare Workers, Durable Objects & Wrangler</p>
 
  <a href="https://www.npmjs.com/package/apiker"><img src="https://badgen.net/npm/v/apiker?color=blue" alt="npm version"></a> <a href="https://github.com/hodgef/apiker"><img src="https://img.shields.io/github/last-commit/hodgef/apiker" alt="latest commit"></a> <a href="https://discord.com/invite/SJexsCG"><img src="https://img.shields.io/discord/498978399801573396.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2" alt="join our chat"></a>
 </div>
@@ -46,28 +46,28 @@ apiker.init({
   routes,
   objects,
   exports,
-  auth: true
+  auth: false
 });
 ```
 
-#### controllers/counter.js
+#### controllers/counter.ts
 
-```js
-import { res } from "apiker";
+```ts
+import { Handler, res } from "apiker";
 
-export const getUserCounter = async ({ state }) => {
+export const getUserCounter: Handler = async ({ state }) => {
   const initialCount = (await state().get("counter")) ?? 0;
-  const count = initialCount + 1;
-  await state().put("counter", count);
-  return res({ count });
+  const counter = initialCount + 1;
+  await state().put({ counter });
+  return res({ counter });
 };
 ```
 
 #### \> GET /users/test/counter
 
 ```
-{"count":1}
-{"count":2}
+{"counter":1}
+{"counter":2}
 ...
 ```
 Take a look at the [Apiker Demo](https://github.com/hodgef/apiker-demo) for an example.
