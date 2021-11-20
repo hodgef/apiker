@@ -99,7 +99,7 @@ password: xxxxx
 ```
 For the implementation details, check out the source at [Auth.ts](https://github.com/hodgef/apiker/blob/master/src/components/Auth/Auth.ts)
 
-If you would like to implement your own auth, you can always copy Auth.ts to your project and edit the authentication flow as needed.
+If you would like to implement your own auth, you can always copy the Auth.ts routes to your Apiker project and edit the authentication flow as needed.
 
 > ⚠️ **Note:** More auth routes are in development. PRs or suggestions are always welcome!
 
