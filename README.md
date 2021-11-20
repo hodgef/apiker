@@ -70,7 +70,9 @@ export const getUserCounter: Handler = async ({ state }) => {
 {"counter":2}
 ...
 ```
-Take a look at the [Apiker Demo](https://github.com/hodgef/apiker-demo) for an example.
+Demo: https://apiker-demo.spv.workers.dev/users/test/counter
+
+Full example: [Apiker Demo](https://github.com/hodgef/apiker-demo) or `npx apiker my-demo`
 
 ## 🔓 Auth
 
@@ -97,15 +99,18 @@ password: xxxxx
 ```
 For the implementation details, check out the source at [Auth.ts](https://github.com/hodgef/apiker/blob/master/src/components/Auth/Auth.ts)
 
-If you would like to implement your own auth, you can always copy Auth.ts to your project and edit the authentication flow as needed.
+If you would like to implement your own auth, you can always copy the Auth.ts routes to your Apiker project and edit the authentication flow as needed.
 
-## 🚀 Deployment
+> ⚠️ **Note:** More auth routes are in development. PRs or suggestions are always welcome!
 
-1. Edit app.toml
+## 🚀 Development & Deployment
+
+0. Install [Cloudflare Wrangler](https://developers.cloudflare.com/workers/cli-wrangler/install-update)
+1. Edit your Apiker project's app.toml
 2. `npm run build`
 3. `wrangler publish`
 
-> Note: Make sure you've read the [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) documentation if you need to install `wrangler` or have any doubts about `app.toml` (also known as wrangler.toml).
+> ⚠️ **Note:** Make sure you've read the [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) documentation if you need to install [`wrangler`](https://developers.cloudflare.com/workers/cli-wrangler/install-update) or have any doubts about `app.toml` (also known as wrangler.toml).
 
 ## ✅ Contributing
 
