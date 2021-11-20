@@ -88,11 +88,11 @@ export const loginUser = async ({ body, state }: RequestParams) => {
    */
   const user = await state(OBN.USERS).get(userId);
 
-  if(!(user && user.password === signedPassword)){
+  if(user?.password === signedPassword){
+    return res(getTokens(userId));
+  } else {
     return res_400();
   }
-
-  return res(getTokens(userId));
 };
 
 export const refreshUser = async ({ headers, state }: RequestParams) => {
@@ -111,11 +111,11 @@ export const refreshUser = async ({ headers, state }: RequestParams) => {
   const { sub: userId } = payload;
   const user = await state(OBN.USERS).get(userId);
 
-  if(!user){
+  if(user?.password){
+    return res(getTokens(userId));
+  } else {
     return res_400();
   }
-
-  return res(getTokens(userId));
 };
 
 export const deleteUser = async ({ headers, state }: RequestParams) => {
