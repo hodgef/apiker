@@ -105,7 +105,7 @@ Response (example):
 
 - If you would like to implement your own auth, you can always copy the Auth.ts routes to your Apiker project and edit the authentication flow as needed.
 
-- ⚠️ <b>Note:</b> Auth routes are in active development. There might be signifiant changes in future versions. PRs and suggestions are always welcome!
+- ⚠️ <b>Note:</b> Auth routes are in active development. There might be significant changes in future versions. PRs and suggestions are always welcome!
 
 ## 🚀 Development & Deployment
 
