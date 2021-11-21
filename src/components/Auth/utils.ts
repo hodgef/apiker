@@ -60,7 +60,7 @@ export const parseJWT = (token: string) => {
 };
 
 export const hash_bcrypt = (message: string) => {
-  const salt = Bcrypt.genSaltSync(5);
+  const salt = Bcrypt.genSaltSync(7);
   const hash = Bcrypt.hashSync(message, salt);
   return hash;
 };
