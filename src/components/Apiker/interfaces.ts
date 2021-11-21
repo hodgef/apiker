@@ -11,7 +11,6 @@ export interface Options {
   controllers?: Controllers;
   debug?: boolean;
   state?: any;
-  enableAuth?: boolean;
   objectVersion?: string;
   exports?: any;
   objects?: string[];

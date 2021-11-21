@@ -8,7 +8,6 @@ class Apiker {
   controllers: Controllers = {};
   debug = false;
   objectVersion = "V1";
-  secretKey!: string;
   objects!: string[];
   auth!: boolean;
   env: any;
