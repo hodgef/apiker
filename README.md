@@ -84,13 +84,13 @@ When the **auth** option is set to true, Apiker will register the following defa
 `/auth/delete`
 
 #### \> POST [/auth/register](https://github.com/hodgef/apiker/blob/86033015a3f320a35867db01e277189e6b109378/src/components/Auth/Auth.ts#L10)
-<blockquote>Request body:</blockquote>
+Request body:
 
 ```
 email: xxxxx
 password: xxxxx
 ```
-<blockquote>Response (example):</blockquote>
+Response (example):
 
 ```json
 {
@@ -99,11 +99,13 @@ password: xxxxx
     "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2ZTlhSTNmMTU3N2YzOTdiOTk4OWM0YTg1NmYyNTc0Y2ZiOTA5M2I0ZTNkN2ZlZWE3MjhlNmVjMjRhYTA2NjNjIiwiY2xpZW50SWQiOiJYQ0VxT1FsSTllWjIwV1lwTmhwRjdGZ0pwQWhuamlHTTU2cHE0NW5iYnFJPSJ9.Q535MhFUb4WhfsZPcxpAa18WzN4I1xKllT+2WHXyg7M="
 }
 ```
-For the implementation details, check out the source at [Auth.ts](https://github.com/hodgef/apiker/blob/master/src/components/Auth/Auth.ts)
+#### Notes:
 
-If you would like to implement your own auth, you can always copy the Auth.ts routes to your Apiker project and edit the authentication flow as needed.
+- For the implementation details, check out the source at [Auth.ts](https://github.com/hodgef/apiker/blob/master/src/components/Auth/Auth.ts)
 
-<blockquote>⚠️ <b>Note:</b> Auth routes are in active development. There might be signifiant changes in future versions. PRs and suggestions are always welcome!</blockquote>
+- If you would like to implement your own auth, you can always copy the Auth.ts routes to your Apiker project and edit the authentication flow as needed.
+
+- ⚠️ <b>Note:</b> Auth routes are in active development. There might be signifiant changes in future versions. PRs and suggestions are always welcome!
 
 ## 🚀 Development & Deployment
 
@@ -112,7 +114,7 @@ If you would like to implement your own auth, you can always copy the Auth.ts ro
 2. `npm run build`
 3. `wrangler publish`
 
-<blockquote>⚠️ <b>Note:</b> Make sure you've read the <a href="https://developers.cloudflare.com/workers/learning/using-durable-objects">Durable Object</a> documentation if you need to install <a href="https://developers.cloudflare.com/workers/cli-wrangler/install-update">wrangler</a> or have any doubts about <code>app.toml</code> (also known as wrangler.toml).</blockquote>
+⚠️ <b>Note:</b> Make sure you've read the <a href="https://developers.cloudflare.com/workers/learning/using-durable-objects">Durable Object</a> documentation if you need to install <a href="https://developers.cloudflare.com/workers/cli-wrangler/install-update">wrangler</a> or have any doubts about <code>app.toml</code> (also known as wrangler.toml).
 
 ## ✅ Contributing
 
