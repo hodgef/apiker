@@ -75,6 +75,7 @@ Demo: https://apiker-demo.spv.workers.dev/users/test/counter
 Full example: [Apiker Demo](https://github.com/hodgef/apiker-demo) or `npx apiker my-demo`
 
 ## 🔓 Auth
+<blockquote>⚠️ <b>Note:</b> Auth is still in active development. Please do not use in production just yet.</blockquote>
 
 When the **auth** option is set to true, Apiker will register the following default routes:
 
@@ -102,8 +103,6 @@ password: xxxxx
 For the implementation details, check out the source at [Auth.ts](https://github.com/hodgef/apiker/blob/master/src/components/Auth/Auth.ts)
 
 If you would like to implement your own auth, you can always copy the Auth.ts routes to your Apiker project and edit the authentication flow as needed.
-
-<blockquote>⚠️ <b>Note:</b> More auth routes are in development. PRs and suggestions are always welcome!</blockquote>
 
 ## 🚀 Development & Deployment
 
