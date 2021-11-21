@@ -74,7 +74,7 @@ Demo: https://apiker-demo.spv.workers.dev/users/test/counter
 
 Full example: [Apiker Demo](https://github.com/hodgef/apiker-demo) or `npx apiker my-demo`
 
-## 🔓 Auth
+## 🔐 Auth
 
 When the **auth** option is set to true, Apiker will register the following default routes:
 
