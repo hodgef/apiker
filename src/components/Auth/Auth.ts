@@ -1,6 +1,6 @@
 import { RequestParams } from "./../Request";
 import { res, res_200, res_400 } from "../Response";
-import { compare_bycrypt, createJWT, getClientId, hash_bcrypt, parseJWT, randomHash } from "./utils";
+import { compare_bcrypt, createJWT, getClientId, hash_bcrypt, parseJWT, randomHash } from "./utils";
 import { AUTH_TOKEN_DURATION_MINS_DEFAULT } from "./constants";
 import { OBN } from "../ObjectBase";
 import { isEmail, isRequiredLength } from "../Validation";
@@ -88,7 +88,7 @@ export const loginUser = async ({ body, state }: RequestParams) => {
    */
   const user = await state(OBN.USERS).get(userId);
 
-  if(user?.password && compare_bycrypt(password, user.password)){
+  if(user?.password && compare_bcrypt(password, user.password)){
     return res(getTokens(userId));
   } else {
     return res_400();

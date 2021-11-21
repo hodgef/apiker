@@ -65,7 +65,7 @@ export const hash_bcrypt = (message: string) => {
   return hash;
 };
 
-export const compare_bycrypt = (message: string, hash: string) => {
+export const compare_bcrypt = (message: string, hash: string) => {
   return Bcrypt.compareSync(message, hash);
 };
 
