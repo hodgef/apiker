@@ -29,7 +29,7 @@ npx apiker your-site-name
 
 Once your project is created, you can edit the [`app.toml`](https://github.com/hodgef/apiker-demo/blob/master/app.toml) and [`src/`](https://github.com/hodgef/apiker-demo/tree/master/src) files as desired :
 
-> ### Counter Example
+### Counter Example
 
 #### src/index.js
 
@@ -84,12 +84,14 @@ When the **auth** option is set to true, Apiker will register the following defa
 `/auth/delete`
 
 #### \> POST [/auth/register](https://github.com/hodgef/apiker/blob/86033015a3f320a35867db01e277189e6b109378/src/components/Auth/Auth.ts#L10)
-> Request body:
+<blockquote>Request body:</blockquote>
+
 ```
 email: xxxxx
 password: xxxxx
 ```
-> Response (example):
+<blockquote>Response (example):</blockquote>
+
 ```json
 {
     "userId": "6e9a13f1577f397b9989c4a856f2524cfb9093b4e3d7feea728e6ec24aa0663c",
@@ -101,7 +103,7 @@ For the implementation details, check out the source at [Auth.ts](https://github
 
 If you would like to implement your own auth, you can always copy the Auth.ts routes to your Apiker project and edit the authentication flow as needed.
 
-> ⚠️ **Note:** More auth routes are in development. PRs or suggestions are always welcome!
+<blockquote>⚠️ <b>Note:</b> More auth routes are in development. PRs and suggestions are always welcome!</blockquote>
 
 ## 🚀 Development & Deployment
 
@@ -110,7 +112,7 @@ If you would like to implement your own auth, you can always copy the Auth.ts ro
 2. `npm run build`
 3. `wrangler publish`
 
-> ⚠️ **Note:** Make sure you've read the [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) documentation if you need to install [`wrangler`](https://developers.cloudflare.com/workers/cli-wrangler/install-update) or have any doubts about `app.toml` (also known as wrangler.toml).
+<blockquote>⚠️ <b>Note:</b> Make sure you've read the <a href="https://developers.cloudflare.com/workers/learning/using-durable-objects">Durable Object</a> documentation if you need to install <a href="https://developers.cloudflare.com/workers/cli-wrangler/install-update">wrangler</a> or have any doubts about <code>app.toml</code> (also known as wrangler.toml).</blockquote>
 
 ## ✅ Contributing
 
