@@ -1,6 +1,9 @@
 import { apiker } from "../Apiker";
 import cryptojs from "../Vendor/crypto";
+import bcrypt from "../Vendor/bcrypt";
+
 const CryptoJS = cryptojs();
+const Bcrypt = bcrypt();
 
 export const encodeString = (inputStr) => {
   const wordArr = CryptoJS.enc.Utf8.parse(inputStr);
@@ -54,6 +57,16 @@ export const parseJWT = (token: string) => {
       return resPayload;
     }
   }
+};
+
+export const hash_bcrypt = (message: string) => {
+  const salt = Bcrypt.genSaltSync(5);
+  const hash = Bcrypt.hashSync(message, salt);
+  return hash;
+};
+
+export const compare_bycrypt = (message: string, hash: string) => {
+  return Bcrypt.compareSync(message, hash);
 };
 
 export const sign = (message) => {

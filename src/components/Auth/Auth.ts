@@ -1,6 +1,6 @@
 import { RequestParams } from "./../Request";
 import { res, res_200, res_400 } from "../Response";
-import { createJWT, getClientId, parseJWT, randomHash, sign } from "./utils";
+import { compare_bycrypt, createJWT, getClientId, hash_bcrypt, parseJWT, randomHash } from "./utils";
 import { AUTH_TOKEN_DURATION_MINS_DEFAULT } from "./constants";
 import { OBN } from "../ObjectBase";
 import { isEmail, isRequiredLength } from "../Validation";
@@ -48,7 +48,7 @@ export const registerUser = async ({ body, state }: RequestParams) => {
   }
 
   const userId = randomHash();
-  const signedPassword = sign(password);
+  const signedPassword = hash_bcrypt(password);
 
   /**
    * Create user
@@ -78,7 +78,6 @@ export const loginUser = async ({ body, state }: RequestParams) => {
    * Check if user exists
    */
   const userId = await state(OBN.EMAILTOUUID).get(email);
-  const signedPassword = sign(password);
 
   if(!userId) {
     return res_400();
@@ -89,7 +88,7 @@ export const loginUser = async ({ body, state }: RequestParams) => {
    */
   const user = await state(OBN.USERS).get(userId);
 
-  if(user?.password === signedPassword){
+  if(user?.password && compare_bycrypt(password, user.password)){
     return res(getTokens(userId));
   } else {
     return res_400();
