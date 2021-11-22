@@ -11,7 +11,7 @@ const getTokens = (userId: string) => {
     const refreshToken = createJWT({ sub: userId, clientId });
   
     return { userId, token, refreshToken };
-  };
+};
 
 export const loginUser: Handler = async ({ body, state }) => {
     const { email, password } = body;
