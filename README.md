@@ -83,7 +83,7 @@ When the **auth** option is set to true, Apiker will register the following defa
 `/auth/refresh`
 `/auth/delete`
 
-#### \> POST [/auth/register](https://github.com/hodgef/apiker/blob/86033015a3f320a35867db01e277189e6b109378/src/components/Auth/Auth.ts#L10)
+#### \> POST [/auth/register](https://github.com/hodgef/apiker/blob/master/src/components/Auth/registerUser.ts)
 Request body:
 
 ```
@@ -101,7 +101,7 @@ Response (example):
 ```
 #### Notes:
 
-- For the implementation details, check out the source at [Auth.ts](https://github.com/hodgef/apiker/blob/master/src/components/Auth/Auth.ts)
+- For auth implementation details, check out the source at [Auth.ts](https://github.com/hodgef/apiker/blob/master/src/components/Auth/Auth.ts)
 
 - If you would like to implement your own auth, you can always copy the Auth.ts routes to your Apiker project and edit the authentication flow as needed.
 
