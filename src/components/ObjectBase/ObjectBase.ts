@@ -27,6 +27,11 @@ export default class {
         await this.state.storage.delete(requestBody.propertyName);
         return res("Success");
 
+      } else if(pathname.startsWith("/list")){
+        const resList = (Object as any).fromEntries(await this.state.storage.list(requestBody));
+        const resJson = JSON.stringify(resList);
+        return new Response(resJson);
+
       } else {
         return res_404();
       }

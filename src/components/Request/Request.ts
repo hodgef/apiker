@@ -29,12 +29,12 @@ export const handleEntryRequest = async (request: Request, env: any) => {
       if (matches) {
         const handler = apiker.routes[routeName];
 
-        if(typeof handler === "string") {
+        if(typeof handler === "function") {
+          handlerFn = handler;
+
+        } else if(typeof handler === "string") {
           const [handlerClass, handlerMethod] = handler.split(".");
           handlerFn = (new apiker.controllers[handlerClass]())[handlerMethod];
-  
-        } else if(typeof handler === "function") {
-          handlerFn = handler;
         }
   
         params = {...params, state: getStateMethods(apiker.defaultObjectName), matches, body, headers };
@@ -61,23 +61,33 @@ export const forwardToHandler = (handlerFn, params) => {
 };
 
 export const readRequestBody = async (request) => {
-  const contentType = request.headers.get("content-type") || "";
-  if (contentType.includes("application/json")) {
-    return (await request.json()) || {};
-  }
-  if (contentType.includes("application/text")) {
-    return request.text();
-  }
-  if (contentType.includes("text/html")) {
-    return request.text();
-  }
-  if (contentType.includes("form")) {
-    const formData = await request.formData();
-    const body = (Object as any).fromEntries(formData);
-    return body || {};
+  let resBody;
+
+  try {
+    const contentType = request.headers.get("content-type") || "";
+    if (contentType.includes("application/json")) {
+      const resText = await request.text();
+      resBody = resText ? JSON.parse(resText): null;
+
+    } else if (contentType.includes("application/text")) {
+      resBody = request.text();
+
+    } else if (contentType.includes("text/html")) {
+      resBody = request.text();
+
+    } else if (contentType.includes("form")) {
+      const formData = await request.formData();
+      const body = (Object as any).fromEntries(formData);
+      resBody = body || {};
+
+    } else {
+      const textContent = await request.text();
+      resBody = textContent || null;
+    }
+  } catch(e) {
+    console.error("ERR readRequestBody", resBody);
+    throw new Error("An exception occurred while parsing the request body");
   }
   
-  const textContent = await request.text();
-  
-  return textContent || null;
+  return resBody;
 };

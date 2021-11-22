@@ -1,8 +1,8 @@
 import { MatchResult } from "path-to-regexp";
-import { StateMethods } from "../State";
+import { StateFn } from "../State";
 
 export interface RequestParams {
-  state: (objectName?: string) => StateMethods;
+  state: StateFn;
   matches: MatchResult<any>;
   body: any;
   headers: Headers;

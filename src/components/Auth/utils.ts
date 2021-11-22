@@ -86,9 +86,22 @@ export const sign_sha256 = (message) => {
   return CryptoJS.HmacSHA256(message, apiker.env.APIKER_SECRET_KEY).toString(CryptoJS.enc.Hex);
 };
 
+export const sign_sha1 = (message) => {
+  if(!apiker.env.APIKER_SECRET_KEY){
+    throw new Error("Apiker secret key is undefined. Please consult the documentation");
+  }
+
+  return CryptoJS.HmacSHA1(message, apiker.env.APIKER_SECRET_KEY).toString(CryptoJS.enc.Hex);
+};
+
 export const randomHash = () => {
   const wordArray = CryptoJS.lib.WordArray.random(16);
   return CryptoJS.SHA256(wordArray).toString(CryptoJS.enc.Hex);
+};
+
+export const randomHash_sha1 = () => {
+  const wordArray = CryptoJS.lib.WordArray.random(16);
+  return CryptoJS.SHA1(wordArray).toString(CryptoJS.enc.Hex);
 };
 
 /**
@@ -100,4 +113,12 @@ export const getClientId = () => {
   const userAgent = apiker.headers.get("User-Agent") || "";
   const clientId = sign(ip + userAgent);
   return clientId;
+};
+
+export const extractToken = (headers: Headers) => {
+  const authHeader = headers.get("Authorization");
+
+  if(authHeader?.includes("Bearer")){
+    return authHeader.split(" ")[1];
+  }
 };

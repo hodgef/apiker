@@ -3,13 +3,13 @@ import { StateMethods } from "./interfaces";
 
 export const getStateMethods = (defaultObjectName: string) =>
   (objectName = defaultObjectName) => {
-    const id = apiker.env[objectName]?.idFromName(apiker.objectVersion);
-    const obj = apiker.env[objectName]?.get(id);
+    const obj = getEnvObject(objectName);
 
     return {
       get: (obj ? getObjectState(obj) : () => {}),
       put: (obj ? putObjectState(obj) : () => {}),
-      delete: (obj ? deleteObjectState(obj) : () => {})
+      delete: (obj ? deleteObjectState(obj) : () => {}),
+      list: (obj ? listObjectState(obj) : () => {}),
     } as StateMethods;
   };
 
@@ -45,6 +45,20 @@ export const getObjectState = (obj: any) =>
     return JSON.parse(body || null);
   };
 
+export const listObjectState = (obj: any) =>
+  async (payload: any) => {
+    const result = await obj.fetch("/list", {
+      method: "POST",
+      body: payload ? JSON.stringify(payload) : "",
+      headers: {
+        "Content-Type": "application/json"
+      },
+    });
+
+    const body = await result.text();
+    return JSON.parse(body || null);
+  };
+
 export const putObjectState = (obj: any) =>
   async (payload: any) => {
     const result = await obj.fetch("/put", {
@@ -58,3 +72,9 @@ export const putObjectState = (obj: any) =>
     const body = await result.text();
     return JSON.parse(body || null);
   };
+
+export const getEnvObject = (objectName) => {
+  const id = apiker.env[objectName]?.idFromName(apiker.objectVersion);
+  const obj = apiker.env[objectName]?.get(id);
+  return obj;
+};

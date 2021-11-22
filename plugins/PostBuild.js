@@ -46,9 +46,8 @@ module.exports = class PostBuild {
             });
 
             // Get list of objects to register
-            const newTomlParams = this.registerMissingObjects(missingObjects, deletedObjects, {...tomlParsed, vars: env });
-            const newTomlAppParams = { ...newTomlParams };
-            delete newTomlAppParams.vars;
+            const newAppTomlParams = this.registerMissingObjects(missingObjects, deletedObjects, {...tomlParsed });
+            const newWranglerTomlParams = { ...newAppTomlParams, vars: env };
 
             /**
              * Build wrangler toml
@@ -58,7 +57,7 @@ module.exports = class PostBuild {
              "# Wrangler.toml\n" +
              "# Auto-generated file. Do not commit this file! Edit .env and app.toml files instead.\n"+
              "# ----------------------------------------------------------------------------------\n\n";
-            const tomlOutputString = this.createTomlContents(newTomlParams, prependedContents);
+            const tomlOutputString = this.createTomlContents(newWranglerTomlParams, prependedContents);
             fs.writeFileSync(path.join(this.curDir, "wrangler.toml"), tomlOutputString);
 
             /**
@@ -69,7 +68,7 @@ module.exports = class PostBuild {
              "# App.toml\n" +
              "# NOTE: Can be committed. Do not add secrets to this file. Use .env for this purpose.\n"+
              "# ----------------------------------------------------------------------------------\n\n";
-             const tomlAppOutputString = this.createTomlContents(newTomlAppParams, prependedAppContents);
+             const tomlAppOutputString = this.createTomlContents(newAppTomlParams, prependedAppContents);
              fs.writeFileSync(path.join(this.curDir, "app.toml"), tomlAppOutputString);
             
             /**

@@ -1,0 +1,1 @@
+export const REQUEST_LIMIT_AMOUNT_PER_HOUR = 50;
