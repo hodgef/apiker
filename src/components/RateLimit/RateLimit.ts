@@ -6,10 +6,10 @@ import { StateFn } from "../State";
 import { REQUEST_LIMIT_AMOUNT_PER_HOUR } from "./constants";
 import { res_429 } from "../Response";
 
-export const rateLimitRequest = async (prefix: string, handler: Handler, params: RequestParams): Promise<Response> => {
+export const rateLimitRequest = async (prefix: string, handler: Handler, params: RequestParams, limit = REQUEST_LIMIT_AMOUNT_PER_HOUR): Promise<Response> => {
     if(apiker.objects.includes(OBN.RATELIMIT)){
         const { state } = params;
-        const rateLimitReached = await isRateLimitReached(prefix, state);
+        const rateLimitReached = await isRateLimitReached(prefix, state, limit);
 
         if(rateLimitReached){
             return res_429();
@@ -21,17 +21,17 @@ export const rateLimitRequest = async (prefix: string, handler: Handler, params:
     return handler(params);
 };
 
-export const isRateLimitReached = async (prefix: string, state: StateFn) => {
+export const isRateLimitReached = async (prefix: string, state: StateFn, limit: number) => {
     const propertyName = getRateLimitPropertyName(prefix);
     const latestRequests = await state(OBN.RATELIMIT).list({
         prefix: propertyName,
-        limit: REQUEST_LIMIT_AMOUNT_PER_HOUR,
-        reverse: true
+        reverse: true,
+        limit
     });
 
     const hourInMs = 3600000;
     const requestValues = Object.values(latestRequests) as number[];
-    const earliestValue = requestValues[REQUEST_LIMIT_AMOUNT_PER_HOUR - 1];
+    const earliestValue = requestValues[limit - 1];
     return earliestValue && Date.now() - earliestValue < hourInMs;
 };
 
