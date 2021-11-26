@@ -47,7 +47,7 @@
     "@typescript-eslint/parser": "^5.3.1",
     "jest": "^27.3.1",
     "path-to-regexp": "^6.2.0",
-    "prettier": "^2.4.1",
+    "prettier": "^2.5.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.60.1",
     "rollup-plugin-copy": "^3.4.0",
