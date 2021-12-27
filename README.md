@@ -70,7 +70,7 @@ export const getUserCounter: Handler = async ({ state }) => {
 {"counter":2}
 ...
 ```
-Demo: https://apiker-demo.spv.workers.dev/users/test/counter
+Demo: https://apiker-demo.volted.co/users/test/counter
 
 Full example: [Apiker Demo](https://github.com/hodgef/apiker-demo) or `npx apiker my-demo`
 
@@ -106,6 +106,28 @@ Response (example):
 - If you would like to implement your own auth, you can always copy the Auth.ts routes to your Apiker project and edit the authentication flow as needed.
 
 - ⚠️ <b>Note:</b> Auth routes are in active development. There might be significant changes in future versions. PRs and suggestions are always welcome!
+
+## 🛡️ Firewall
+
+Apiker can interact with the Cloudflare Firewall to prevent endpoint flooding.
+
+To enable it, set the `firewall` option to `true` or pass an object such as the following:
+
+```js
+firewall: {
+    limitRequestsPerMinute: 100
+}
+```
+
+The `firewall` option requires that you specify a Cloudflare Token with Firewall permissions in the `.env`. Please follow [this guide](https://developers.cloudflare.com/api/tokens/create) on how to create API tokens.
+
+Example (in your .env file):
+```
+CLOUDFLARE_WAF_KEY = "XXXXX"
+```
+
+#### Notes:
+ - You can use the Firewall Banning and Unbanning handlers in your application at will. Just [import the Firewall methods](https://github.com/hodgef/apiker/blob/master/src/components/Firewall/Firewall.ts) that are exported from the apiker package.
 
 ## 🚀 Development & Deployment
 
