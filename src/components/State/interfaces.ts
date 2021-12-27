@@ -6,6 +6,7 @@ export interface ListRequestObject {
     prefix?: string;
     reverse?: boolean;
     limit?: number;
+    noCache?: boolean;
 }
 
 export type StateFn = (objectName?: string) => StateMethods;

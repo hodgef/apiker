@@ -65,22 +65,23 @@ export const forwardToMiddleware = async (request: Request, handlerFn: Handler, 
       middlewares.push(firewallMiddleWare);
     }
 
-    let retval: Response;
+    /**
+     * No more middlewares after this point
+     */
+    const remainingMiddlewares = [...middlewares];
 
     const loadNextMiddleware = async () => {
-      if(!middlewares.length){
-        return;
+      const middleware = remainingMiddlewares.shift();
+      const retval = await middleware(request, handlerFn, params);
+
+      if(remainingMiddlewares.length){
+        return loadNextMiddleware();
+      } else {
+        return retval;
       }
-      const middleware = middlewares.shift();
-      retval = await middleware(request, handlerFn, params);
-      return loadNextMiddleware();
     }
 
-    await loadNextMiddleware();
-
-    retval = await handlerFn(params as RequestParams);
-
-    return retval;
+    return middlewares.length ? loadNextMiddleware() : handlerFn(params as RequestParams);
   } catch(e: any) {
     return new Response(e.message);
   }

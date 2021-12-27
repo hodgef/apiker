@@ -19,7 +19,7 @@ export const firewallMiddleWare: Middleware = ({}, handlerFn, params) => {
         minuteInMs, 
         async () => {
             await banIP(ip);
-            return res_429();
+            return res_429("You've made too many requests. Please try again later.");
         }
     );
 }

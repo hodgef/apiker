@@ -4,10 +4,10 @@ import { RESPONSE_MESSAGES } from "./constants";
 /**
  * Responses
  */
-export const res_200 = (message = null, options = null) => res(message || RESPONSE_MESSAGES[200], options || 200);
-export const res_400 = (message = null, options = null) => res(message || RESPONSE_MESSAGES[400], options || 400);
-export const res_404 = (message = null, options = null) => res(message || RESPONSE_MESSAGES[404], options || 404);
-export const res_429 = (message = null, options = null) => res(message || RESPONSE_MESSAGES[429], options || 429);
+export const res_200 = (message = "", options = null) => res(message || RESPONSE_MESSAGES[200], options || 200);
+export const res_400 = (message = "", options = null) => res(message || RESPONSE_MESSAGES[400], options || 400);
+export const res_404 = (message = "", options = null) => res(message || RESPONSE_MESSAGES[404], options || 404);
+export const res_429 = (message = "", options = null) => res(message || RESPONSE_MESSAGES[429], options || 429);
 
 export const res = (input: any, options = {} as any) => {
   const data = typeof input === "string" || typeof input === "number" ? { message: input } : (input || {});

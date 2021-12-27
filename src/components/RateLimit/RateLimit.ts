@@ -30,12 +30,13 @@ export const isRateLimitReached = async (prefix: string, state: StateFn, limit: 
     const latestRequests = await state(OBN.RATELIMIT).list({
         prefix: propertyName,
         reverse: true,
+        noCache: true,
         limit
     });
 
     const requestValues = Object.values(latestRequests) as number[];
     const requestCount = limit - requestValues.filter(value => {
-        return value && Date.now() - value > timeLapse
+        return value && (Date.now() - timeLapse) > value
     }).length;
 
     const earliestValue = requestValues[limit - 1];
