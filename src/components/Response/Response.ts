@@ -1,5 +1,5 @@
 import { apiker } from "../Apiker";
-import { RESPONSE_HEADERS_DEFAULT, RESPONSE_MESSAGES } from "./constants";
+import { RESPONSE_MESSAGES } from "./constants";
 
 /**
  * Responses
@@ -9,10 +9,10 @@ export const res_400 = (message = null, options = null) => res(message || RESPON
 export const res_404 = (message = null, options = null) => res(message || RESPONSE_MESSAGES[404], options || 404);
 export const res_429 = (message = null, options = null) => res(message || RESPONSE_MESSAGES[429], options || 429);
 
-export const res = (input: any, options = {} as any ) => {
+export const res = (input: any, options = {} as any) => {
   const data = typeof input === "string" ? { message: input } : (input || {});
   return new Response(JSON.stringify({ ...data }, undefined, apiker.debug ? 4 : undefined), {
-    headers: RESPONSE_HEADERS_DEFAULT,
+    headers: apiker.responseHeaders,
     ...(Number.isInteger(options) ? { status: options } : options)
   });
 };

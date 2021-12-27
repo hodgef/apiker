@@ -1,8 +1,9 @@
 import { apiker } from "../Apiker";
 import { match } from "path-to-regexp";
-import { res_404 } from "../Response";
+import { RESPONSE_HEADERS_DEFAULT, res_404 } from "../Response";
 import { getStateMethods } from "../State";
 import { Handler, RequestParams } from "./interfaces";
+import { firewallMiddleWare } from "../Firewall/middleware";
 
 /**
  * Handles incoming Cloudflare Worker requests
@@ -10,6 +11,7 @@ import { Handler, RequestParams } from "./interfaces";
 export const handleEntryRequest = async (request: Request, env: any) => {
   try {
     apiker.setProps({ env });
+    apiker.responseHeaders = new Headers(RESPONSE_HEADERS_DEFAULT);
 
     const url = new URL(request.url);
     const { pathname } = url;
@@ -45,16 +47,33 @@ export const handleEntryRequest = async (request: Request, env: any) => {
     });
   
     return handlerFn
-      ? forwardToHandler(handlerFn, params)
+      ? forwardToMiddleware(request, handlerFn, params)
       : res_404();
   } catch (e: any) {
     return new Response(e.message);
   }
 };
 
-export const forwardToHandler = (handlerFn, params) => {
+export const forwardToMiddleware = async (request: Request, handlerFn: Handler, params: Partial<RequestParams>) => {
   try {
-    return handlerFn(params);
+    const middlewares: any[] = [];
+
+    /**
+     * Apply middleware
+     */
+    if(apiker.firewall) {
+      middlewares.push(firewallMiddleWare);
+    }
+
+    let retval: Response;
+
+    middlewares.forEach(middleware => {
+      retval = middleware(request, handlerFn, params);
+    });
+
+    retval = await handlerFn(params as RequestParams);
+
+    return retval;
   } catch(e: any) {
     return new Response(e.message);
   }

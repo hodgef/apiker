@@ -1,7 +1,7 @@
 import { getAuthRoutes } from "../Auth";
 import ObjectBase from "../ObjectBase/ObjectBase";
 import { handleEntryRequest } from "../Request";
-import type { Controllers, Options, Routes } from "./interfaces";
+import type { Controllers, Firewall, Options, Routes } from "./interfaces";
 
 class Apiker {
   routes: Routes = {};
@@ -12,6 +12,8 @@ class Apiker {
   auth!: boolean;
   env: any;
   headers!: Headers;
+  responseHeaders!: Headers;
+  firewall!: Firewall;
 
   defaultObjectName = "Common";
 
@@ -23,7 +25,7 @@ class Apiker {
       /**
        * Extract options
        */
-      const { routes, controllers = {} as Controllers, objects, exports, auth = false } = options;
+      const { routes, controllers = {} as Controllers, objects, exports, firewall, auth = false } = options;
 
       /**
        * Check for requires params
@@ -35,7 +37,7 @@ class Apiker {
       /**
        * Assign options
        */
-      this.setProps({ routes, controllers, objects, auth });
+      this.setProps({ routes, controllers, objects, auth, firewall });
 
       /**
        * If auth option is set to true, set auth routes

@@ -17,6 +17,11 @@ export interface Options {
   env?: any;
   auth?: boolean;
   headers?: Headers;
+  firewall?: Firewall;
+}
+
+export interface Firewall {
+  limitRequestsPerMinute: number;
 }
 
 export type Controller = new (...args: any[]) => any;

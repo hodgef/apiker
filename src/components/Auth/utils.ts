@@ -115,8 +115,8 @@ export const getClientId = () => {
   return clientId;
 };
 
-export const extractToken = (headers: Headers) => {
-  const authHeader = headers.get("Authorization");
+export const extractToken = (headers: Headers | undefined) => {
+  const authHeader = headers?.get("Authorization");
 
   if(authHeader?.includes("Bearer")){
     return authHeader.split(" ")[1];
