@@ -44,8 +44,8 @@ class Apiker {
        */
       if(auth){
         this.routes = {
-          ...this.routes,
-          ...getAuthRoutes()
+          ...getAuthRoutes(),
+          ...this.routes
         };
       }
 
