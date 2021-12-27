@@ -8,12 +8,14 @@ import { banIP } from "./Firewall";
 export const firewallMiddleWare: Middleware = ({}, handlerFn, params) => {
     const ip = apiker.headers.get("CF-Connecting-IP") as string;
     const minuteInMs = 60000;
+
+    const limitRequestsPerMinute = typeof apiker.firewall === "object" ? apiker.firewall.limitRequestsPerMinute : null;
     
     return rateLimitRequest(
         FIREWALL_RATELIMIT_PREFIX,
         handlerFn,
         params,
-        apiker.firewall?.limitRequestsPerMinute || FIREWALL_REQUESTS_MINUTE,
+        limitRequestsPerMinute || FIREWALL_REQUESTS_MINUTE,
         minuteInMs, 
         async () => {
             await banIP(ip);

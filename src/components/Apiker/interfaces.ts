@@ -17,7 +17,7 @@ export interface Options {
   env?: any;
   auth?: boolean;
   headers?: Headers;
-  firewall?: Firewall;
+  firewall?: Firewall | boolean;
 }
 
 export interface Firewall {

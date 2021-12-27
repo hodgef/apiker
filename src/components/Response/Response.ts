@@ -10,7 +10,7 @@ export const res_404 = (message = null, options = null) => res(message || RESPON
 export const res_429 = (message = null, options = null) => res(message || RESPONSE_MESSAGES[429], options || 429);
 
 export const res = (input: any, options = {} as any) => {
-  const data = typeof input === "string" ? { message: input } : (input || {});
+  const data = typeof input === "string" || typeof input === "number" ? { message: input } : (input || {});
   return new Response(JSON.stringify({ ...data }, undefined, apiker.debug ? 4 : undefined), {
     headers: apiker.responseHeaders,
     ...(Number.isInteger(options) ? { status: options } : options)

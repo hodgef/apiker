@@ -67,9 +67,16 @@ export const forwardToMiddleware = async (request: Request, handlerFn: Handler, 
 
     let retval: Response;
 
-    middlewares.forEach(middleware => {
-      retval = middleware(request, handlerFn, params);
-    });
+    const loadNextMiddleware = async () => {
+      if(!middlewares.length){
+        return;
+      }
+      const middleware = middlewares.shift();
+      retval = await middleware(request, handlerFn, params);
+      return loadNextMiddleware();
+    }
+
+    await loadNextMiddleware();
 
     retval = await handlerFn(params as RequestParams);
 

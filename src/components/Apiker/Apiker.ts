@@ -13,7 +13,7 @@ class Apiker {
   env: any;
   headers!: Headers;
   responseHeaders!: Headers;
-  firewall!: Firewall;
+  firewall!: Firewall | boolean;
 
   defaultObjectName = "Common";
 
