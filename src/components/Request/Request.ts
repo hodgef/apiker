@@ -47,14 +47,14 @@ export const handleEntryRequest = async (request: Request, env: any) => {
     });
   
     return handlerFn
-      ? forwardToMiddleware(request, handlerFn, params)
+      ? forwardToMiddleware(params, request, handlerFn)
       : res_404();
   } catch (e: any) {
     return new Response(e.message);
   }
 };
 
-export const forwardToMiddleware = async (request: Request, handlerFn: Handler, params: Partial<RequestParams>) => {
+export const forwardToMiddleware = async (params: Partial<RequestParams>, request: Request, handlerFn: Handler): Promise<Response> => {
   try {
     const middlewares: any[] = [];
 
@@ -69,19 +69,13 @@ export const forwardToMiddleware = async (request: Request, handlerFn: Handler, 
      * No more middlewares after this point
      */
     const remainingMiddlewares = [...middlewares];
-
-    const loadNextMiddleware = async () => {
-      const middleware = remainingMiddlewares.shift();
-      const retval = await middleware(request, handlerFn, params);
-
-      if(remainingMiddlewares.length){
-        return loadNextMiddleware();
-      } else {
-        return retval;
-      }
+    const loadNextMiddleware = async (): Promise<Response> => {
+      const middleware = remainingMiddlewares.shift() as Handler;
+      const nextMiddleware = remainingMiddlewares.shift() || handlerFn;
+      return middleware(params as RequestParams, request, nextMiddleware);
     }
 
-    return middlewares.length ? loadNextMiddleware() : handlerFn(params as RequestParams);
+    return loadNextMiddleware();
   } catch(e: any) {
     return new Response(e.message);
   }

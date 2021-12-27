@@ -35,8 +35,8 @@ export const isRateLimitReached = async (prefix: string, state: StateFn, limit: 
     });
 
     const requestValues = Object.values(latestRequests) as number[];
-    const requestCount = limit - requestValues.filter(value => {
-        return value && (Date.now() - timeLapse) > value
+    const requestCount = requestValues.filter(value => {
+        return (value && Date.now() - value < timeLapse)
     }).length;
 
     const earliestValue = requestValues[limit - 1];
