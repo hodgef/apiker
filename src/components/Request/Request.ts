@@ -1,6 +1,6 @@
 import { apiker } from "../Apiker";
 import { match } from "path-to-regexp";
-import { RESPONSE_HEADERS_DEFAULT, res_404 } from "../Response";
+import { RESPONSE_HEADERS_DEFAULT, res_404, res_429 } from "../Response";
 import { getStateMethods } from "../State";
 import { Handler, RequestParams } from "./interfaces";
 import { firewallMiddleWare } from "../Firewall/middleware";
@@ -16,10 +16,10 @@ export const handleEntryRequest = async (request: Request, env: any) => {
     const url = new URL(request.url);
     const { pathname } = url;
   
-    let handlerFn: Handler | undefined;
-    let params = { request } as Partial<RequestParams>;
+    let handlerFn: Handler = () => res_404();
     const body = await readRequestBody(request);
     const headers = request.headers;
+    let params = { request, state: getStateMethods(apiker.defaultObjectName), body, headers } as Partial<RequestParams>;
   
     /**
      * Check if path matches with a defined route
@@ -39,16 +39,15 @@ export const handleEntryRequest = async (request: Request, env: any) => {
           handlerFn = (new apiker.controllers[handlerClass]())[handlerMethod];
         }
   
-        params = {...params, state: getStateMethods(apiker.defaultObjectName), matches, body, headers };
+        params = {...params, matches };
         apiker.setProps({ headers });
       }
   
       return !!matches;
     });
   
-    return handlerFn
-      ? forwardToMiddleware(params, request, handlerFn)
-      : res_404();
+    return forwardToMiddleware(params, request, handlerFn);
+
   } catch (e: any) {
     return new Response(e.message);
   }
@@ -63,6 +62,14 @@ export const forwardToMiddleware = async (params: Partial<RequestParams>, reques
      */
     if(apiker.firewall) {
       middlewares.push(firewallMiddleWare);
+    }
+
+    /**
+     * Prevent bans-in-progress from getting to the handlerFn
+     */
+    const ip = request.headers.get("CF-Connecting-IP") as string;
+    if(apiker.bans.includes(ip)){
+      handlerFn = () => res_429();
     }
 
     /**

@@ -6,11 +6,16 @@ import { StateFn } from "../State";
 import { res_429 } from "../Response";
 import { REQUEST_LIMIT_AMOUNT_PER_HOUR } from "./constants";
 
-export const rateLimitRequest = async (prefix: string, handler: Handler, params: RequestParams, limit = REQUEST_LIMIT_AMOUNT_PER_HOUR, timeLapse = 3600000, onLimitReached = res_429 as any): Promise<Response> => {
+const hourInMs = 3600000;
+
+export const rateLimitRequest = async (prefix: string, handler: Handler, params: RequestParams, limit = REQUEST_LIMIT_AMOUNT_PER_HOUR, timeLapse = hourInMs, onLimitReached = res_429 as any): Promise<Response> => {
     if(apiker.objects.includes(OBN.RATELIMIT)){
         const { state } = params;
         const { rateLimitReached, requestCount } = await isRateLimitReached(prefix, state, limit, timeLapse);
         const rateLimitRemaining = limit - requestCount;
+
+        apiker.responseHeaders.append("X-RateLimit-Limit", limit.toString());
+        apiker.responseHeaders.append("X-RateLimit-Remaining", rateLimitRemaining.toString());
 
         if(rateLimitReached){
             return onLimitReached();
@@ -18,8 +23,20 @@ export const rateLimitRequest = async (prefix: string, handler: Handler, params:
             await addToRateLimit(prefix, state);
         }
 
-        apiker.responseHeaders.append("X-RateLimit-Limit", limit.toString());
-        apiker.responseHeaders.append("X-RateLimit-Remaining", rateLimitRemaining.toString());
+        /**
+         * Handle RateLimit purging
+         */
+        const lastRateLimitPurge = await state().get("lastRateLimitPurge");
+
+        if(!lastRateLimitPurge){
+            await state().put({ lastRateLimitPurge: Date.now() });
+        } else {
+            if(Date.now() - lastRateLimitPurge >= hourInMs){
+                apiker.bans = [];
+                await state(OBN.RATELIMIT).deleteAll();
+                await state().put({ lastRateLimitPurge: Date.now() });
+            }
+        }
     }
 
     return handler(params);

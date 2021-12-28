@@ -45,8 +45,7 @@ const routes = {
 apiker.init({
   routes,
   objects,
-  exports,
-  auth: false
+  exports
 });
 ```
 
@@ -76,7 +75,7 @@ Full example: [Apiker Demo](https://github.com/hodgef/apiker-demo) or `npx apike
 
 ## 🔐 Auth
 
-When the **auth** option is set to true, Apiker will register the following default routes:
+When the **authRoutes** option is set to true, Apiker will register the following default routes:
 
 `/auth/register`
 `/auth/login`

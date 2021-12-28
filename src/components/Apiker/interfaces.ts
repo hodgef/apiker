@@ -15,7 +15,7 @@ export interface Options {
   exports?: any;
   objects?: string[];
   env?: any;
-  auth?: boolean;
+  authRoutes?: boolean;
   headers?: Headers;
   firewall?: Firewall | boolean;
 }

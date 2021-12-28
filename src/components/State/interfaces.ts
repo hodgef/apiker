@@ -15,5 +15,6 @@ export interface StateMethods {
     get: (propertyName: string) => any,
     put: (putRequestObject: PutRequestObject) => any,
     delete: (propertyName: string) => any,
+    deleteAll: () => any,
     list: (listRequestObject?: ListRequestObject) => any
 }

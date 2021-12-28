@@ -19,7 +19,8 @@ export const firewallMiddleWare: Middleware = (params, {}, nextMiddleware) => {
         minuteInMs, 
         async () => {
             await banIP(ip);
-            return res_429("You've made too many requests. Please try again later.");
+            apiker.bans.push(ip);
+            return res_429();
         }
     );
 }

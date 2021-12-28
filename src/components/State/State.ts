@@ -9,6 +9,7 @@ export const getStateMethods = (defaultObjectName: string) =>
       get: (obj ? getObjectState(obj) : () => {}),
       put: (obj ? putObjectState(obj) : () => {}),
       delete: (obj ? deleteObjectState(obj) : () => {}),
+      deleteAll: (obj ? deleteAllObjectState(obj) : () => {}),
       list: (obj ? listObjectState(obj) : () => {}),
     } as StateMethods;
   };
@@ -23,6 +24,16 @@ export const deleteObjectState = (obj: any) =>
       headers: {
         "Content-Type": "application/json"
       },
+    });
+
+    const body = await result.text();
+    return JSON.parse(body || null);
+  };
+
+export const deleteAllObjectState = (obj: any) =>
+  async () => {
+    const result = await obj.fetch("/deleteall", {
+      method: "POST"
     });
 
     const body = await result.text();

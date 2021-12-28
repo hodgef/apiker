@@ -9,11 +9,12 @@ class Apiker {
   debug = false;
   objectVersion = "V1";
   objects!: string[];
-  auth!: boolean;
+  authRoutes!: boolean;
   env: any;
   headers!: Headers;
   responseHeaders!: Headers;
   firewall!: Firewall | boolean;
+  bans: string[] = [];
 
   defaultObjectName = "Common";
 
@@ -25,7 +26,7 @@ class Apiker {
       /**
        * Extract options
        */
-      const { routes, controllers = {} as Controllers, objects, exports, firewall, auth = false } = options;
+      const { routes, controllers = {} as Controllers, objects, exports, firewall, authRoutes = false } = options;
 
       /**
        * Check for requires params
@@ -37,12 +38,12 @@ class Apiker {
       /**
        * Assign options
        */
-      this.setProps({ routes, controllers, objects, auth, firewall });
+      this.setProps({ routes, controllers, objects, authRoutes, firewall });
 
       /**
        * If auth option is set to true, set auth routes
        */
-      if(auth){
+      if(authRoutes){
         this.routes = {
           ...getAuthRoutes(),
           ...this.routes

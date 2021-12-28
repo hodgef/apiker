@@ -23,6 +23,10 @@ export default class {
         
         return res("Success");
 
+      } else if(pathname.startsWith("/deleteall")){
+        await this.state.storage.deleteAll();
+        return res("Success");
+
       } else if(pathname.startsWith("/delete")){
         await this.state.storage.delete(requestBody.propertyName);
         return res("Success");
