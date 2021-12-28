@@ -18,8 +18,8 @@ export const firewallMiddleWare: Middleware = (params, {}, nextMiddleware) => {
         limitRequestsPerMinute || FIREWALL_REQUESTS_MINUTE,
         minuteInMs, 
         async () => {
-            await banIP(ip);
             apiker.bans.push(ip);
+            await banIP(ip);
             return res_429();
         }
     );
