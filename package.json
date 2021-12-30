@@ -67,9 +67,15 @@
     "typescript": "^4.5.4"
   },
   "jest": {
+    "testMatch": ["<rootDir>/src/tests/*.{ts,js}"],
+    "testPathIgnorePatterns": ["/node_modules/"],
+    "transform": {
+      "^.+\\.tsx$": "babel-jest"
+    },
     "moduleFileExtensions": [
       "js",
       "ts",
+      "tsx",
       "json",
       "node"
     ]
