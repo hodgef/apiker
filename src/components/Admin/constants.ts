@@ -1,0 +1,1 @@
+export const ADMIN_LOGIN_PREFIX = "admin-login";

@@ -1,50 +1,62 @@
 import { OBN } from "../ObjectBase";
 import { Handler } from "../Request";
 import { res, res_400 } from "../Response";
+import { StateFn } from "../State";
 import { isEmail, isRequiredLength } from "../Validation";
-import { AUTH_TOKEN_DURATION_MINS_DEFAULT } from "./constants";
-import { createJWT, getClientId, hash_bcrypt, randomHash } from "./utils";
-
-const getTokens = (userId: string) => {
-  const clientId = getClientId();
-  const token = createJWT({ sub: userId, clientId }, AUTH_TOKEN_DURATION_MINS_DEFAULT);
-  const refreshToken = createJWT({ sub: userId, clientId });
-
-  return { userId, token, refreshToken };
-};
+import { User } from "./interfaces";
+import { getTokens, hash_bcrypt, randomHash_SHA1 } from "./utils";
 
 export const registerUser: Handler = async ({ body, state }) => {
     const { email, password } = body;
   
-    if(!isEmail(email) || !isRequiredLength(password)) {
+    const user = await registerUserAction(state, email, password);
+
+    if(!user?.id){
       return res_400();
     }
+
+    const tokens = getTokens(user?.id);
   
-    /**
-     * Check if user exists
-     */
-    const currentUserId = await state(OBN.EMAILTOUUID).get(email);
-  
-    if(currentUserId) {
+    if(tokens) {
+      return res(tokens);
+    } else {
       return res_400();
     }
-  
-    const userId = randomHash();
-    const signedPassword = hash_bcrypt(password);
-  
-    /**
-     * Create user
-     */
-    await state(OBN.USERS).put({ [userId]: {
-      email,
-      password: signedPassword,
-      createdAt: Date.now()
-    }});
-  
-    /**
-     * Create EmailToUUID entry
-     */
-    await state(OBN.EMAILTOUUID).put({ [email]: userId });
-    
-    return res(getTokens(userId));
 };
+
+
+export const registerUserAction = async (state: StateFn, email: string, password: string, extraParams = {}) => {
+  if(!isEmail(email) || !isRequiredLength(password)) {
+    return;
+  }
+
+  /**
+   * Check if user exists
+   */
+  const currentUserId = await state(OBN.EMAILTOUUID).get(email);
+
+  if(currentUserId) {
+    return;
+  }
+
+  const id = randomHash_SHA1();
+  const signedPassword = hash_bcrypt(password);
+  const user: User = {
+    id,
+    email,
+    password: signedPassword,
+    createdAt: Date.now(),
+    ...extraParams,
+  };
+
+  /**
+   * Create user
+   */
+  await state(OBN.USERS).put({ [id]: user });
+
+  /**
+   * Create EmailToUUID entry
+   */
+  await state(OBN.EMAILTOUUID).put({ [email]: id });
+  return user;
+}

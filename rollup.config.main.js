@@ -3,6 +3,12 @@ import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import dts from "rollup-plugin-dts";
 import copy from "rollup-plugin-copy";
+import nodePolyfills from 'rollup-plugin-node-polyfills';
+import replace from '@rollup/plugin-replace';
+
+import React from 'react';
+import ReactIs from 'react-is';
+import ReactDOM from 'react-dom';
 
 const packageJson = require("./package.json");
 
@@ -24,8 +30,21 @@ export default [
       }
     ],
     plugins: [
-      resolve(),
-      commonjs(),
+      replace({
+        "process.env.NODE_ENV": JSON.stringify("production")
+      }),
+      nodePolyfills(),
+      resolve({
+        browser: true
+      }),
+      commonjs({
+        include: /node_modules/,
+        namedExports: {
+            'react-is': Object.keys(ReactIs),
+            'react': Object.keys(React),
+            'react-dom': Object.keys(ReactDOM)
+        }
+      }),
       typescript({ tsconfig: "./tsconfig.json" }),
       copy({
         targets: [

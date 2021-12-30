@@ -1,3 +1,5 @@
+import { RequestParams } from "../Request";
+
 export interface Routes {
   [route: string]: any;
 }
@@ -10,14 +12,14 @@ export interface Options {
   routes?: Routes;
   controllers?: Controllers;
   debug?: boolean;
-  state?: any;
   objectVersion?: string;
   exports?: any;
   objects?: string[];
   env?: any;
   authRoutes?: boolean;
-  headers?: Headers;
+  requestParams?: RequestParams;
   firewall?: Firewall | boolean;
+  adminPanel?: boolean;
 }
 
 export interface Firewall {

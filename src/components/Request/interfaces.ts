@@ -6,8 +6,9 @@ export interface RequestParams {
   matches: MatchResult<any>;
   body: any;
   headers: Headers;
+  request: Request;
 }
 
-export type Handler = ((params: RequestParams, request?: Request, nextMiddleware?: Handler) => Response | Promise<Response>);
+export type Handler = ((params: RequestParams, nextMiddleware?: Handler) => Response | Promise<Response>);
 
-export type Middleware = (params: RequestParams, request: Request, handlerFn: Handler) => Response | Promise<Response>;
+export type Middleware = (params: RequestParams, handlerFn: Handler) => Response | Promise<Response>;

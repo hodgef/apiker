@@ -19,7 +19,9 @@ export const handleEntryRequest = async (request: Request, env: any) => {
     let handlerFn: Handler = () => res_404();
     const body = await readRequestBody(request);
     const headers = request.headers;
-    let params = { request, state: getStateMethods(apiker.defaultObjectName), body, headers } as Partial<RequestParams>;
+    const state = getStateMethods(apiker.defaultObjectName);
+    let params = { request, state, body, headers } as RequestParams;
+    apiker.requestParams = params;
   
     /**
      * Check if path matches with a defined route
@@ -40,21 +42,21 @@ export const handleEntryRequest = async (request: Request, env: any) => {
         }
   
         params = {...params, matches };
-        apiker.setProps({ headers });
       }
   
       return !!matches;
     });
   
-    return forwardToMiddleware(params, request, handlerFn);
+    return forwardToMiddleware(params, handlerFn);
 
   } catch (e: any) {
     return new Response(e.message);
   }
 };
 
-export const forwardToMiddleware = async (params: Partial<RequestParams>, request: Request, handlerFn: Handler): Promise<Response> => {
+export const forwardToMiddleware = async (params: RequestParams, handlerFn: Handler): Promise<Response> => {
   try {
+    const { request } = params;
     const middlewares: any[] = [];
 
     /**
@@ -79,7 +81,7 @@ export const forwardToMiddleware = async (params: Partial<RequestParams>, reques
     const loadNextMiddleware = async (): Promise<Response> => {
       const middleware = remainingMiddlewares.shift() as Handler;
       const nextMiddleware = remainingMiddlewares.shift() || handlerFn;
-      return middleware(params as RequestParams, request, nextMiddleware);
+      return middleware(params, nextMiddleware);
     }
 
     return loadNextMiddleware();

@@ -16,3 +16,9 @@ export const res = (input: any, options = {} as any) => {
     ...(Number.isInteger(options) ? { status: options } : options)
   });
 };
+
+export const resRaw = (htmlContent: string, contentType = "text/html") => {
+  const headers = apiker.responseHeaders;
+  headers.set("content-type", `${contentType};charset=UTF-8`);
+  return new Response(htmlContent, { headers });
+}

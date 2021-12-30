@@ -1,6 +1,11 @@
 import { apiker } from "../Apiker";
+import { parse } from "cookie"
 import cryptojs from "../Vendor/crypto";
 import bcrypt from "../Vendor/bcrypt";
+import { OBN } from "../ObjectBase";
+import { StateFn } from "../State";
+import { User } from "./interfaces";
+import { AUTH_TOKEN_DURATION_MINS_DEFAULT } from "./constants";
 
 const CryptoJS = cryptojs();
 const Bcrypt = bcrypt();
@@ -99,7 +104,7 @@ export const randomHash = () => {
   return CryptoJS.SHA256(wordArray).toString(CryptoJS.enc.Hex);
 };
 
-export const randomHash_sha1 = () => {
+export const randomHash_SHA1 = () => {
   const wordArray = CryptoJS.lib.WordArray.random(16);
   return CryptoJS.SHA1(wordArray).toString(CryptoJS.enc.Hex);
 };
@@ -109,16 +114,55 @@ export const randomHash_sha1 = () => {
  * This value is returned to client and not stored
  */
 export const getClientId = () => {
-  const ip = apiker.headers.get("CF-Connecting-IP");
-  const userAgent = apiker.headers.get("User-Agent") || "";
+  const { headers } = apiker.requestParams;
+  const ip = headers.get("CF-Connecting-IP");
+  const userAgent = headers.get("User-Agent") || "";
   const clientId = sign(ip + userAgent);
   return clientId;
 };
 
 export const extractToken = (headers: Headers | undefined) => {
   const authHeader = headers?.get("Authorization");
+  const cookie = parse(headers?.get("Cookie") || "")
+  const authCookie = cookie["apikerToken"] || "";
+  const authValue = (authHeader || authCookie);
 
-  if(authHeader?.includes("Bearer")){
-    return authHeader.split(" ")[1];
+  if(authValue?.includes("Bearer")){
+    return authValue.split(" ")[1];
   }
 };
+
+export const getCurrentUser = async (headers: Headers, state: StateFn): Promise<User | undefined> => {
+  const token = extractToken(headers);
+
+  if(!token){
+    return;
+  }
+
+  const payload = parseJWT(token);
+
+  if(!payload){
+    return;
+  }
+
+  const { sub: userId } = payload;
+  const user = await state(OBN.USERS).get(userId);
+
+  if(user?.password){
+    return user;
+  }
+}
+
+export const getTokens = (userId: string, expirationInMinutes = AUTH_TOKEN_DURATION_MINS_DEFAULT) => {
+  const clientId = getClientId();
+  const token = createJWT({ sub: userId, clientId }, expirationInMinutes);
+  const refreshToken = createJWT({ sub: userId, clientId });
+
+  return { userId, token, refreshToken };
+};
+
+export const getSignedIp = () => {
+  const { headers } = apiker.requestParams;
+  const ip = headers.get("CF-Connecting-IP");
+  return sign(ip);
+}

@@ -1,42 +1,55 @@
 import { OBN } from "../ObjectBase";
 import { Handler } from "../Request";
 import { res, res_400 } from "../Response";
+import { StateFn } from "../State";
 import { isEmail, isRequiredLength } from "../Validation";
-import { AUTH_TOKEN_DURATION_MINS_DEFAULT } from "./constants";
-import { compare_bcrypt, createJWT, getClientId } from "./utils";
-
-const getTokens = (userId: string) => {
-    const clientId = getClientId();
-    const token = createJWT({ sub: userId, clientId }, AUTH_TOKEN_DURATION_MINS_DEFAULT);
-    const refreshToken = createJWT({ sub: userId, clientId });
-  
-    return { userId, token, refreshToken };
-};
+import { User } from "./interfaces";
+import { compare_bcrypt, getTokens } from "./utils";
 
 export const loginUser: Handler = async ({ body, state }) => {
     const { email, password } = body;
+
+    const tokens = await loginUserAction(state, email, password);
   
-    if(!isEmail(email) || !isRequiredLength(password)) {
-      return res_400();
-    }
-  
-    /**
-     * Check if user exists
-     */
-    const userId = await state(OBN.EMAILTOUUID).get(email);
-  
-    if(!userId) {
-      return res_400();
-    }
-  
-    /**
-     * Check user
-     */
-    const user = await state(OBN.USERS).get(userId);
-  
-    if(user?.password && compare_bcrypt(password, user.password)){
-      return res(getTokens(userId));
+    if(tokens) {
+      return res(tokens);
     } else {
       return res_400();
     }
-  };
+};
+
+export const loginUserAction = async (state: StateFn, email: string, password: string) => {
+  if(!isEmail(email) || !isRequiredLength(password)) {
+    return;
+  }
+
+  const user = await checkUser(state, email, password);
+
+  if(user?.password && compare_bcrypt(password, user.password)){
+    return getTokens(user.id);
+  }
+}
+
+export const checkUser = async (state: StateFn, email: string, password: string) => {
+  if(!isEmail(email) || !isRequiredLength(password)) {
+    return;
+  }
+
+  /**
+   * Check if user exists
+   */
+  const userId = await state(OBN.EMAILTOUUID).get(email);
+
+  if(!userId) {
+    return;
+  }
+
+  /**
+   * Check user
+   */
+  const user = await state(OBN.USERS).get(userId) as User;
+
+  if(user?.password && compare_bcrypt(password, user.password)){
+    return user;
+  }
+}

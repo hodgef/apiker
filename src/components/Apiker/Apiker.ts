@@ -1,6 +1,7 @@
+import { getAdminRoutes } from "../Admin";
 import { getAuthRoutes } from "../Auth";
 import ObjectBase from "../ObjectBase/ObjectBase";
-import { handleEntryRequest } from "../Request";
+import { handleEntryRequest, RequestParams } from "../Request";
 import type { Controllers, Firewall, Options, Routes } from "./interfaces";
 
 class Apiker {
@@ -11,10 +12,11 @@ class Apiker {
   objects!: string[];
   authRoutes!: boolean;
   env: any;
-  headers!: Headers;
+  requestParams!: RequestParams;
   responseHeaders!: Headers;
   firewall!: Firewall | boolean;
   bans: string[] = [];
+  adminPanel!: boolean;
 
   defaultObjectName = "Common";
 
@@ -26,10 +28,10 @@ class Apiker {
       /**
        * Extract options
        */
-      const { routes, controllers = {} as Controllers, objects, exports, firewall, authRoutes = false } = options;
+      const { routes, controllers = {} as Controllers, objects, exports, firewall, adminPanel = false, authRoutes = false } = options;
 
       /**
-       * Check for requires params
+       * Check for required params
        */
       if(!(routes && objects && exports)){
         throw new Error("Missing required parameters, please consult the Apiker documentation");
@@ -38,14 +40,24 @@ class Apiker {
       /**
        * Assign options
        */
-      this.setProps({ routes, controllers, objects, authRoutes, firewall });
+      this.setProps({ routes, controllers, objects, authRoutes, adminPanel, firewall });
 
       /**
-       * If auth option is set to true, set auth routes
+       * If authRoutes option is set to true, set auth routes
        */
       if(authRoutes){
         this.routes = {
           ...getAuthRoutes(),
+          ...this.routes
+        };
+      }
+
+      /**
+       * If adminPanel option is set to true, set admin panel routes
+       */
+      if(adminPanel){
+        this.routes = {
+          ...getAdminRoutes(),
           ...this.routes
         };
       }

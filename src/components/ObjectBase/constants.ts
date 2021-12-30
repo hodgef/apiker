@@ -2,5 +2,6 @@ export const OBN = {
   COMMON: "Common",
   USERS: "Users",
   EMAILTOUUID: "EmailToUUID",
-  RATELIMIT: "RateLimit"
+  RATELIMIT: "RateLimit",
+  LOGS: "Logs"
 };

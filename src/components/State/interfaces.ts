@@ -12,9 +12,9 @@ export interface ListRequestObject {
 export type StateFn = (objectName?: string) => StateMethods;
 
 export interface StateMethods {
-    get: (propertyName: string) => any,
-    put: (putRequestObject: PutRequestObject) => any,
-    delete: (propertyName: string) => any,
-    deleteAll: () => any,
-    list: (listRequestObject?: ListRequestObject) => any
+    get: (propertyName: string) => Promise<any>,
+    put: (putRequestObject: PutRequestObject) => Promise<any>,
+    delete: (propertyName: string) => Promise<any>,
+    deleteAll: () => Promise<any>,
+    list: (listRequestObject?: ListRequestObject) => Promise<any>
 }
