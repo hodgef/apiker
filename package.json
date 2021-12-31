@@ -37,7 +37,7 @@
     "@babel/plugin-proposal-class-properties": "^7.16.5",
     "@babel/plugin-transform-runtime": "^7.16.5",
     "@babel/plugin-transform-typescript": "^7.16.1",
-    "@babel/preset-env": "^7.16.5",
+    "@babel/preset-env": "^7.16.7",
     "@babel/preset-typescript": "^7.16.0",
     "@rollup/plugin-commonjs": "^21.0.1",
     "@rollup/plugin-eslint": "^8.0.1",
