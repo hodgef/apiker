@@ -63,25 +63,8 @@
     "rollup-plugin-prettier": "^2.2.0",
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.31.1",
+    "ts-jest": "^27.1.2",
     "tslib": "^2.3.1",
     "typescript": "^4.5.4"
-  },
-  "jest": {
-    "testMatch": [
-      "<rootDir>/src/tests/*.{ts,js}"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "transform": {
-      "^.+\\.tsx$": "babel-jest"
-    },
-    "moduleFileExtensions": [
-      "js",
-      "ts",
-      "tsx",
-      "json",
-      "node"
-    ]
   }
 }
