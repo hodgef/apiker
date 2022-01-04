@@ -1,6 +1,6 @@
 {
   "name": "apiker",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "API for Cloudflare Workers & Wrangler",
   "bin": "bin/index.js",
   "main": "dist/cjs/index.js",
@@ -67,8 +67,12 @@
     "typescript": "^4.5.4"
   },
   "jest": {
-    "testMatch": ["<rootDir>/src/tests/*.{ts,js}"],
-    "testPathIgnorePatterns": ["/node_modules/"],
+    "testMatch": [
+      "<rootDir>/src/tests/*.{ts,js}"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
     "transform": {
       "^.+\\.tsx$": "babel-jest"
     },
