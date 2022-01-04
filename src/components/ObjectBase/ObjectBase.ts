@@ -20,7 +20,7 @@ export default class {
         await Promise.all(
           Object.keys(requestBody).map(propertyName => this.state.storage.put(propertyName, requestBody[propertyName]))
         );
-        
+
         return res("Success");
 
       } else if(pathname.startsWith("/deleteall")){

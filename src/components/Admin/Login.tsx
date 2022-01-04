@@ -15,10 +15,10 @@ export const adminPanelLogin: Handler = async ({ state }) => {
 
 export const AdminPanelLogin: React.FC = ({ hasUsers }) => {
   return (
-    <React.Fragment>
+    <div className="m-3">
       {hasUsers ? (
         <React.Fragment>
-          <h1 className="display-5 mb-3">Login</h1>
+          <h1 className="display-6 mb-3">Login</h1>
           <form className="row g-3" method="post" action="/admp">
             <div className="col-auto">
                 <label for="staticEmail2" className="visually-hidden">Email</label>
@@ -35,7 +35,7 @@ export const AdminPanelLogin: React.FC = ({ hasUsers }) => {
         </React.Fragment>
       ) : (
         <React.Fragment>
-          <h1 className="display-5 mb-3">Welcome to Apiker</h1>
+          <h1 className="display-6 mb-3">Welcome to Apiker</h1>
           <p className="lead">
             Setup your admin account in order to manage your Apiker installation.
           </p>
@@ -54,6 +54,6 @@ export const AdminPanelLogin: React.FC = ({ hasUsers }) => {
           </form>
         </React.Fragment>
       )}
-    </React.Fragment>
+    </div>
   )
 };

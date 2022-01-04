@@ -8,6 +8,7 @@ import { adminPanelLogin } from './Login';
 import { apiker } from '../Apiker';
 import { addLogEntry, getLogEntries, LogObject } from '../Logging';
 import { ADMIN_LOGIN_PREFIX } from './constants';
+import { res_401 } from '../Response';
 
 export const adminPanelSetup: Handler = async (params) => {
   const { headers, state, body } = params;
@@ -43,11 +44,15 @@ export const adminPanelSetup: Handler = async (params) => {
       await addLogEntry(ADMIN_LOGIN_PREFIX);
     }
   } else {
-    user = await getCurrentUser(headers, state);
+    user = await getCurrentUser();
   }
  
   if(!user){
     return adminPanelLogin(params);
+  }
+
+  if(user?.role !== "admin"){
+    return res_401();
   }
 
   const latestLogins = (await getLogEntries(ADMIN_LOGIN_PREFIX, 5)).sort((a, b) => b.time - a.time);
@@ -59,7 +64,7 @@ export const adminPanelSetup: Handler = async (params) => {
 
 export const AdminPanelPage: React.FC = ({ latestLogins, currentId }) => {
   return (
-    <React.Fragment>
+    <div class="m-3">
       <h1 className="display-6 mb-3">{latestLogins.length ? "Welcome back": "Welcome"}</h1>
       <p className="lead">
         Latest admin-login events:
@@ -79,7 +84,7 @@ export const AdminPanelPage: React.FC = ({ latestLogins, currentId }) => {
               return (
                 <tr>
                   <th scope="row">{new Date(time).toLocaleString()}</th>
-                  <td>{id} {currentId === id && <span className="badge bg-primary">This client</span>}</td>
+                  <td><div class="d-flex"><span className="text-truncate" style={{ maxWidth: 100, display: "inline-block" }} title={id}>{id}</span> {currentId === id && <span className="badge bg-primary" title="This client">*</span>}</div></td>
                   <td><span title={countryCode}>{getFlagEmoji(countryCode)}</span></td>
                   <td>{pathname}</td>
                 </tr>
@@ -89,6 +94,6 @@ export const AdminPanelPage: React.FC = ({ latestLogins, currentId }) => {
         </table>
         <a href="/admp/dashboard" class="btn btn-primary">Continue to Dashboard</a>
       </div>
-    </React.Fragment>
+    </div>
   )
 };

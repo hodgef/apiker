@@ -5,4 +5,5 @@ export interface LogObject {
     clientId: string;
     countryCode: string;
     pathname: string;
+    issuedBy?: string;
 }

@@ -9,6 +9,7 @@ export const RESPONSE_HEADERS_DEFAULT = {
 export const RESPONSE_MESSAGES = {
   200: "Success",
   400: "Bad request",
+  401: "Forbidden",
   404: "Not found",
   429: "Too many requests"
 };

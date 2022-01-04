@@ -1,0 +1,1 @@
+export const BANS_PREFIX = "bans";

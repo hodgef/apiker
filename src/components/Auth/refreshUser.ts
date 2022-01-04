@@ -2,8 +2,8 @@ import { Handler } from "../Request";
 import { res, res_400 } from "../Response";
 import { getCurrentUser, getTokens } from "./utils";
 
-export const refreshUser: Handler = async ({ headers, state }) => {
-  const user = await getCurrentUser(headers, state);
+export const refreshUser: Handler = async () => {
+  const user = await getCurrentUser();
 
   if(user?.id){
     return res(getTokens(user.id));

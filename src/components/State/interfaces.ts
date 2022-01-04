@@ -5,7 +5,7 @@ export interface PutRequestObject {
 export interface ListRequestObject {
     prefix?: string;
     reverse?: boolean;
-    limit?: number;
+    limit?: number | null;
     noCache?: boolean;
 }
 

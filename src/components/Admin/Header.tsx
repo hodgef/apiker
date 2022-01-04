@@ -1,7 +1,7 @@
 import React from "react";
 import { PortalSection, PortalSections } from "./interfaces";
 
-export const PanelHeader: React.FC = ({ currentSection = "home" }) => {
+export const PanelHeader: React.FC = ({ currentSection = "home", rateLimitMax, rateLimitRemaining }) => {
     const sections: PortalSections = [
         {
             name: "home",
@@ -9,15 +9,14 @@ export const PanelHeader: React.FC = ({ currentSection = "home" }) => {
             link: "/admp/dashboard"
         },
         {
-            name: "tools",
-            title: "Tools",
-            children: [
-                {
-                    name: "ban-client",
-                    title: "Ban Client",
-                    link: "/admp/ban-client"
-                }
-            ]
+            name: "visitors",
+            title: "Visitors",
+            link: "/admp/visitors"
+        },
+        {
+            name: "bans",
+            title: "Bans",
+            link: "/admp/bans"
         }
     ];
 
@@ -37,7 +36,7 @@ export const PanelHeader: React.FC = ({ currentSection = "home" }) => {
     return (
         <nav className="navbar mb-4 navbar-expand-lg navbar-light bg-light">
             <div className="container-fluid">
-                <a className="navbar-brand" href="#">Dashboard</a>
+                <a className="navbar-brand" href="/admp">Apiker</a>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
@@ -46,6 +45,7 @@ export const PanelHeader: React.FC = ({ currentSection = "home" }) => {
                         {sections.map(renderSection)}
                     </ul>
                 </div>
+                {rateLimitMax && <span className="text-muted" title="Firewall RateLimit remaining/max">{rateLimitRemaining}/{rateLimitMax}</span>}
             </div>
         </nav>
     );

@@ -1,9 +1,11 @@
 import { apiker } from "../Apiker";
 import { match } from "path-to-regexp";
-import { RESPONSE_HEADERS_DEFAULT, res_404, res_429 } from "../Response";
+import { RESPONSE_HEADERS_DEFAULT, res_401, res_404 } from "../Response";
 import { getStateMethods } from "../State";
 import { Handler, RequestParams } from "./interfaces";
 import { firewallMiddleWare } from "../Firewall/middleware";
+import { isSignedIPBanned } from "../Bans";
+import { getClientId, getSignedIp } from "..";
 
 /**
  * Handles incoming Cloudflare Worker requests
@@ -70,8 +72,12 @@ export const forwardToMiddleware = async (params: RequestParams, handlerFn: Hand
      * Prevent bans-in-progress from getting to the handlerFn
      */
     const ip = request.headers.get("CF-Connecting-IP") as string;
-    if(apiker.bans.includes(ip)){
-      handlerFn = () => res_429();
+    if(apiker.bans.includes(ip) || await isSignedIPBanned()){
+      handlerFn = () => res_401({
+        message: "Forbidden",
+        id: getSignedIp(),
+        cid: getClientId()
+      });
     }
 
     /**

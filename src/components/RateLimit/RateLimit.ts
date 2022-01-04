@@ -3,7 +3,7 @@ import { OBN } from "../ObjectBase";
 import { Handler, RequestParams } from "../Request";
 import { res_429 } from "../Response";
 import { REQUEST_LIMIT_AMOUNT_PER_HOUR } from "./constants";
-import { addLogEntry, getUserLogEntries, getUserLogPropertyName, LogObject } from "../Logging";
+import { addLogEntry, getUserLogEntries } from "../Logging";
 
 const hourInMs = 3600000;
 
@@ -19,7 +19,7 @@ export const rateLimitRequest = async (prefix: string, handler: Handler, params:
         if(rateLimitReached){
             return onLimitReached();
         } else {
-            await addLogEntry( prefix, {}, OBN.RATELIMIT);
+            await addLogEntry(prefix, {}, OBN.RATELIMIT);
         }
 
         /**

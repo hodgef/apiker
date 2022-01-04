@@ -1,7 +1,10 @@
-import { AdminPanelPage, AdminPanelLogin, AdminPanelDashboard } from "./components/Admin";
+import { AdminPanelPage, AdminPanelLogin, AdminPanelDashboard, AdminPanelVisitors, AdminPanelBans, AdminPanelBanId } from "./components/Admin";
 
 export default {
     AdminPanelPage,
     AdminPanelLogin,
-    AdminPanelDashboard
+    AdminPanelDashboard,
+    AdminPanelVisitors,
+    AdminPanelBans,
+    AdminPanelBanId
 }

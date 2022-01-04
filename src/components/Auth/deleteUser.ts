@@ -5,8 +5,8 @@ import { StateFn } from "../State";
 import { User } from "./interfaces";
 import { getCurrentUser } from "./utils";
 
-export const deleteUser: Handler = async ({ headers, state }) => {
-    const user = await getCurrentUser(headers, state);
+export const deleteUser: Handler = async ({ state }) => {
+    const user = await getCurrentUser();
 
     if(!user?.id){
       return res_400();
