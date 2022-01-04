@@ -5,7 +5,7 @@ import { getStateMethods } from "../State";
 import { Handler, RequestParams } from "./interfaces";
 import { firewallMiddleWare } from "../Firewall/middleware";
 import { isSignedIPBanned } from "../Bans";
-import { getClientId, getSignedIp } from "..";
+import { getClientId, getSignedIp } from "../Auth";
 
 /**
  * Handles incoming Cloudflare Worker requests

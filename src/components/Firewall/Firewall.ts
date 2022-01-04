@@ -1,4 +1,4 @@
-import { getSignedIp } from "..";
+import { getSignedIp } from "../Auth";
 import { apiker } from "../Apiker";
 import { FIREWALL_ENDPOINT } from "./constants";
 

@@ -3,7 +3,7 @@ import React from "react";
 import { wrapReactPage } from '../Page';
 import { PanelHeader } from './Header';
 import { apiker } from '../Apiker';
-import { res_404 } from '..';
+import { res_404 } from '../Response';
 import { banSignedIP, unbanSignedIP } from '../Bans';
 
 export const adminPanelBanId: Handler = async (params) => {

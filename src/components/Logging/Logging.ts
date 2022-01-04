@@ -1,4 +1,4 @@
-import { OBN } from "..";
+import { OBN } from "../ObjectBase";
 import { apiker } from "../Apiker";
 import { getClientId, getSignedIp } from "../Auth";
 import { ListRequestObject } from "../State";
