@@ -18,6 +18,6 @@ export const isSignedIPBanned = async (signedIp = getSignedIp()) => {
 }
 
 export const getBannedSignedIPs = async (limit = 10) => {
-    const entries = await getAllLogEntries(limit, OBN.BANS);
+    const entries = await getAllLogEntries(OBN.BANS, limit);
     return entries;
 }

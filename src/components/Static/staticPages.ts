@@ -185,13 +185,16 @@ export const apikerPagesStatic = `const pages = (function (React) {
     };
 
     var AdminPanelDashboard = function (_a) {
-        var latestBans = _a.latestBans, latestVisitors = _a.latestVisitors, currentId = _a.currentId, rateLimitMax = _a.rateLimitMax, rateLimitRemaining = _a.rateLimitRemaining;
+        var latestBans = _a.latestBans, latestVisitors = _a.latestVisitors, allVisitorsCount = _a.allVisitorsCount, currentId = _a.currentId, rateLimitMax = _a.rateLimitMax, rateLimitRemaining = _a.rateLimitRemaining;
         return (React__default["default"].createElement(React__default["default"].Fragment, null,
             React__default["default"].createElement(PanelHeader, { rateLimitMax: rateLimitMax, rateLimitRemaining: rateLimitRemaining }),
             React__default["default"].createElement("div", { className: "container" },
                 React__default["default"].createElement("div", { className: "row" },
                     React__default["default"].createElement("div", { className: "col" },
-                        React__default["default"].createElement("div", { className: "p-2 text-light bg-secondary" }, "Latest Visitors"),
+                        React__default["default"].createElement("div", { className: "p-2 text-light bg-secondary" },
+                            "Latest Visitors (",
+                            allVisitorsCount,
+                            ")"),
                         React__default["default"].createElement("table", { className: "table" },
                             React__default["default"].createElement("thead", null,
                                 React__default["default"].createElement("tr", null,

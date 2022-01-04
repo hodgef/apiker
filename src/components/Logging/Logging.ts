@@ -73,12 +73,16 @@ export const deleteLogEntries = async (prefix: string, objectName = OBN.LOGS) =>
     return Promise.all(promises);
 }
 
-export const getAllLogEntries = async (limit = 10, objectName = OBN.LOGS) => {
+export const getAllLogEntries = async (objectName = OBN.LOGS, limit: number | null = null) => {
     const { state } = apiker.requestParams;
-    const entries = await state(objectName).list({
+    const payload = {
         reverse: true,
-        noCache: objectName !== OBN.LOGS,
-        limit
-    });
+        noCache: objectName !== OBN.LOGS
+    } as ListRequestObject;
+
+    if(limit){
+        payload.limit = limit; 
+    }
+    const entries = await state(objectName).list(payload);
     return Object.values(entries) as LogObject[];
 }
