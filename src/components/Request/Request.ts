@@ -1,9 +1,11 @@
 import { apiker } from "../Apiker";
 import { match } from "path-to-regexp";
-import { RESPONSE_HEADERS_DEFAULT, res_404, res_429 } from "../Response";
+import { RESPONSE_HEADERS_DEFAULT, res_401, res_404 } from "../Response";
 import { getStateMethods } from "../State";
 import { Handler, RequestParams } from "./interfaces";
 import { firewallMiddleWare } from "../Firewall/middleware";
+import { isSignedIPBanned } from "../Bans";
+import { getClientId, getSignedIp } from "../Auth";
 
 /**
  * Handles incoming Cloudflare Worker requests
@@ -19,7 +21,9 @@ export const handleEntryRequest = async (request: Request, env: any) => {
     let handlerFn: Handler = () => res_404();
     const body = await readRequestBody(request);
     const headers = request.headers;
-    let params = { request, state: getStateMethods(apiker.defaultObjectName), body, headers } as Partial<RequestParams>;
+    const state = getStateMethods(apiker.defaultObjectName);
+    let params = { request, state, body, headers } as RequestParams;
+    apiker.requestParams = params;
   
     /**
      * Check if path matches with a defined route
@@ -40,21 +44,21 @@ export const handleEntryRequest = async (request: Request, env: any) => {
         }
   
         params = {...params, matches };
-        apiker.setProps({ headers });
       }
   
       return !!matches;
     });
   
-    return forwardToMiddleware(params, request, handlerFn);
+    return forwardToMiddleware(params, handlerFn);
 
   } catch (e: any) {
     return new Response(e.message);
   }
 };
 
-export const forwardToMiddleware = async (params: Partial<RequestParams>, request: Request, handlerFn: Handler): Promise<Response> => {
+export const forwardToMiddleware = async (params: RequestParams, handlerFn: Handler): Promise<Response> => {
   try {
+    const { request } = params;
     const middlewares: any[] = [];
 
     /**
@@ -68,8 +72,12 @@ export const forwardToMiddleware = async (params: Partial<RequestParams>, reques
      * Prevent bans-in-progress from getting to the handlerFn
      */
     const ip = request.headers.get("CF-Connecting-IP") as string;
-    if(apiker.bans.includes(ip)){
-      handlerFn = () => res_429();
+    if(apiker.bans.includes(ip) || await isSignedIPBanned()){
+      handlerFn = () => res_401({
+        message: "Forbidden",
+        id: getSignedIp(),
+        cid: getClientId()
+      });
     }
 
     /**
@@ -79,7 +87,7 @@ export const forwardToMiddleware = async (params: Partial<RequestParams>, reques
     const loadNextMiddleware = async (): Promise<Response> => {
       const middleware = remainingMiddlewares.shift() as Handler;
       const nextMiddleware = remainingMiddlewares.shift() || handlerFn;
-      return middleware(params as RequestParams, request, nextMiddleware);
+      return middleware(params, nextMiddleware);
     }
 
     return loadNextMiddleware();

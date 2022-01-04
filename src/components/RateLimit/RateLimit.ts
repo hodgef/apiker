@@ -1,17 +1,16 @@
 import { apiker } from "../Apiker";
-import {  sign } from "../Auth";
 import { OBN } from "../ObjectBase";
 import { Handler, RequestParams } from "../Request";
-import { StateFn } from "../State";
 import { res_429 } from "../Response";
 import { REQUEST_LIMIT_AMOUNT_PER_HOUR } from "./constants";
+import { addLogEntry, getUserLogEntries } from "../Logging";
 
 const hourInMs = 3600000;
 
 export const rateLimitRequest = async (prefix: string, handler: Handler, params: RequestParams, limit = REQUEST_LIMIT_AMOUNT_PER_HOUR, timeLapse = hourInMs, onLimitReached = res_429 as any): Promise<Response> => {
     if(apiker.objects.includes(OBN.RATELIMIT)){
         const { state } = params;
-        const { rateLimitReached, requestCount } = await isRateLimitReached(prefix, state, limit, timeLapse);
+        const { rateLimitReached, requestCount } = await isRateLimitReached(prefix, limit, timeLapse);
         const rateLimitRemaining = limit - requestCount;
 
         apiker.responseHeaders.append("X-RateLimit-Limit", limit.toString());
@@ -20,7 +19,7 @@ export const rateLimitRequest = async (prefix: string, handler: Handler, params:
         if(rateLimitReached){
             return onLimitReached();
         } else {
-            await addToRateLimit(prefix, state);
+            await addLogEntry(prefix, {}, OBN.RATELIMIT);
         }
 
         /**
@@ -42,35 +41,16 @@ export const rateLimitRequest = async (prefix: string, handler: Handler, params:
     return handler(params);
 };
 
-export const isRateLimitReached = async (prefix: string, state: StateFn, limit: number, timeLapse: number) => {
-    const propertyName = getRateLimitPropertyName(prefix);
-    const latestRequests = await state(OBN.RATELIMIT).list({
-        prefix: propertyName,
-        reverse: true,
-        noCache: true,
-        limit
-    });
-
-    const requestValues = Object.values(latestRequests) as number[];
-    const requestCount = requestValues.filter(value => {
+export const isRateLimitReached = async (prefix: string, limit: number, timeLapse: number) => {
+    const requestValues = await getUserLogEntries(prefix, limit, OBN.RATELIMIT);
+    const requestTimes = requestValues.map(requestValue => (Number.isInteger(requestValue)) ? requestValue as unknown as number : requestValue.time );
+    const requestCount = requestTimes.filter(value => {
         return (value && Date.now() - value < timeLapse)
     }).length;
 
-    const earliestValue = requestValues[limit - 1];
+    const earliestValue = requestTimes[limit - 1];
     return {
         rateLimitReached: earliestValue && Date.now() - earliestValue < timeLapse,
         requestCount
     };
-};
-
-export const addToRateLimit = async (prefix: string, state: StateFn) => {
-    const propertyName = getRateLimitPropertyName(prefix) + Date.now();
-    await state(OBN.RATELIMIT).put({ [propertyName]: Date.now() });
-};
-
-export const getRateLimitPropertyName = (prefix: string) => {
-    const ip = apiker.headers.get("CF-Connecting-IP");
-    const signedIp = sign(ip);
-    const propertyName = `${prefix}:${signedIp}`;
-    return propertyName;
 };

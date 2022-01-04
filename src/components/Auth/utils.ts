@@ -1,6 +1,10 @@
 import { apiker } from "../Apiker";
+import { parse } from "cookie"
 import cryptojs from "../Vendor/crypto";
 import bcrypt from "../Vendor/bcrypt";
+import { OBN } from "../ObjectBase";
+import { User } from "./interfaces";
+import { AUTH_TOKEN_DURATION_MINS_DEFAULT } from "./constants";
 
 const CryptoJS = cryptojs();
 const Bcrypt = bcrypt();
@@ -59,17 +63,17 @@ export const parseJWT = (token: string) => {
   }
 };
 
-export const hash_bcrypt = (message: string) => {
+export const hash_bcrypt = (message: string): string => {
   const salt = Bcrypt.genSaltSync(7);
   const hash = Bcrypt.hashSync(message, salt);
   return hash;
 };
 
-export const compare_bcrypt = (message: string, hash: string) => {
+export const compare_bcrypt = (message: string, hash: string): boolean => {
   return Bcrypt.compareSync(message, hash);
 };
 
-export const sign = (message) => {
+export const sign = (message): string => {
   if(!apiker.env.APIKER_SECRET_KEY){
     throw new Error("Apiker secret key is undefined. Please consult the documentation");
   }
@@ -78,7 +82,7 @@ export const sign = (message) => {
   return CryptoJS.enc.Base64.stringify(signature);
 };
 
-export const sign_sha256 = (message) => {
+export const sign_sha256 = (message: string): string => {
   if(!apiker.env.APIKER_SECRET_KEY){
     throw new Error("Apiker secret key is undefined. Please consult the documentation");
   }
@@ -86,7 +90,7 @@ export const sign_sha256 = (message) => {
   return CryptoJS.HmacSHA256(message, apiker.env.APIKER_SECRET_KEY).toString(CryptoJS.enc.Hex);
 };
 
-export const sign_sha1 = (message) => {
+export const sign_sha1 = (message: string): string => {
   if(!apiker.env.APIKER_SECRET_KEY){
     throw new Error("Apiker secret key is undefined. Please consult the documentation");
   }
@@ -99,7 +103,7 @@ export const randomHash = () => {
   return CryptoJS.SHA256(wordArray).toString(CryptoJS.enc.Hex);
 };
 
-export const randomHash_sha1 = () => {
+export const randomHash_SHA1 = () => {
   const wordArray = CryptoJS.lib.WordArray.random(16);
   return CryptoJS.SHA1(wordArray).toString(CryptoJS.enc.Hex);
 };
@@ -109,16 +113,56 @@ export const randomHash_sha1 = () => {
  * This value is returned to client and not stored
  */
 export const getClientId = () => {
-  const ip = apiker.headers.get("CF-Connecting-IP");
-  const userAgent = apiker.headers.get("User-Agent") || "";
+  const { headers } = apiker.requestParams;
+  const ip = headers.get("CF-Connecting-IP");
+  const userAgent = headers.get("User-Agent") || "";
   const clientId = sign(ip + userAgent);
   return clientId;
 };
 
 export const extractToken = (headers: Headers | undefined) => {
   const authHeader = headers?.get("Authorization");
+  const cookie = parse(headers?.get("Cookie") || "")
+  const authCookie = cookie["apikerToken"] || "";
+  const authValue = (authHeader || authCookie);
 
-  if(authHeader?.includes("Bearer")){
-    return authHeader.split(" ")[1];
+  if(authValue?.includes("Bearer")){
+    return authValue.split(" ")[1];
   }
 };
+
+export const getCurrentUser = async (): Promise<User | undefined> => {
+  const { headers, state } = apiker.requestParams;
+  const token = extractToken(headers);
+
+  if(!token){
+    return;
+  }
+
+  const payload = parseJWT(token);
+
+  if(!payload){
+    return;
+  }
+
+  const { sub: userId } = payload;
+  const user = await state(OBN.USERS).get(userId);
+
+  if(user?.password){
+    return user;
+  }
+}
+
+export const getTokens = (userId: string, expirationInMinutes = AUTH_TOKEN_DURATION_MINS_DEFAULT) => {
+  const clientId = getClientId();
+  const token = createJWT({ sub: userId, clientId }, expirationInMinutes);
+  const refreshToken = createJWT({ sub: userId, clientId });
+
+  return { userId, token, refreshToken };
+};
+
+export const getSignedIp = () => {
+  const { headers } = apiker.requestParams;
+  const ip = headers.get("CF-Connecting-IP");
+  return sign(ip);
+}
