@@ -9,6 +9,7 @@ export default [
     input: "src/pages.ts",
     output: [
       {
+        name: 'pages',
         file: "./src/components/Static/staticPages.ts",
         format: "iife"
       }
@@ -28,7 +29,7 @@ export default [
         name: 'modify-output',
         renderChunk: (source) => {
           return {
-            code: `export const apikerPagesStatic = \`const pages = ${source}\``
+            code: `export const apikerPagesStatic = \`var cryptojs = bcrypt = function(){}; ${source}\`;`
           }
         }
       },
