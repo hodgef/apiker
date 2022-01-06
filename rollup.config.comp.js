@@ -13,7 +13,7 @@ export default [
         format: "iife"
       }
     ],
-    external: ['apiker', "react", "react-dom", "react-dom/server"],
+    external: ['apiker', "react", "react-dom", "react-dom/server", "cfw-crypto", "cfw-bcrypt"],
     plugins: [
       replace({
         "process.env.NODE_ENV": JSON.stringify("production")
