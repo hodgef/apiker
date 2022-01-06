@@ -120,11 +120,15 @@ export const getClientId = () => {
   return clientId;
 };
 
-export const extractToken = (headers: Headers | undefined) => {
+export const extractToken = () => {
+  const { headers, request } = apiker.requestParams;
+  const url = new URL(request.url);
+  const params = new URLSearchParams(url.search);
   const authHeader = headers?.get("Authorization");
   const cookie = parse(headers?.get("Cookie") || "")
   const authCookie = cookie["apikerToken"] || "";
-  const authValue = (authHeader || authCookie);
+  const authParam = params.get("t") ? `Bearer ${params.get("t")}`: "";
+  const authValue = (authHeader || authCookie || authParam);
 
   if(authValue?.includes("Bearer")){
     return authValue.split(" ")[1];
@@ -132,8 +136,8 @@ export const extractToken = (headers: Headers | undefined) => {
 };
 
 export const getCurrentUser = async (): Promise<User | undefined> => {
-  const { headers, state } = apiker.requestParams;
-  const token = extractToken(headers);
+  const { state } = apiker.requestParams;
+  const token = extractToken();
 
   if(!token){
     return;

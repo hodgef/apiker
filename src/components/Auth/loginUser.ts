@@ -1,15 +1,15 @@
+import { apiker } from "../Apiker";
 import { OBN } from "../ObjectBase";
 import { Handler } from "../Request";
 import { res, res_400 } from "../Response";
-import { StateFn } from "../State";
 import { isEmail, isRequiredLength } from "../Validation";
 import { User } from "./interfaces";
 import { compare_bcrypt, getTokens } from "./utils";
 
-export const loginUser: Handler = async ({ body, state }) => {
+export const loginUser: Handler = async ({ body }) => {
     const { email, password } = body;
 
-    const tokens = await loginUserAction(state, email, password);
+    const tokens = await loginUserAction(email, password);
   
     if(tokens) {
       return res(tokens);
@@ -18,19 +18,20 @@ export const loginUser: Handler = async ({ body, state }) => {
     }
 };
 
-export const loginUserAction = async (state: StateFn, email: string, password: string) => {
+export const loginUserAction = async (email: string, password: string) => {
   if(!isEmail(email) || !isRequiredLength(password)) {
     return;
   }
 
-  const user = await checkUser(state, email, password);
+  const user = await checkUser(email, password);
 
   if(user?.password && compare_bcrypt(password, user.password)){
     return getTokens(user.id);
   }
 }
 
-export const checkUser = async (state: StateFn, email: string, password: string) => {
+export const checkUser = async (email: string, password: string) => {
+  const { state } = apiker.requestParams;
   if(!isEmail(email) || !isRequiredLength(password)) {
     return;
   }

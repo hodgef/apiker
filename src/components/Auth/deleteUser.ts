@@ -1,7 +1,7 @@
+import { apiker } from "../Apiker";
 import { OBN } from "../ObjectBase";
 import { Handler } from "../Request";
 import { res_200, res_400 } from "../Response";
-import { StateFn } from "../State";
 import { User } from "./interfaces";
 import { getCurrentUser } from "./utils";
 
@@ -12,7 +12,7 @@ export const deleteUser: Handler = async ({ state }) => {
       return res_400();
     }
     
-    const success = await deleteUserAction(state, user);
+    const success = await deleteUserAction(user);
   
     if(success){
       return res_200();
@@ -21,7 +21,8 @@ export const deleteUser: Handler = async ({ state }) => {
     }
 };
 
-export const deleteUserAction = async (state: StateFn, user: User) => {
+export const deleteUserAction = async (user: User) => {
+  const { state } = apiker.requestParams;
   await state(OBN.EMAILTOUUID).delete(user.email);
   await state(OBN.USERS).delete(user.id);
   return true;

@@ -20,6 +20,13 @@ export interface Options {
   requestParams?: RequestParams;
   firewall?: Firewall | boolean;
   adminPanel?: boolean;
+  name?: string;
+  email?: EmailOptions;
+}
+
+export interface EmailOptions {
+  name?: string;
+  senderEmail: string;
 }
 
 export interface Firewall {

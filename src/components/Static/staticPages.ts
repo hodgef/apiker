@@ -1,4 +1,4 @@
-export const apikerPagesStatic = `var cryptojs = bcrypt = function(){}; var pages = (function (React, ReactDOMServer, cryptojs, bcrypt) {
+export const apikerPagesStatic = `var pages = (function (React, ReactDOMServer, cryptojs, bcrypt) {
     'use strict';
 
     function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
@@ -301,4 +301,4 @@ export const apikerPagesStatic = `var cryptojs = bcrypt = function(){}; var page
 
     return pages;
 
-})(React, null, cryptojs, bcrypt);`;
+})(React, null, function(){}, function(){});`;

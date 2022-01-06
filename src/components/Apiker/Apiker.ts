@@ -2,9 +2,10 @@ import { getAdminRoutes } from "../Admin";
 import { getAuthRoutes } from "../Auth";
 import ObjectBase from "../ObjectBase/ObjectBase";
 import { handleEntryRequest, RequestParams } from "../Request";
-import type { Controllers, Firewall, Options, Routes } from "./interfaces";
+import type { Controllers, EmailOptions, Firewall, Options, Routes } from "./interfaces";
 
 class Apiker {
+  name = "Apiker";
   routes: Routes = {};
   controllers: Controllers = {};
   debug = false;
@@ -17,6 +18,7 @@ class Apiker {
   firewall!: Firewall | boolean;
   bans: string[] = [];
   adminPanel!: boolean;
+  email?: EmailOptions;
 
   defaultObjectName = "Common";
 
@@ -28,7 +30,17 @@ class Apiker {
       /**
        * Extract options
        */
-      const { routes, controllers = {} as Controllers, objects, exports, firewall, adminPanel = false, authRoutes = false } = options;
+      const {
+        routes,
+        controllers = {} as Controllers,
+        objects,
+        exports,
+        firewall,
+        adminPanel = false,
+        authRoutes = false,
+        name,
+        email
+      } = options;
 
       /**
        * Check for required params
@@ -40,7 +52,7 @@ class Apiker {
       /**
        * Assign options
        */
-      this.setProps({ routes, controllers, objects, authRoutes, adminPanel, firewall });
+      this.setProps({ routes, controllers, objects, authRoutes, adminPanel, firewall, name, email });
 
       /**
        * If authRoutes option is set to true, set auth routes

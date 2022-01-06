@@ -11,7 +11,7 @@ import { ADMIN_LOGIN_PREFIX } from './constants';
 import { res_401 } from '../Response';
 
 export const adminPanelSetup: Handler = async (params) => {
-  const { headers, state, body } = params;
+  const { state, body } = params;
   const { email, password } = body || {};
   let user: User | undefined;
 
@@ -24,9 +24,9 @@ export const adminPanelSetup: Handler = async (params) => {
     const hasUsers = !!firstUser?.id;
     
     if(hasUsers) {
-      user = await checkUser(state, email, password);
+      user = await checkUser(email, password);
     } else {
-      user = await registerUserAction(state, email, password, { role: "admin" });
+      user = await registerUserAction(email, password, { role: "admin" });
     }
 
     if(user){
