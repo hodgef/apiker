@@ -46,7 +46,7 @@
     "@rollup/plugin-replace": "^3.0.1",
     "@rollup/plugin-typescript": "^8.2.5",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
-    "@typescript-eslint/parser": "^5.8.1",
+    "@typescript-eslint/parser": "^5.9.1",
     "cfw-bcrypt": "^1.0.3",
     "cfw-crypto": "^1.0.3",
     "cookie": "^0.4.1",
