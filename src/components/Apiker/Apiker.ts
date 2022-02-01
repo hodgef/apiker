@@ -16,7 +16,6 @@ class Apiker {
   requestParams!: RequestParams;
   responseHeaders!: Headers;
   firewall!: Firewall | boolean;
-  bans: string[] = [];
   adminPanel!: boolean;
   email?: EmailOptions;
 

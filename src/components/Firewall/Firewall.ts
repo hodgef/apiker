@@ -14,17 +14,17 @@ export const firewallBanIP = async (ip: string) => {
     await fetch(FIREWALL_ENDPOINT, {
         method: "POST",
         body: JSON.stringify({
-            "mode":"block",
-            "configuration":
-            { "target":"ip","value": ip },
-            "notes": `Banned by Apiker. id: ${getSignedIp()}`
+            mode:"block",
+            configuration:
+            { target:"ip",value: ip },
+            notes: `Banned by Apiker. id: ${getSignedIp()}`
         }),
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiker.env.CLOUDFLARE_WAF_KEY}`
+            Authorization: `Bearer ${apiker.env.CLOUDFLARE_WAF_KEY}`
         },
     });
-}
+};
 
 export const getFirewallBannedEntryId = async (ip: string): Promise<string> => {
     if(!ip){
@@ -42,12 +42,12 @@ export const getFirewallBannedEntryId = async (ip: string): Promise<string> => {
     } as Record<string, string>), {
         method: "GET",
         headers: {
-            "Authorization": `Bearer ${apiker.env.CLOUDFLARE_WAF_KEY}`
+            Authorization: `Bearer ${apiker.env.CLOUDFLARE_WAF_KEY}`
         },
     });
 
     return result[0].id;
-}
+};
 
 export const firewallUnbanIP = async (ip: string) => {
     if(!ip){
@@ -67,9 +67,9 @@ export const firewallUnbanIP = async (ip: string) => {
     const result = await fetch(`${FIREWALL_ENDPOINT}/${entryId}`, {
         method: "DELETE",
         headers: {
-            "Authorization": `Bearer ${apiker.env.CLOUDFLARE_WAF_KEY}`
+            Authorization: `Bearer ${apiker.env.CLOUDFLARE_WAF_KEY}`
         },
     });
 
     return result;
-}
+};

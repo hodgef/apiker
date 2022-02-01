@@ -69,26 +69,14 @@ export const forwardToMiddleware = async (params: RequestParams, handlerFn: Hand
     }
 
     /**
-     * Prevent bans-in-progress from getting to the handlerFn
-     */
-    const ip = request.headers.get("CF-Connecting-IP") as string;
-    if(apiker.bans.includes(ip) || await isSignedIPBanned()){
-      handlerFn = () => res_401({
-        message: "Forbidden",
-        id: getSignedIp(),
-        cid: getClientId()
-      });
-    }
-
-    /**
      * No more middlewares after this point
      */
     const remainingMiddlewares = [...middlewares];
     const loadNextMiddleware = async (): Promise<Response> => {
       const middleware = remainingMiddlewares.shift() as Handler;
       const nextMiddleware = remainingMiddlewares.shift() || handlerFn;
-      return middleware(params, nextMiddleware);
-    }
+      return middleware ? middleware(params, nextMiddleware) : handlerFn(params);
+    };
 
     return loadNextMiddleware();
   } catch(e: any) {

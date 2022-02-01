@@ -28,12 +28,11 @@ export const rateLimitRequest = async (prefix: string, handler: Handler, params:
         const lastRateLimitPurge = await state().get("lastRateLimitPurge");
 
         if(!lastRateLimitPurge){
-            await state().put({ lastRateLimitPurge: Date.now() });
+            state().put({ lastRateLimitPurge: Date.now() });
         } else {
             if(Date.now() - lastRateLimitPurge >= hourInMs){
-                apiker.bans = [];
-                await state(OBN.RATELIMIT).deleteAll();
-                await state().put({ lastRateLimitPurge: Date.now() });
+                state(OBN.RATELIMIT).deleteAll();
+                state().put({ lastRateLimitPurge: Date.now() });
             }
         }
     }
@@ -45,7 +44,7 @@ export const isRateLimitReached = async (prefix: string, limit: number, timeLaps
     const requestValues = await getUserLogEntries(prefix, limit, OBN.RATELIMIT);
     const requestTimes = requestValues.map(requestValue => (Number.isInteger(requestValue)) ? requestValue as unknown as number : requestValue.time );
     const requestCount = requestTimes.filter(value => {
-        return (value && Date.now() - value < timeLapse)
+        return (value && Date.now() - value < timeLapse);
     }).length;
 
     const earliestValue = requestTimes[limit - 1];

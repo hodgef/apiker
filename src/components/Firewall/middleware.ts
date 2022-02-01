@@ -23,11 +23,10 @@ export const firewallMiddleWare: Middleware = (params, nextMiddleware) => {
         async () => {
             const user = await getCurrentUser();
             if(user?.role !== "admin"){
-                apiker.bans.push(ip);
                 await banSignedIP();
                 await firewallBanIP(ip);
                 return res_429();
             }
         }
     );
-}
+};

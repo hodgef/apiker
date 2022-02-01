@@ -10,13 +10,13 @@ export const addUniqueLogEntry = async (prefix: string, additionalParams = {}, o
         return;
     }
     await addLogEntry(prefix, additionalParams, objectName, signedIp, clientId);
-}
+};
 
 export const addLogEntry = async (prefix: string, additionalParams = {}, objectName = OBN.LOGS, signedIp: string | undefined = undefined, clientId: string | undefined = undefined) => {
     if(apiker.objects.includes(objectName)){
         const { state } = apiker.requestParams;
         const propertyName = getUserLogPropertyName(prefix, signedIp) + Date.now();
-        await state(objectName).put({ [propertyName]: getLogParams(propertyName, signedIp, clientId, additionalParams) });
+        state(objectName).put({ [propertyName]: getLogParams(propertyName, signedIp, clientId, additionalParams) });
     }
 };
 
@@ -33,8 +33,8 @@ export const getLogParams = (propertyName: string, signedIp: string | undefined 
         countryCode,
         pathname,
         ...additionalParams
-    }
-}
+    };
+};
 
 export const getUserLogPropertyName = (prefix: string, signedIp: string | null = getSignedIp()) => {
     const propertyName = `${prefix}:${signedIp}`;
@@ -44,7 +44,7 @@ export const getUserLogPropertyName = (prefix: string, signedIp: string | null =
 export const getUserLogEntries = async (prefix: string, limit = 10, objectName = OBN.LOGS, signedIp: string | undefined = undefined) => {
     const propertyName = getUserLogPropertyName(prefix, signedIp);
     return getLogEntries(propertyName, limit, objectName);
-}
+};
 
 export const getLogEntries = async (prefix: string, limit: number | null = 10, objectName = OBN.LOGS) => {
     const { state } = apiker.requestParams;
@@ -59,19 +59,19 @@ export const getLogEntries = async (prefix: string, limit: number | null = 10, o
     }
     const entries = await state(objectName).list(payload);
     return Object.values(entries) as LogObject[];
-}
+};
 
 export const deleteUserLogEntries = async (prefix: string, objectName = OBN.LOGS, signedIp: string | undefined = undefined) => {
     const userPrefix = getUserLogPropertyName(prefix, signedIp);
     await deleteLogEntries(userPrefix, objectName);
-}
+};
 
 export const deleteLogEntries = async (prefix: string, objectName = OBN.LOGS) => {
     const { state } = apiker.requestParams;
     const entries = await getLogEntries(prefix, null, objectName);
     const promises = entries.map(({ propertyName }: LogObject) => state(objectName).delete(propertyName));
     return Promise.all(promises);
-}
+};
 
 export const getAllLogEntries = async (objectName = OBN.LOGS, limit: number | null = null) => {
     const { state } = apiker.requestParams;
@@ -85,4 +85,4 @@ export const getAllLogEntries = async (objectName = OBN.LOGS, limit: number | nu
     }
     const entries = await state(objectName).list(payload);
     return Object.values(entries) as LogObject[];
-}
+};
