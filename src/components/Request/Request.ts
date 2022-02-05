@@ -1,11 +1,10 @@
 import { apiker } from "../Apiker";
 import { match } from "path-to-regexp";
-import { RESPONSE_HEADERS_DEFAULT, res_401, res_404 } from "../Response";
+import { RESPONSE_HEADERS_DEFAULT, res_404 } from "../Response";
 import { getStateMethods } from "../State";
 import { Handler, RequestParams } from "./interfaces";
 import { firewallMiddleWare } from "../Firewall/middleware";
-import { isSignedIPBanned } from "../Bans";
-import { getClientId, getSignedIp } from "../Auth";
+import { forwardToMiddleware } from "../Middleware";
 
 /**
  * Handles incoming Cloudflare Worker requests
@@ -48,38 +47,20 @@ export const handleEntryRequest = async (request: Request, env: any) => {
   
       return !!matches;
     });
-  
-    return forwardToMiddleware(params, handlerFn);
 
-  } catch (e: any) {
-    return new Response(e.message);
-  }
-};
-
-export const forwardToMiddleware = async (params: RequestParams, handlerFn: Handler): Promise<Response> => {
-  try {
-    const { request } = params;
-    const middlewares: any[] = [];
+    const middlewares: Handler[] = [];
 
     /**
-     * Apply middleware
-     */
-    if(apiker.firewall) {
+       * Apply middleware
+       */
+     if(apiker.firewall) {
       middlewares.push(firewallMiddleWare);
     }
 
-    /**
-     * No more middlewares after this point
-     */
-    const remainingMiddlewares = [...middlewares];
-    const loadNextMiddleware = async (): Promise<Response> => {
-      const middleware = remainingMiddlewares.shift() as Handler;
-      const nextMiddleware = remainingMiddlewares.shift() || handlerFn;
-      return middleware ? middleware(params, nextMiddleware) : handlerFn(params);
-    };
+  
+    return forwardToMiddleware(params, handlerFn, middlewares);
 
-    return loadNextMiddleware();
-  } catch(e: any) {
+  } catch (e: any) {
     return new Response(e.message);
   }
 };

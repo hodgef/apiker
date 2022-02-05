@@ -11,4 +11,3 @@ export interface RequestParams {
 
 export type Handler = ((params: RequestParams, nextMiddleware?: Handler) => Response | Promise<Response>);
 
-export type Middleware = (params: RequestParams, handlerFn: Handler) => Response | Promise<Response>;
