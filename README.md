@@ -11,24 +11,9 @@
  
 </div>
 
-## Features
+# 📦 Install & Use 
 
-- Easy routing & state management
-- Basic JWT-based Auth (register, login, refresh token, delete user)
-- Automatically updates [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) migrations, classes and bindings so you don't have to.
-- Get and set object state easily. e.g: `await state().get(paramInCommonObj);` or `await state("MyObjectName").put({ myParam });`
-
-**New**:
-- Rate Limiting
-- Firewall support (IP bans with Cloudflare Firewall)
-- Ability to send emails (with Sendinblue)
-- Simple Admin panel
-- User geolocation
-- Logging handlers
-
-# 📦 Installation & Usage 
-
-Using Apiker is a breeze. You can create an API with only 3 lines of code:
+With Apiker, you can create an API in only 3 lines of code:
 ```js
 import { apiker, res } from "apiker";
 const routes = { "/users/:id/hello": () => res("Hello World!") };
@@ -45,6 +30,22 @@ Check out the **[Getting Started](https://hodgef.com/apiker/)** page to begin.
 
 
 Note: To run Apiker, you need a Cloudflare account with [Durable Objects access](https://developers.cloudflare.com/workers/platform/pricing#durable-objects).
+
+
+# ⭐ Features
+
+- Easy routing & state management
+- Basic JWT-based Auth (register, login, refresh token, delete user)
+- Automatically updates [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) migrations, classes and bindings so you don't have to.
+- Get and set object state easily. e.g: `await state().get(paramInCommonObj);` or `await state("MyObjectName").put({ myParam });`
+
+**New**:
+- Rate Limiting
+- Firewall support (IP bans with Cloudflare Firewall)
+- Ability to send emails (with Sendinblue)
+- Simple Admin panel
+- User geolocation
+- Logging handlers
 
 
 # ✅ Contributing 
