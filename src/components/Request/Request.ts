@@ -4,7 +4,7 @@ import { RESPONSE_HEADERS_DEFAULT, res_404 } from "../Response";
 import { getStateMethods } from "../State";
 import { Handler, RequestParams } from "./interfaces";
 import { firewallMiddleWare } from "../Firewall/middleware";
-import { forwardToMiddleware } from "../Middleware";
+import { forwardToMiddleware, Middleware } from "../Middleware";
 
 /**
  * Handles incoming Cloudflare Worker requests
@@ -48,7 +48,7 @@ export const handleEntryRequest = async (request: Request, env: any) => {
       return !!matches;
     });
 
-    const middlewares: Handler[] = [];
+    const middlewares: Handler[] & Middleware[] = [];
 
     /**
        * Apply middleware
