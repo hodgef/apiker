@@ -11,9 +11,9 @@
  
 </div>
 
-# 📦 Install & Use 
+## 📦 Installation & Usage
 
-With Apiker, you can create an API in only 3 lines of code:
+With Apiker, you can create an API in only 3 lines of code
 ```js
 import { apiker, res } from "apiker";
 const routes = { "/users/:id/hello": () => res("Hello World!") };
@@ -21,7 +21,7 @@ const routes = { "/users/:id/hello": () => res("Hello World!") };
 apiker.init({ routes, exports, objects: ["Common"] });
 
 ```
-> GET /users/my-user/hello
+> ➡️ GET /users/my-user/hello
 ```
 { "message": "Hello World!" }
 ```
@@ -32,7 +32,7 @@ Check out the **[Getting Started](https://hodgef.com/apiker/)** page to begin.
 Note: To run Apiker, you need a Cloudflare account with [Durable Objects access](https://developers.cloudflare.com/workers/platform/pricing#durable-objects).
 
 
-# ⭐ Features
+## ⭐ Features
 
 - Easy routing & state management
 - Basic JWT-based Auth (register, login, refresh token, delete user)
@@ -44,11 +44,17 @@ Note: To run Apiker, you need a Cloudflare account with [Durable Objects access]
 - Firewall support (IP bans with Cloudflare Firewall)
 - Ability to send emails (with Sendinblue)
 - Simple Admin panel
-- User geolocation
+- User IP geolocation
 - Logging handlers
 
+## 📕 Why Apiker?
 
-# ✅ Contributing 
+Apiker was developed to cut down on API building time and complexity. API creation can take a considerable time, and it often represents the main painpoint in getting your MVP to production.
+
+The goal of Apiker is to let you jump straight to route creation, where you can leverage persistent key-value state quickly. Apiker also provides useful handlers should you need them, such as JWT Auth, Hashing, Rate Limiting, Email, among others.
+
+
+## ✅ Contributing 
 
 PRs and issues are welcome. Feel free to submit any issues you have at:
 [https://github.com/hodgef/Apiker/issues](https://github.com/hodgef/Apiker/issues)
