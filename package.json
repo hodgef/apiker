@@ -52,7 +52,7 @@
     "cookie": "^0.4.2",
     "jest": "^27.4.7",
     "path-to-regexp": "^6.2.0",
-    "prettier": "^2.5.1",
+    "prettier": "^2.6.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-is": "^17.0.2",
