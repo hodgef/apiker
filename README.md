@@ -49,9 +49,9 @@ Note: To run Apiker, you need a Cloudflare account with [Durable Objects access]
 
 ## 📕 Why Apiker?
 
-Apiker was developed to cut down on API building time and complexity. API creation can take a considerable time, and it often represents the main painpoint in getting your MVP to production.
+Apiker was developed to cut down on API building time and complexity. API creation can take a considerable time, and it often represents the main obstable to getting your MVP to production.
 
-The goal of Apiker is to let you jump straight to route creation, where you can leverage persistent key-value state quickly. Apiker also provides useful handlers should you need them, such as JWT Auth, Hashing, Rate Limiting, Email, among others.
+Apiker lets you jump straight to route creation, where you can leverage persistent key-value state quickly. Apiker also provides useful handlers should you need them, such as JWT Auth, Hashing, Rate Limiting, Email, among others.
 
 
 ## ✅ Contributing 
