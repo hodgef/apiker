@@ -165,8 +165,11 @@ export const getTokens = (userId: string, expirationInMinutes = AUTH_TOKEN_DURAT
   return { userId, token, refreshToken };
 };
 
-export const getSignedIp = () => {
+export const getRawIp = () => {
   const { headers } = apiker.requestParams;
-  const ip = headers.get("CF-Connecting-IP");
-  return sign(ip);
+  return headers.get("CF-Connecting-IP") as string;
+}
+
+export const getSignedIp = () => {
+  return sign(getRawIp());
 }

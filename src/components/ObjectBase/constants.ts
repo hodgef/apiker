@@ -6,3 +6,10 @@ export const OBN = {
   LOGS: "Logs",
   BANS: "Bans"
 };
+
+export const OBMT = {
+  DEFAULT: "default",
+  SIGNEDIP: "signedIp",
+  CLIENTID: "clientId",
+  IP: "ip"
+}

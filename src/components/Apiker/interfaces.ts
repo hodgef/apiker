@@ -15,6 +15,7 @@ export interface Options {
   objectVersion?: string;
   exports?: any;
   objects?: string[];
+  objectStateMapping?: ObjectStateMapping;
   env?: any;
   authRoutes?: boolean;
   requestParams?: RequestParams;
@@ -23,6 +24,8 @@ export interface Options {
   name?: string;
   email?: EmailOptions;
 }
+
+export type ObjectStateMapping = { objectName: string, columnName: string };
 
 export interface EmailOptions {
   name?: string;

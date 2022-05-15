@@ -1,9 +1,23 @@
+import { MatchResult } from "path-to-regexp";
 import { apiker } from "../Apiker";
+import { getClientId, getRawIp, getSignedIp } from "../Auth";
+import { OBMT } from "../ObjectBase";
 import { StateMethods } from "./interfaces";
 
-export const getStateMethods = (defaultObjectName: string) =>
-  (objectName = defaultObjectName) => {
-    const obj = getEnvObject(objectName);
+export const getStateMethods = (defaultObjectName: string, matches?: MatchResult<any>) =>
+  (objectName = defaultObjectName, objectId?: string) => {
+    /**
+     * If there's an existing object state mapping, using that as default
+     */
+    if(!objectId){
+      objectId = parseObjectStateMapping(apiker.objectStateMapping[objectName], matches);
+    }
+
+    if(apiker.debug){
+      console.log('objectId', objectName, apiker.objectStateMapping[objectName], objectId || OBMT.DEFAULT);
+    }
+
+    const obj = getEnvObject(objectName, objectId || OBMT.DEFAULT);
 
     return {
       get: (obj ? getObjectState(obj) : () => {}),
@@ -13,6 +27,34 @@ export const getStateMethods = (defaultObjectName: string) =>
       list: (obj ? listObjectState(obj) : () => {}),
     } as StateMethods;
   };
+
+export const parseObjectStateMapping = (objectStateMapping: string, matches?: MatchResult<any>) => {
+  let value = objectStateMapping;
+
+  if(objectStateMapping === OBMT.SIGNEDIP){
+    value = getSignedIp();
+
+  } else if(objectStateMapping === OBMT.CLIENTID){
+    value = getClientId();
+
+  } else if(objectStateMapping === OBMT.IP) {
+    value = getRawIp();
+
+  } else if (!!objectStateMapping){
+    // If the mapping still hasn't been matched, matching it with one of the route parameters 
+    value = matches?.params[objectStateMapping] || objectStateMapping;
+  }
+
+  /**
+   * Adding mapping to headers for debgug purposes
+   */
+  if(apiker.debug){
+    console.log("objectStateMapping", objectStateMapping);
+    console.log("StateMappingValue", value);
+  }
+
+  return value;
+}
 
 export const deleteObjectState = (obj: any) =>
   async (propertyName: string) => {
@@ -84,8 +126,8 @@ export const putObjectState = (obj: any) =>
     return JSON.parse(body || null);
   };
 
-export const getEnvObject = (objectName) => {
-  const id = apiker.env[objectName]?.idFromName(apiker.objectVersion);
+export const getEnvObject = (objectName: string, objectId: string | undefined) => {
+  const id = apiker.env[objectName]?.idFromName(objectId);
   const obj = apiker.env[objectName]?.get(id);
   return obj;
 };

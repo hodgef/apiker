@@ -20,9 +20,7 @@ export const handleEntryRequest = async (request: Request, env: any) => {
     let handlerFn: Handler = () => res_404();
     const body = await readRequestBody(request);
     const headers = request.headers;
-    const state = getStateMethods(apiker.defaultObjectName);
-    let params = { request, state, body, headers } as RequestParams;
-    apiker.requestParams = params;
+    let params = { request, body, headers } as RequestParams;
   
     /**
      * Check if path matches with a defined route
@@ -41,18 +39,24 @@ export const handleEntryRequest = async (request: Request, env: any) => {
           const [handlerClass, handlerMethod] = handler.split(".");
           handlerFn = (new apiker.controllers[handlerClass]())[handlerMethod];
         }
-  
-        params = {...params, matches };
+
+        const state = getStateMethods(apiker.defaultObjectName, matches);
+        params = {...params, matches, state };
+      } else {
+        const state = getStateMethods(apiker.defaultObjectName);
+        params = {...params, state };
       }
   
       return !!matches;
     });
 
+    apiker.requestParams = params;
+
     const middlewares: Handler[] & Middleware[] = [];
 
     /**
-       * Apply middleware
-       */
+     * Apply middleware
+     */
      if(apiker.firewall) {
       middlewares.push(firewallMiddleWare);
     }
