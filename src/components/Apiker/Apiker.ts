@@ -2,7 +2,7 @@ import { getAdminRoutes } from "../Admin";
 import { getAuthRoutes } from "../Auth";
 import ObjectBase from "../ObjectBase/ObjectBase";
 import { handleEntryRequest, RequestParams } from "../Request";
-import type { Controllers, EmailOptions, Firewall, ObjectStateMapping, Options, Routes } from "./interfaces";
+import type { Controllers, EmailOptions, Firewall, ObjectStateMapping, Options, Routes, Timings } from "./interfaces";
 
 class Apiker {
   name = "Apiker";
@@ -19,6 +19,7 @@ class Apiker {
   firewall!: Firewall | boolean;
   adminPanel!: boolean;
   email?: EmailOptions;
+  timings: Timings = {};
 
   defaultObjectName = "Common";
 

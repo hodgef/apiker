@@ -25,7 +25,8 @@ export interface Options {
   email?: EmailOptions;
 }
 
-export type ObjectStateMapping = { objectName: string, columnName: string };
+export type Timings = { [timingName: string]: number };
+export type ObjectStateMapping = { [objectName: string]: string };
 
 export interface EmailOptions {
   name?: string;
