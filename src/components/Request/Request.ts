@@ -5,14 +5,14 @@ import { getStateMethods } from "../State";
 import { Handler, RequestParams } from "./interfaces";
 import { firewallMiddleWare } from "../Firewall/middleware";
 import { forwardToMiddleware, Middleware } from "../Middleware";
-import { measureTimingStart } from "../Timings";
+import { measureTiming } from "../Timings";
 import { TIMINGS } from "../Timings/constants";
 
 /**
  * Handles incoming Cloudflare Worker requests
  */
 export const handleEntryRequest = async (request: Request, env: any) => {
-  measureTimingStart(TIMINGS.REQUEST_START);
+  measureTiming(TIMINGS.REQUEST_START);
   
   try {
     apiker.setProps({ env });

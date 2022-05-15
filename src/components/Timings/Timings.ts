@@ -1,7 +1,7 @@
 import { apiker } from "../Apiker";
 import { TIMINGS } from "./constants";
 
-export const measureTimingStart = (timingName: string): number => {
+export const measureTiming = (timingName: string): number => {
     const time = Date.now();
     apiker.timings[timingName] = time;
     return time;
