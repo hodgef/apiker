@@ -150,7 +150,7 @@ export const getCurrentUser = async (): Promise<User | undefined> => {
   }
 
   const { sub: userId } = payload;
-  const user = await state(OBN.USERS).get(userId);
+  const user = await state(OBN.USERS, userId).get(userId);
 
   if(user?.password){
     return user;

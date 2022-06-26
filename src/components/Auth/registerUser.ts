@@ -34,7 +34,7 @@ export const registerUserAction = async (email: string, password: string, extraP
   /**
    * Check if user exists
    */
-  const currentUserId = await state(OBN.EMAILTOUUID).get(email);
+  const currentUserId = await state(OBN.EMAILTOUUID, email).get(email);
 
   if(currentUserId) {
     return;
@@ -53,11 +53,11 @@ export const registerUserAction = async (email: string, password: string, extraP
   /**
    * Create user
    */
-  await state(OBN.USERS).put({ [id]: user });
+  await state(OBN.USERS, id).put({ [id]: user });
 
   /**
    * Create EmailToUUID entry
    */
-  await state(OBN.EMAILTOUUID).put({ [email]: id });
+  await state(OBN.EMAILTOUUID, email).put({ [email]: id });
   return user;
 }

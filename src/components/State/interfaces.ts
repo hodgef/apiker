@@ -9,7 +9,7 @@ export interface ListRequestObject {
     noCache?: boolean;
 }
 
-export type StateFn = (objectName?: string) => StateMethods;
+export type StateFn = (objectName?: string, objectId?: string) => StateMethods;
 
 export interface StateMethods {
     get: (propertyName: string) => Promise<any>,

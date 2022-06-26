@@ -23,7 +23,7 @@ export const deleteUser: Handler = async ({ state }) => {
 
 export const deleteUserAction = async (user: User) => {
   const { state } = apiker.requestParams;
-  await state(OBN.EMAILTOUUID).delete(user.email);
-  await state(OBN.USERS).delete(user.id);
+  await state(OBN.EMAILTOUUID, user.email).delete(user.email);
+  await state(OBN.USERS, user.id).delete(user.id);
   return true;
 }

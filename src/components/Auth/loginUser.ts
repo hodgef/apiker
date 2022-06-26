@@ -39,7 +39,7 @@ export const checkUser = async (email: string, password: string) => {
   /**
    * Check if user exists
    */
-  const userId = await state(OBN.EMAILTOUUID).get(email);
+  const userId = await state(OBN.EMAILTOUUID, email).get(email);
 
   if(!userId) {
     return;
@@ -48,7 +48,7 @@ export const checkUser = async (email: string, password: string) => {
   /**
    * Check user
    */
-  const user = await state(OBN.USERS).get(userId) as User;
+  const user = await state(OBN.USERS, userId).get(userId) as User;
 
   if(user?.password && compare_bcrypt(password, user.password)){
     return user;

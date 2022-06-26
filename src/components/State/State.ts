@@ -2,10 +2,10 @@ import { MatchResult } from "path-to-regexp";
 import { apiker } from "../Apiker";
 import { getClientId, getRawIp, getSignedIp } from "../Auth";
 import { OBMT } from "../ObjectBase";
-import { StateMethods } from "./interfaces";
+import { StateFn, StateMethods } from "./interfaces";
 
-export const getStateMethods = (defaultObjectName: string, matches?: MatchResult<any>) =>
-  (objectName = defaultObjectName, objectId?: string) => {
+export const getStateMethods = (defaultObjectName: string, matches?: MatchResult<any>) : StateFn =>
+  (objectName = defaultObjectName, objectId?) => {
     /**
      * If there's an existing object state mapping, using that as default
      */

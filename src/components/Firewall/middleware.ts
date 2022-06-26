@@ -14,7 +14,7 @@ export const firewallMiddleWare: Middleware = (params, nextMiddleware) => {
     const minuteInMs = 60000;
 
     const limitRequestsPerMinute = typeof apiker.firewall === "object" ? apiker.firewall.limitRequestsPerMinute : null;
-    
+
     return rateLimitRequest(
         FIREWALL_RATELIMIT_PREFIX,
         nextMiddleware,

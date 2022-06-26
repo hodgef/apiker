@@ -21,7 +21,7 @@ export const forgotUserAction = async (
   /**
    * Check if user exists
    */
-  const currentUserId = await state(OBN.EMAILTOUUID).get(email);
+  const currentUserId = await state(OBN.EMAILTOUUID, email).get(email);
 
   if(!currentUserId) {
     return;
