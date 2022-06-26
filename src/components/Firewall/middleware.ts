@@ -6,6 +6,7 @@ import { FIREWALL_RATELIMIT_PREFIX, FIREWALL_REQUESTS_MINUTE } from "./constants
 import { firewallBanIP } from "./Firewall";
 import { banSignedIP } from "../Bans";
 import { getCurrentUser } from "../Auth";
+import { OBN } from "../ObjectBase";
 
 export const firewallMiddleWare: Middleware = (params, nextMiddleware) => {
     const { headers } = apiker.requestParams;
@@ -25,6 +26,9 @@ export const firewallMiddleWare: Middleware = (params, nextMiddleware) => {
             if(user?.role !== "admin"){
                 await banSignedIP();
                 await firewallBanIP(ip);
+                // Since we've banned the user, we can delete all related rate limit entries
+                const { state } = apiker.requestParams;
+                state(OBN.RATELIMIT).deleteAll();
                 return res_429();
             }
         }

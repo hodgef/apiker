@@ -24,17 +24,18 @@ export const rateLimitRequest = async (prefix: string, handler: Handler, params:
 
         /**
          * Handle RateLimit purging
+         * TODO: This relies on the common object. To be rewritten
          */
-        const lastRateLimitPurge = await state().get("lastRateLimitPurge");
+        // const lastRateLimitPurge = await state().get("lastRateLimitPurge");
 
-        if(!lastRateLimitPurge){
-            state().put({ lastRateLimitPurge: Date.now() });
-        } else {
-            if(Date.now() - lastRateLimitPurge >= hourInMs){
-                state(OBN.RATELIMIT).deleteAll();
-                state().put({ lastRateLimitPurge: Date.now() });
-            }
-        }
+        // if(!lastRateLimitPurge){
+        //     state().put({ lastRateLimitPurge: Date.now() });
+        // } else {
+        //     if(Date.now() - lastRateLimitPurge >= hourInMs){
+        //         state(OBN.RATELIMIT).deleteAll();
+        //         state().put({ lastRateLimitPurge: Date.now() });
+        //     }
+        // }
     }
 
     return handler(params);

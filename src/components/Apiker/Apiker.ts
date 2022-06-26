@@ -1,5 +1,6 @@
 import { getAdminRoutes } from "../Admin";
 import { getAuthRoutes } from "../Auth";
+import { OBMT } from "../ObjectBase";
 import ObjectBase from "../ObjectBase/ObjectBase";
 import { handleEntryRequest, RequestParams } from "../Request";
 import type { Controllers, EmailOptions, Firewall, ObjectStateMapping, Options, Routes, Timings } from "./interfaces";
@@ -28,13 +29,20 @@ class Apiker {
    */
   init = (options: Options = {}) => {
     try {
+      const defaultObjectStateMapping = {
+        CounterUser: OBMT.SIGNEDIP,
+        RateLimit: OBMT.SIGNEDIP,
+        Logs: OBMT.SIGNEDIP,
+        Bans: OBMT.SIGNEDIP
+      };
+
       /**
        * Extract options
        */
       const {
         routes,
         controllers = {} as Controllers,
-        objectStateMapping = {} as ObjectStateMapping,
+        objectStateMapping = defaultObjectStateMapping,
         objects,
         exports,
         firewall,
