@@ -7,7 +7,7 @@ const execOptions = {stdio : "pipe" };
 if(process.argv[2]){
   const dirName = process.argv[2];
   console.log("\n> Clone Apiker demo project\n");
-  execSync(`git clone https://github.com/hodgef/apiker-demo.git ${dirName}`, execOptions);
+  execSync(`git clone https://github.com/hodgef/apiker-template.git ${dirName}`, execOptions);
 
   if(fs.existsSync(`./${dirName}/`)){
     process.chdir(`./${dirName}`);
