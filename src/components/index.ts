@@ -6,3 +6,4 @@ export * from "./Response";
 export * from "./RateLimit";
 export * from "./Logging";
 export * from "./Timings";
+export * from "./Email";
