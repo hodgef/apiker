@@ -29,20 +29,12 @@ class Apiker {
    */
   init = (options: Options = {}) => {
     try {
-      const defaultObjectStateMapping = {
-        CounterUser: OBMT.SIGNEDIP,
-        RateLimit: OBMT.SIGNEDIP,
-        Logs: OBMT.SIGNEDIP,
-        Bans: OBMT.SIGNEDIP
-      };
-
       /**
        * Extract options
        */
       const {
         routes,
         controllers = {} as Controllers,
-        objectStateMapping = defaultObjectStateMapping,
         objects,
         exports,
         firewall,
@@ -52,6 +44,17 @@ class Apiker {
         email,
         debug
       } = options;
+
+      /**
+       * Apply defaults to objectStateMapping
+       */
+      const objectStateMapping = {
+        CounterUser: OBMT.SIGNEDIP,
+        RateLimit: OBMT.SIGNEDIP,
+        Logs: OBMT.SIGNEDIP,
+        Bans: OBMT.SIGNEDIP,
+        ...(options.objectStateMapping || {})
+      };
 
       /**
        * Check for required params
