@@ -34,25 +34,107 @@ Note: To run Apiker, you need a Cloudflare account with [Durable Objects access]
 
 ## ⭐ Features
 
-- Easy routing & state management
-- Basic JWT-based Auth (register, login, refresh token, delete user)
-- Automatically updates [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) migrations, classes and bindings so you don't have to.
-- Get and set object state easily. e.g: `await state().get(paramInCommonObj);` or `await state("MyObjectName").put({ myParam });`
+- 📕 Routing and State management
+- 🔑 Auth, JWT-based (Register, Login, Refresh token, Delete user)
+- ⚡️Automatically updates [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) migrations, classes and bindings so you don't have to.
+- 🛑 Rate Limiting / Flooding mitigation
+- 🛡️ Firewall support (IP bans with Cloudflare Firewall)
+- 📧 Email support (with Sendinblue)
+- ⚙️ Simple Admin panel
+- 👤 Geolocation handlers
+- 📝 Logging handlers
 
-**New**:
-- Rate Limiting
-- Firewall support (IP bans with Cloudflare Firewall)
-- Ability to send emails (with Sendinblue)
-- Simple Admin panel
-- User IP geolocation
-- Logging handlers
+## 📕 Examples
 
-## 📕 Why Apiker?
+### 1. Save value to `Common` object (shared by all visitors)
+```js
+import { res } from "apiker";
 
-Apiker was developed to cut down on API building time and complexity. API creation can take a considerable time, and it often represents the main obstable to getting your MVP to production.
+export const example1_saveValueCommon = async ({ state }) => {
+  // Using `state` with no parameters will default to the Common object
+  const count = ((await state().get("count")) || 0) + 1;
+  await state().put({ count });
+  return res({ count });
+};
+```
+> ➡️ GET /example1
+```
+{ "count": 1 }
+```
+[View Source](https://github.com/hodgef/apiker-examples/blob/master/src/controllers/example1_saveValueCommon.ts) | [View Demo](https://apiker-examples.volted.co/example1)
 
-Apiker lets you jump straight to route creation, where you can leverage persistent key-value state quickly. Apiker also provides useful handlers should you need them, such as JWT Auth, Hashing, Rate Limiting, Email, among others.
+### 2. Save value to a different object, and use one object instance per visitor
+```js
+import { res } from "apiker";
 
+export const example2_saveValueDiffObject = async ({ state }) => {
+  const count = (await state("Example2").get("count") || 0) + 1;
+  await state("Example2").put({ count });
+  return res({ count });
+};
+
+// In index.js ...
+apiker.init({
+ ...
+ objectStateMapping: {
+    // One object instance per user IP
+    Example2: OBMT.SIGNEDIP
+  }
+});
+```
+> ➡️ GET /example2
+```
+{ "count": 1 }
+```
+[View Source](https://github.com/hodgef/apiker-examples/blob/master/src/controllers/example2_saveValueDiffObject.ts) | [View Demo](https://apiker-examples.volted.co/example2)
+
+### 3. Use one object instance per route parameter value
+```js
+import { res } from "apiker";
+
+export const example3_instancePerRouteParam = async ({ state, matches }) => {
+  // Get username from route (/example3/:username)
+  const username = matches.params.username;
+  const acceptedUsernames = ["bob", "rob", "todd"];
+
+  if (acceptedUsernames.includes(username)) {
+    const { name = username, count = 0 } = (await state("Example3").get("username")) || {};
+    const payload = {
+      username: {
+        name,
+        count: count + 1
+      }
+    };
+
+    await state("Example3").put(payload);
+    return res(payload);
+  } else {
+    return res({ acceptedUsernames });
+  }
+};
+
+
+// In index.js ...
+apiker.init({
+ ...
+ objectStateMapping: {
+    // Mapped to the parameter `username` in the route
+    Example3: "username"
+  }
+});
+```
+> ➡️ GET /example3/bob
+```
+{
+    "username": {
+        "name": "bob",
+        "count": 1
+    }
+}
+```
+[View Source](https://github.com/hodgef/apiker-examples/blob/master/src/controllers/example3_instancePerRouteParam.ts) | [View Demo](https://apiker-examples.volted.co/example3/bob)
+
+> For more details and examples, check out the **[Documentation](https://hodgef.com/apiker/)**.
 
 ## ✅ Contributing 
 
