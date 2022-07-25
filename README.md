@@ -70,6 +70,11 @@ export const myRouteHandler = async ({
   return res({ body });
 };
 ```
+```js
+const routes = {
+  "/users/myroute": myRouteHandler
+};
+```
 Discuss: https://github.com/hodgef/apiker/issues/133
 
 ### 2. State: Save value to `Common` object (shared by all visitors)
