@@ -46,7 +46,33 @@ Note: To run Apiker, you need a Cloudflare account with [Durable Objects access]
 
 ## 📕 Examples
 
-### 1. Save value to `Common` object (shared by all visitors)
+### 1. Basic route handler example
+```js
+import { res, res_400 } from "apiker";
+
+export const myRouteHandler = async ({
+  request, // https://developers.cloudflare.com/workers/runtime-apis/request/
+  body, // The body of your request, such as form params or plaintext, depending on request content-type
+  headers, // Request headers. Response headers are located at `apiker.responseHeaders`
+  matches, // Your query params and route parts
+  state // The state method used to interact with permanent storage (check the examples below & docs for more info)
+}) => {
+  // If we want to allow POST only, we explicitly check for it :
+  if(request.method !== "POST"){
+     // returns 400 Bad Request error. You can also use `res("Invalid Method", 405)`
+     // https://github.com/hodgef/apiker/blob/master/src/components/Response/Response.ts#L10
+     return res_400();
+  }
+
+  // We'll return the request body passed, for example POST form parameters
+  // `res` and `res_000` functions respond with JSON. To respond with raw text you can use `resRaw`
+  // https://github.com/hodgef/apiker/blob/master/src/components/Response/Response.ts#L23
+  return res({ body });
+};
+```
+Discuss: https://github.com/hodgef/apiker/issues/133
+
+### 2. State: Save value to `Common` object (shared by all visitors)
 ```js
 import { res } from "apiker";
 
@@ -63,7 +89,7 @@ export const example1_saveValueCommon = async ({ state }) => {
 ```
 [View Source](https://github.com/hodgef/apiker-examples/blob/master/src/controllers/example1_saveValueCommon.ts) | [View Demo](https://apiker-examples.volted.co/example1)
 
-### 2. Save value to a different object, and use one object instance per visitor
+### 3. State: Save value to a different object, and use one object instance per visitor
 ```js
 import { res } from "apiker";
 
@@ -88,7 +114,7 @@ apiker.init({
 ```
 [View Source](https://github.com/hodgef/apiker-examples/blob/master/src/controllers/example2_saveValueDiffObject.ts) | [View Demo](https://apiker-examples.volted.co/example2)
 
-### 3. Use one object instance per route parameter value
+### 4. State: Use one object instance per route parameter value
 ```js
 import { res } from "apiker";
 
