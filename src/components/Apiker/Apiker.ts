@@ -4,6 +4,7 @@ import { OBMT } from "../ObjectBase";
 import ObjectBase from "../ObjectBase/ObjectBase";
 import { handleEntryRequest, RequestParams } from "../Request";
 import type { Controllers, EmailOptions, Firewall, ObjectStateMapping, Options, Routes, Timings } from "./interfaces";
+import { ResponseParams } from "./utils";
 
 class Apiker {
   name = "Apiker";
@@ -16,6 +17,7 @@ class Apiker {
   authRoutes!: boolean;
   env: any;
   requestParams!: RequestParams;
+  responseParams = new ResponseParams();
   responseHeaders!: Headers;
   firewall!: Firewall | boolean;
   adminPanel!: boolean;

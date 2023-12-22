@@ -147,8 +147,8 @@ export const apikerPagesStatic = `var pages = (function (React, ReactDOMServer, 
     };
 
     var AdminPanelLogin = function (_a) {
-        var hasUsers = _a.hasUsers;
-        return (React__default["default"].createElement("div", { className: "m-3" }, hasUsers ? (React__default["default"].createElement(React__default["default"].Fragment, null,
+        var hasAdmins = _a.hasAdmins;
+        return (React__default["default"].createElement("div", { className: "m-3" }, hasAdmins ? (React__default["default"].createElement(React__default["default"].Fragment, null,
             React__default["default"].createElement("h1", { className: "display-6 mb-3" }, "Login"),
             React__default["default"].createElement("form", { className: "row g-3", method: "post", action: "/admp" },
                 React__default["default"].createElement("div", { className: "col-auto" },

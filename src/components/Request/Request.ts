@@ -1,4 +1,4 @@
-import { apiker } from "../Apiker";
+import { apiker, ResponseParams } from "../Apiker";
 import { match } from "path-to-regexp";
 import { RESPONSE_HEADERS_DEFAULT, res_404 } from "../Response";
 import { getStateMethods } from "../State";
@@ -17,6 +17,7 @@ export const handleEntryRequest = async (request: Request, env: any) => {
   try {
     apiker.setProps({ env });
     apiker.responseHeaders = new Headers(RESPONSE_HEADERS_DEFAULT);
+    apiker.responseParams = new ResponseParams();
 
     const url = new URL(request.url);
     const { pathname } = url;

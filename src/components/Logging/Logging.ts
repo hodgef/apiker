@@ -12,11 +12,12 @@ export const addUniqueLogEntry = async (prefix: string, additionalParams = {}, o
     await addLogEntry(prefix, additionalParams, objectName, signedIp, clientId);
 };
 
-export const addLogEntry = async (prefix: string, additionalParams = {}, objectName = OBN.LOGS, signedIp: string | undefined = undefined, clientId: string | undefined = undefined) => {
+export const addLogEntry = async (prefix: string, additionalParams = {} as any, objectName = OBN.LOGS, signedIp: string | undefined = undefined, clientId: string | undefined = undefined) => {
     if(apiker.objects.includes(objectName)){
         const { state } = apiker.requestParams;
+        const { objectId = null } = additionalParams;
         const propertyName = getUserLogPropertyName(prefix, signedIp) + Date.now();
-        state(objectName).put({ [propertyName]: getLogParams(propertyName, signedIp, clientId, additionalParams) });
+        state(objectName, objectId).put({ [propertyName]: getLogParams(propertyName, signedIp, clientId, additionalParams) });
     }
 };
 

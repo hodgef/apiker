@@ -157,6 +157,18 @@ export const getCurrentUser = async (): Promise<User | undefined> => {
   }
 }
 
+export const isUserAdmin = async (userId = ""): Promise<boolean> => {
+  if(!userId) return false;
+  const { state } = apiker.requestParams;
+  const adminIds = await state(OBN.COMMON).get("adminIds");
+  return adminIds.includes(userId);
+}
+
+export const isCurrentUserAdmin = async (): Promise<boolean> => {
+  const user = await getCurrentUser();
+  return await isUserAdmin(user?.id);
+}
+
 export const getTokens = (userId: string, expirationInMinutes = AUTH_TOKEN_DURATION_MINS_DEFAULT) => {
   const clientId = getClientId();
   const token = createJWT({ sub: userId, clientId }, expirationInMinutes);

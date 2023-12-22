@@ -1,7 +1,7 @@
 import { Handler } from '../Request';
 import React from "react";
 import { getFlagEmoji, wrapReactPage } from '../Page';
-import { getCurrentUser, getSignedIp } from '../Auth';
+import { getCurrentUser, getSignedIp, isUserAdmin } from '../Auth';
 import { adminPanelLogin } from './Login';
 import { PanelHeader } from './Header';
 import { getAllLogEntries, getLogEntries, LogObject } from '../Logging';
@@ -9,6 +9,7 @@ import { getBannedSignedIPs } from '../Bans';
 import { FIREWALL_RATELIMIT_PREFIX } from '../Firewall';
 import { OBN } from '../ObjectBase';
 import { apiker } from '../Apiker';
+import { res_401 } from '../Response';
 
 export const adminPanelDashboard: Handler = async (params) => {
   const user = await getCurrentUser();
@@ -17,6 +18,10 @@ export const adminPanelDashboard: Handler = async (params) => {
     return adminPanelLogin(params);
   }
 
+  if(!isUserAdmin(user.id)){
+    return res_401();
+  }
+  
   const latestBans = (await getBannedSignedIPs()).sort((a, b) => b.time - a.time);
   const latestVisitors = (await getLogEntries(FIREWALL_RATELIMIT_PREFIX, 5, OBN.RATELIMIT)).sort((a, b) => b.time - a.time);
   const allVisitorsCount = (await getAllLogEntries(OBN.RATELIMIT)).length;

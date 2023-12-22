@@ -1,7 +1,7 @@
 import { Handler } from '../Request';
 import React from "react";
 import { getFlagEmoji, wrapReactPage } from '../Page';
-import { checkUser, getCurrentUser, getSignedIp, getTokens, registerUserAction, User } from '../Auth';
+import { checkUser, getCurrentUser, getSignedIp, getTokens, isUserAdmin, registerUserAction, User } from '../Auth';
 import { OBN } from '../ObjectBase';
 import cookie from "cookie"
 import { adminPanelLogin } from './Login';
@@ -19,17 +19,16 @@ export const adminPanelSetup: Handler = async (params) => {
    * If there's an user, it's a login, otherwise it's a registration
    */
   if(email && password){
-    const latestRequests = await state(OBN.USERS).list({ limit: 1 });
-    const firstUser = Object.values(latestRequests)[0] as User;
-    const hasUsers = !!firstUser?.id;
+    const adminIds = await state(OBN.COMMON).get("adminIds");
+    const hasAdmins = !!adminIds?.length;
     
-    if(hasUsers) {
+    if(hasAdmins) {
       user = await checkUser(email, password);
     } else {
       user = await registerUserAction(email, password, { role: "admin" });
     }
 
-    if(user){
+    if(user && await isUserAdmin(user.id)){
       const { token } = getTokens(user?.id, 60);
       apiker.responseHeaders.set('Set-Cookie', cookie.serialize('apikerToken', `Bearer ${token}`, {
         sameSite: true,
@@ -51,7 +50,7 @@ export const adminPanelSetup: Handler = async (params) => {
     return adminPanelLogin(params);
   }
 
-  if(user?.role !== "admin"){
+  if(!await isUserAdmin(user.id)){
     return res_401();
   }
 
