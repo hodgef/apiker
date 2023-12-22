@@ -2,7 +2,7 @@
   "compilerOptions": {
     "jsx": "react",
     "target": "es6",
-    "module": "commonjs",
+    "module": "esnext",
     "declaration": true,
     "declarationDir": "types",
     "sourceMap": true,
