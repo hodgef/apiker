@@ -35,13 +35,13 @@ export const apikerPagesStatic = `var pages = (function (pathToRegexp, React, Re
         }
     ];
     var AdminPanelPage = function () {
-        var _a = React__default["default"].useState(); _a[0]; var setAction = _a[1];
+        var _a = React__default["default"].useState(), action = _a[0], setAction = _a[1];
         var onDropdownItemClick = function (id) {
-            console.log("click");
             setAction(id);
+            console.log("Action set", id);
         };
         var dropdown = (React__default["default"].createElement("div", { className: "btn-group" },
-            React__default["default"].createElement("button", { className: "btn btn-transparent btn-lg dropdown-toggle action-dropdown", type: "button", id: "main-dropdown", "data-bs-toggle": "dropdown", "aria-expanded": "false" }, "Test"),
+            React__default["default"].createElement("button", { className: "btn btn-transparent btn-lg dropdown-toggle action-dropdown", type: "button", id: "main-dropdown", "data-bs-toggle": "dropdown", "aria-expanded": "false" }, action ? action : "Select action"),
             React__default["default"].createElement("ul", { className: "dropdown-menu", "aria-labelledby": "main-dropdown" }, actions.map(function (_a) {
                 var id = _a.id, displayName = _a.displayName;
                 return (React__default["default"].createElement("li", { key: id },
