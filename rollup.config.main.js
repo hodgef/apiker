@@ -5,10 +5,15 @@ import dts from "rollup-plugin-dts";
 import copy from "rollup-plugin-copy";
 import nodePolyfills from 'rollup-plugin-node-polyfills';
 import replace from '@rollup/plugin-replace';
+import { string } from "rollup-plugin-string";
+import image from '@rollup/plugin-image';
+import alias from '@rollup/plugin-alias';
+import path from 'path';
 
-import React from 'react';
-import ReactIs from 'react-is';
-import ReactDOM from 'react-dom';
+const globals = {
+  "react": "React",
+  "react-dom": "ReactDOM"
+};
 
 const packageJson = require("./package.json");
 
@@ -19,16 +24,17 @@ export default [
       {
         file: packageJson.main,
         format: "cjs",
-        sourcemap: true,
         name: "Apiker",
-        exports: "named"
+        exports: "named",
+        globals
       },
       {
         file: packageJson.module,
         format: "esm",
-        sourcemap: true
+        globals
       }
     ],
+    external: Object.keys(globals),
     plugins: [
       replace({
         "process.env.NODE_ENV": JSON.stringify("production")
@@ -37,15 +43,18 @@ export default [
       resolve({
         browser: true
       }),
-      commonjs({
-        include: /node_modules/,
-        namedExports: {
-            'react-is': Object.keys(ReactIs),
-            'react': Object.keys(React),
-            'react-dom': Object.keys(ReactDOM)
+      commonjs(),
+      typescript({ tsconfig: "./tsconfig.json" }),
+      alias({
+        entries: {
+          '@panelAssets': path.resolve(__dirname, './src/components/Admin/assets')
         }
       }),
-      typescript({ tsconfig: "./tsconfig.json" }),
+      image(),
+      string({
+        // Required to be specified
+        include: "**/*.css",
+      }),
       copy({
         targets: [
           { src: "plugins/PostBuild.js", dest: "dist/plugins" },

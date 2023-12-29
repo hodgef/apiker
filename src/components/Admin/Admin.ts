@@ -1,23 +1,14 @@
-import { adminPanelBanId } from "./BanId";
-import { Handler, RequestParams } from "../Request";
+import { Handler } from "../Request";
 import { resRaw } from "../Response";
 import { apikerPagesStatic } from "../Static";
-import { adminPanelBans } from "./Bans";
-import { adminPanelDashboard } from "./Dashboard";
-import { adminWhitelistMiddleware } from "./middleware";
-import { adminPanelSetup } from "./Setup";
-import { adminPanelVisitors } from "./Visitors";
+import { adminPanelPage } from "./Panel";
 
 /**
  * Responses
  */
 export const getAdminRoutes = () => ({
-    "/admp": adminPanelSetup,
-    "/admp/static.js": adminPanelStatic,
-    "/admp/dashboard": (params: RequestParams) => adminWhitelistMiddleware(params, adminPanelDashboard),
-    "/admp/visitors": (params: RequestParams) => adminWhitelistMiddleware(params, adminPanelVisitors),
-    "/admp/bans": (params: RequestParams) => adminWhitelistMiddleware(params, adminPanelBans),
-    "/admp/banid": (params: RequestParams) => adminWhitelistMiddleware(params, adminPanelBanId),
+    "/admp": adminPanelPage,
+    "/admp/static.js": adminPanelStatic
 });
 
 export const adminPanelStatic: Handler = () => {

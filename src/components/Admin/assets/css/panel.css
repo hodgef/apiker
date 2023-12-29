@@ -1,0 +1,50 @@
+html, body, #app {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    padding: 50px;
+}
+
+.btn-group {
+    display: flex;
+}
+
+.action-dropdown {
+    border: 2px solid #ccc;
+    display: flex;
+    justify-content: space-between;
+}
+
+.action-dropdown::after {
+    border: none !important;
+    content: "expand_more";
+    font-family: "Material Symbols Outlined";
+    font-size: 35px;
+    position: absolute;
+    right: 7px;
+    top: 0;
+}
+
+.btn:hover {
+    border-color: #ccc !important;
+}
+
+ul.dropdown-menu.show {
+    display: flex;
+    width: 100%;
+    padding: 10px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+ul.dropdown-menu.show li {
+    background: whitesmoke;
+    border-radius: 5px;
+    flex: 1;
+}
+
+a.dropdown-item {
+    border-radius: 5px;
+}

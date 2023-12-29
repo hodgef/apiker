@@ -1,8 +1,10 @@
-import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
-import nodePolyfills from 'rollup-plugin-node-polyfills';
 import replace from '@rollup/plugin-replace';
+import { string } from "rollup-plugin-string";
+import image from '@rollup/plugin-image';
+import alias from '@rollup/plugin-alias';
+import path from 'path';
 
 const globals = {
   "react": "React",
@@ -27,12 +29,18 @@ export default [
       replace({
         "process.env.NODE_ENV": JSON.stringify("production")
       }),
-      nodePolyfills(),
-      resolve({
-        browser: true
-      }),
       commonjs(),
       typescript({ tsconfig: "./tsconfig.comp.json" }),
+      alias({
+        entries: {
+          '@panelAssets': path.resolve(__dirname, './src/components/Admin/assets')
+        }
+      }),
+      image(),
+      string({
+        // Required to be specified
+        include: "**/*.css",
+      }),
       {
         name: 'modify-output',
         renderChunk: (source) => {
