@@ -8,6 +8,7 @@ export const RESPONSE_HEADERS_DEFAULT = {
 
 export const RESPONSE_MESSAGES = {
   200: "Success",
+  204: "No Content",
   400: "Bad request",
   401: "Forbidden",
   404: "Not found",

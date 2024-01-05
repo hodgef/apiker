@@ -1,3 +1,4 @@
+import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import replace from '@rollup/plugin-replace';
@@ -27,7 +28,11 @@ export default [
     external: Object.keys(globals),
     plugins: [
       replace({
-        "process.env.NODE_ENV": JSON.stringify("production")
+        "process.env.NODE_ENV": JSON.stringify("production"),
+        preventAssignment: true
+      }),
+      resolve({
+        browser: true
       }),
       commonjs(),
       typescript({ tsconfig: "./tsconfig.comp.json" }),
@@ -43,11 +48,7 @@ export default [
       }),
       {
         name: 'modify-output',
-        renderChunk: (source) => {
-          return {
-            code: `export const apikerPagesStatic = \`${source}\`;`
-          }
-        }
+        renderChunk: (source) => ({ code: `export const apikerPagesStatic = \`${source}\`;` })
       },
     ],
   }

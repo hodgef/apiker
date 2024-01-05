@@ -9,5 +9,8 @@ export interface RequestParams {
   request: Request;
 }
 
-export type Handler = ((params: RequestParams, nextMiddleware?: Handler) => Response | Promise<Response>);
+export type Handler = ((params: RequestParams) => Response | Promise<Response>);
 
+export interface RouteObject {
+  [route: string]: Handler;
+}

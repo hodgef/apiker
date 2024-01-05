@@ -3,10 +3,11 @@ import { match } from "path-to-regexp";
 import { RESPONSE_HEADERS_DEFAULT, res_404 } from "../Response";
 import { getStateMethods } from "../State";
 import { Handler, RequestParams } from "./interfaces";
-import { firewallMiddleWare } from "../Firewall/middleware";
+import { firewallMiddleware } from "../Firewall/middleware";
 import { forwardToMiddleware, Middleware } from "../Middleware";
 import { measureTiming } from "../Timings";
 import { TIMINGS } from "../Timings/constants";
+import { bansMiddleware } from "../Bans/middleware";
 
 /**
  * Handles incoming Cloudflare Worker requests
@@ -57,17 +58,23 @@ export const handleEntryRequest = async (request: Request, env: any) => {
 
     apiker.requestParams = params;
 
+    /**
+     * Middleware
+     */
     const middlewares: Handler[] & Middleware[] = [];
 
-    /**
-     * Apply middleware
-     */
-     if(apiker.firewall) {
-      middlewares.push(firewallMiddleWare);
+    /** Apiker firewall bans */
+    if(apiker.firewall) {
+      middlewares.push(firewallMiddleware);
     }
 
+    /** Bans */
+    middlewares.push(bansMiddleware);
+
+    /** Handler */
+    middlewares.push(handlerFn);
   
-    return forwardToMiddleware(params, handlerFn, middlewares);
+    return forwardToMiddleware(params, middlewares);
 
   } catch (e: any) {
     return new Response(e.message);

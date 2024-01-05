@@ -17,7 +17,8 @@ export const addLogEntry = async (prefix: string, additionalParams = {} as any, 
         const { state } = apiker.requestParams;
         const { objectId = null } = additionalParams;
         const propertyName = getUserLogPropertyName(prefix, signedIp) + Date.now();
-        state(objectName, objectId).put({ [propertyName]: getLogParams(propertyName, signedIp, clientId, additionalParams) });
+        const logParams = getLogParams(propertyName, signedIp, clientId, additionalParams);
+        await state(objectName, objectId).put({ [propertyName]: logParams });
     }
 };
 
@@ -74,7 +75,7 @@ export const deleteLogEntries = async (prefix: string, objectName = OBN.LOGS) =>
     return Promise.all(promises);
 };
 
-export const getAllLogEntries = async (objectName = OBN.LOGS, limit: number | null = null) => {
+export const getAllLogEntries = async (objectName = OBN.LOGS, limit: number | null = null, objectId?: string) => {
     const { state } = apiker.requestParams;
     const payload = {
         reverse: true,
@@ -84,6 +85,6 @@ export const getAllLogEntries = async (objectName = OBN.LOGS, limit: number | nu
     if(limit){
         payload.limit = limit; 
     }
-    const entries = await state(objectName).list(payload);
+    const entries = await state(objectName, objectId).list(payload);
     return Object.values(entries) as LogObject[];
 };

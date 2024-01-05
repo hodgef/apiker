@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 import { resRaw } from "../Response";
+import { apiker } from "../Apiker";
 
 export const pageHeader = (styles = "") => `
     <!DOCTYPE html>
@@ -34,8 +35,8 @@ export const pageHeader = (styles = "") => `
 
 export const pageFooter = (prepend = "") => `
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/react@17.0.2/umd/react.development.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/react-dom@17.0.2/umd/react-dom.development.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
         <script src="/admp/static.js"></script>
         ${prepend}
@@ -47,10 +48,34 @@ export const wrapPage = (pageContent: string, styles = "") => resRaw(pageHeader(
 
 export const wrapReactPage = (componentName: string, pageComponent: React.ReactElement, props = {}, styles = "") => {
     let pageContent = ReactDOMServer.renderToString(pageComponent);
+
+    apiker.responseHeaders.set("Content-Security-Policy", "frame-ancestors 'none';");
+    apiker.responseHeaders.set("X-Frame-Options", "deny");
+
     return resRaw(pageHeader(styles) + pageContent + pageFooter(`
         <script>
-            const app = document.querySelector("#app");
-            ReactDOM.hydrate(pages["${componentName}"](${JSON.stringify(props)}), app);
+            window.appRoot = (action, componentName, props = {}) => {
+                const domNode = document.getElementById("app");
+                const root = ReactDOM.createRoot(domNode);
+
+                const componentProps = {
+                    ...props
+                };
+
+                if(!window.initializeAppHelper){
+                    window.initializeAppHelper = (componentName) => ({
+                        setProps: (newProps) => root.render(pages[componentName](newProps))
+                    });
+                }
+
+                if(action === "hydrate"){
+                    pages.ReactDOM.hydrate(pages[componentName](componentProps), app);
+
+                } else if (action === "render") {
+                    root.render(pages[componentName](componentProps));
+                }
+            };
+            window.appRoot("hydrate", "${componentName}", ${JSON.stringify(props)});
         </script>
     `));
 }

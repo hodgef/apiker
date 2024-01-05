@@ -3,18 +3,31 @@ html, body, #app {
     margin: 0;
 }
 
-body {
-    padding: 50px;
+.navbar {
+    padding: 50px !important;
 }
 
 .btn-group {
     display: flex;
 }
 
-.action-dropdown {
+.action-dropdown,
+.form-control {
     border: 2px solid #ccc;
     display: flex;
     justify-content: space-between;
+}
+
+.container .btn.action-btn {
+    padding: 0.5rem 1rem;
+    font-size: 20px;
+    width: 100%;
+    background: #2e3191;
+    border-color: #2e3191;
+}
+
+.container .btn.action-btn:hover {
+    opacity: 0.9;
 }
 
 .action-dropdown::after {
@@ -36,7 +49,7 @@ ul.dropdown-menu.show {
     width: 100%;
     padding: 10px;
     gap: 10px;
-    flex-wrap: wrap;
+    flex-flow: column;
 }
 
 ul.dropdown-menu.show li {
@@ -47,4 +60,67 @@ ul.dropdown-menu.show li {
 
 a.dropdown-item {
     border-radius: 5px;
+    text-align: center;
+}
+
+.action-wrapper {
+    border-radius: 10px;
+    border-bottom: 2px solid #ececec;
+}
+
+.signed-ip {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    font-size: 14px;
+    opacity: 0.6;
+}
+
+.results-container {
+    margin-top: 10px;
+    background: #f6f6f6;
+    border-radius: 5px;
+    overflow-y: auto;
+    max-height: 300px;
+    padding: 10px;
+    position: relative;
+}
+
+.results-container .results-item {
+    padding: 10px 15px;
+    border-bottom: 1px #ccc dashed;
+}
+
+.results-container .results-item:last-child {
+    border-bottom: none;
+}
+
+.results-container .results-item ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.results-container .results-item ul li {
+    display: flex;
+    flex-flow: row;
+    gap: 10px;
+}
+
+.results-container .results-item ul li span.title {
+    font-weight: 500;
+    display: inline-block;
+    text-transform: capitalize;
+    width: 24%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.results-container .results-item ul li span.text {
+    display: inline-block;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    flex: 1;
 }

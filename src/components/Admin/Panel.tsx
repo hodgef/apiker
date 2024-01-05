@@ -1,45 +1,67 @@
+//@ts-ignore
+import css from "@panelAssets/css/panel.css";
+
 import React from "react";
 import { Header } from "./Header";
 import { Content } from "./Content";
 import { wrapReactPage } from "../Page";
 import { Handler } from "../Request";
-
-//@ts-ignore
-import css from "@panelAssets/css/panel.css";
+import { getAppHelper } from "./Utils";
+import { Action, AdminPanelPageProps } from "./interfaces";
+import { Login } from "./Actions/Login";
+import { OBN } from "../ObjectBase";
+import { createJWT, getCurrentUser, getSignedIp } from "../Auth";
+import { Dialog } from "./Dialog";
+import { authActions, defaultActions } from "./constants";
+import { BanUser } from "./Actions/BanUser";
+import { UnbanUser } from "./Actions/UnbanUser";
+import { SearchBans } from "./Actions/SearchBans";
 
 export const adminPanelPage: Handler = async ({ state }) => {
-    const props = {};
+    const pageName = "AdminPanelPage";
+    const adminIds = await state(OBN.COMMON).get("adminIds");
+    const hasAdmins = !!adminIds?.length;
+    const csrfToken = createJWT({ pageName }, 60);
+
+    const user = await getCurrentUser();
+    const isAdminLoggedIn = user?.role === "admin";
+
+    const userSignedIp = isAdminLoggedIn ? getSignedIp() : undefined;
+
+    const props = { isSetup: !hasAdmins, pageName, csrfToken, isAdminLoggedIn, userSignedIp } as AdminPanelPageProps;
     return wrapReactPage('AdminPanelPage', <AdminPanelPage {...props} />, props, css);
 }
 
-const actions: {
-    id: string;
-    displayName: string;
-}[] = [
-        {
-            id: "login",
-            displayName: "Login"
-        }
-    ];
+const actionsComponent = {
+    login: Login,
+    banUser: BanUser,
+    unbanUser: UnbanUser,
+    searchBans: SearchBans
+};
 
+export const AdminPanelPage: React.FC<AdminPanelPageProps> = (props) => {
+    let { userSignedIp, isAdminLoggedIn, action, actions = defaultActions, dialog, pageName = "" } = props;
+    const { setProps } = getAppHelper(pageName);
+    let ActionComponent = action ? actionsComponent[action.id] : null;
 
-export const AdminPanelPage: React.FC = () => {
-    const [action, setAction] = React.useState<string>();
-
-    const onDropdownItemClick = (id: string) => {
-        setAction(id);
-        console.log("Action set", id);
+    if(isAdminLoggedIn){
+        actions = authActions;
     }
 
-    const dropdown = (
+    const onDropdownItemClick = (action: Action) => {
+        setProps({ ...props, action, dialog: undefined });
+    }
+
+    const actionDropdown = (
         <div className="btn-group">
             <button className="btn btn-transparent btn-lg dropdown-toggle action-dropdown" type="button" id="main-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                {action ? action : "Select action"}
+                {action ? action.displayName : "Select action"}
             </button>
             <ul className="dropdown-menu" aria-labelledby="main-dropdown">
-                {actions.map(({ id, displayName }) => {
+                {actions.map((currentAction) => {
+                    const { id, displayName } = currentAction;
                     return (
-                        <li key={id}><a className="dropdown-item" href="#" onClick={() => onDropdownItemClick(id)}>{displayName}</a></li>
+                        <li key={id}><a className="dropdown-item" href="#" onClick={() => onDropdownItemClick(currentAction)}>{displayName}</a></li>
                     )
                 })}
             </ul>
@@ -48,9 +70,13 @@ export const AdminPanelPage: React.FC = () => {
 
     return (
         <>
-            <Header />
+            <Header>
+                {dialog && <Dialog {...props} />}
+            </Header>
             <Content>
-                {dropdown}
+                {actionDropdown}
+                {ActionComponent && <ActionComponent {...props} />}
+                {userSignedIp && <div className="signed-ip">Your ID: {userSignedIp}</div>}
             </Content>
         </>
     )

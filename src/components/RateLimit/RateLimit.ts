@@ -7,9 +7,8 @@ import { addLogEntry, getUserLogEntries } from "../Logging";
 
 const hourInMs = 3600000;
 
-export const rateLimitRequest = async (prefix: string, handler: Handler, params: RequestParams, limit = REQUEST_LIMIT_AMOUNT_PER_HOUR, timeLapse = hourInMs, onLimitReached = res_429 as any): Promise<Response> => {
+export const rateLimitRequest = async (prefix: string, params: RequestParams, handlerFn?: Handler, limit = REQUEST_LIMIT_AMOUNT_PER_HOUR, timeLapse = hourInMs, onLimitReached = res_429 as any) => {
     if(apiker.objects.includes(OBN.RATELIMIT)){
-        const { state } = params;
         const { rateLimitReached, requestCount } = await isRateLimitReached(prefix, limit, timeLapse);
         const rateLimitRemaining = limit - requestCount;
 
@@ -38,7 +37,9 @@ export const rateLimitRequest = async (prefix: string, handler: Handler, params:
         // }
     }
 
-    return handler(params);
+    if(handlerFn){
+        handlerFn(params);
+    }
 };
 
 export const isRateLimitReached = async (prefix: string, limit: number, timeLapse: number) => {

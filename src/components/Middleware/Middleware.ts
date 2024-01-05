@@ -1,16 +1,18 @@
-import { Handler, RequestParams } from "../Request";
+import { RequestParams } from "../Request";
+import { res_204 } from "../Response";
 import { Middleware } from "./interfaces";
 
-export const forwardToMiddleware = async (params: RequestParams, handlerFn: Handler, middlewares: Middleware[] = []): Promise<Response> => {
+export const forwardToMiddleware = async (params: RequestParams, middlewares: Middleware[] = []): Promise<Response | Middleware> => {
     try {
-      const remainingMiddlewares = [...middlewares];
-      const loadNextMiddleware = async (): Promise<Response> => {
-        const middleware = remainingMiddlewares.shift() as Handler;
-        const nextMiddleware = (remainingMiddlewares.shift() || handlerFn) as Handler;
-        return middleware ? middleware(params, nextMiddleware) : handlerFn(params);
-      };
-  
-      return loadNextMiddleware();
+      for (let index = 0; index < middlewares.length; index++) {
+        const middleware = middlewares[index];
+        const response = await middleware(params);
+        if(response) {
+          return response;
+        }
+      }
+
+      return res_204();
     } catch(e: any) {
       return new Response(e.message);
     }

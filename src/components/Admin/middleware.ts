@@ -1,18 +1,35 @@
 import { apiker } from "../Apiker";
-import { getCurrentUser } from "../Auth";
+import { getCurrentUser, parseJWT } from "../Auth";
 import { getCurrentUserGeodata } from "../Geolocation";
-import { Middleware } from "../Middleware";
-import { res_401 } from "../Response";
+import { Middleware, forwardToMiddleware } from "../Middleware";
+import { Handler } from "../Request";
+import { res_204, res_401 } from "../Response";
 
-export const adminLoginMiddleware: Middleware = async (params, nextMiddleware) => {
+export const adminLoginMiddleware: Middleware = async (params, handlerFn?: Handler) => {
     const user = await getCurrentUser();
     if(user?.role !== "admin"){
         return res_401();
     }
-    return nextMiddleware(params);
+
+    if(handlerFn){
+        return handlerFn(params);
+    }
 };
 
-export const adminWhitelistMiddleware: Middleware = async (params, nextMiddleware) => {
+export const adminCsrfCheckMiddleware: Middleware = async (params, handlerFn?: Handler) => {
+    const { headers } = apiker.requestParams;
+    const csrfToken = headers.get("X-Apiker-Csrf") as string;
+
+    if(!csrfToken || !parseJWT(csrfToken)){
+        return res_401();
+    }
+
+    if(handlerFn){
+        return handlerFn(params);
+    }
+}
+
+export const adminWhitelistMiddleware: Middleware = async (params, handlerFn?: Handler) => {
     if(apiker.env.ADMP_IP_WHITELIST || apiker.env.ADMP_ISP_WHITELIST || apiker.env.ADMP_CITY_WHITELIST){
         const { headers } = apiker.requestParams;
         const ip = headers.get("CF-Connecting-IP") as string;
@@ -30,6 +47,16 @@ export const adminWhitelistMiddleware: Middleware = async (params, nextMiddlewar
             return res_401();
         }
     }
-    
-    return adminLoginMiddleware(params, nextMiddleware);
+
+    if(handlerFn){
+        return handlerFn(params);
+    }
+};
+
+export const adminMiddleware: Middleware = async (params, handlerFn = () => res_204()) => {
+    return forwardToMiddleware(params, [
+        adminCsrfCheckMiddleware,
+        adminWhitelistMiddleware,
+        handlerFn
+    ]);
 };

@@ -46,7 +46,7 @@ export const parseObjectStateMapping = (objectStateMapping: string, matches?: Ma
   }
 
   /**
-   * Adding mapping to headers for debgug purposes
+   * Adding mapping to headers for debug purposes
    */
   if(apiker.debug){
     console.log("objectStateMapping", objectStateMapping);

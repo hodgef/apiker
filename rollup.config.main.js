@@ -37,7 +37,8 @@ export default [
     external: Object.keys(globals),
     plugins: [
       replace({
-        "process.env.NODE_ENV": JSON.stringify("production")
+        "process.env.NODE_ENV": JSON.stringify("production"),
+        preventAssignment: true
       }),
       nodePolyfills(),
       resolve({
@@ -64,8 +65,8 @@ export default [
     ],
   },
   {
-    input: "dist/esm/types/index.d.ts",
-    output: [{ file: "dist/index.d.ts", format: "esm" }],
+    input: "dist/esm/index.d.ts",
+    output: [{ file: "dist/types/index.d.ts", format: "esm" }],
     plugins: [dts()],
   },
 ];

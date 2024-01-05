@@ -54,7 +54,7 @@ class Apiker {
         CounterUser: OBMT.SIGNEDIP,
         RateLimit: OBMT.SIGNEDIP,
         Logs: OBMT.SIGNEDIP,
-        Bans: OBMT.SIGNEDIP,
+        Bans: "userId",
         ...(options.objectStateMapping || {})
       };
 
