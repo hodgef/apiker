@@ -10,21 +10,23 @@ export const getStateMethods = (defaultObjectName: string, matches?: MatchResult
      * If there's an existing object state mapping, using that as default
      */
     if(!objectId){
-      objectId = parseObjectStateMapping(apiker.objectStateMapping[objectName], matches);
+      objectId = parseObjectStateMapping(apiker.objectStateMapping[objectName], matches) || OBMT.DEFAULT;
     }
 
-    if(apiker.debug){
-      console.log('objectId', objectName, apiker.objectStateMapping[objectName], objectId || OBMT.DEFAULT);
-    }
+    const obj = getEnvObject(objectName, objectId);
 
-    const obj = getEnvObject(objectName, objectId || OBMT.DEFAULT);
+    const callback = (operationName: string) => {
+      if(apiker.debug){
+        console.log("APIKER ::", operationName, objectName, objectId);
+      }
+    }
 
     return {
-      get: (obj ? getObjectState(obj) : () => {}),
-      put: (obj ? putObjectState(obj) : () => {}),
-      delete: (obj ? deleteObjectState(obj) : () => {}),
-      deleteAll: (obj ? deleteAllObjectState(obj) : () => {}),
-      list: (obj ? listObjectState(obj) : () => {}),
+      get: (obj ? getObjectState(obj, () => callback("get")) : () => {}),
+      put: (obj ? putObjectState(obj, () => callback("put")) : () => {}),
+      delete: (obj ? deleteObjectState(obj, () => callback("delete")): () => {}),
+      deleteAll: (obj ? deleteAllObjectState(obj, () => callback("deleteAll")) : () => {}),
+      list: (obj ? listObjectState(obj, () => callback("list")) : () => {}),
     } as StateMethods;
   };
 
@@ -56,7 +58,7 @@ export const parseObjectStateMapping = (objectStateMapping: string, matches?: Ma
   return value;
 }
 
-export const deleteObjectState = (obj: any) =>
+export const deleteObjectState = (obj: any, callback: any) =>
   async (propertyName: string) => {
     const result = await obj.fetch("/delete", {
       method: "POST",
@@ -69,20 +71,40 @@ export const deleteObjectState = (obj: any) =>
     });
 
     const body = await result.text();
-    return JSON.parse(body || null);
+    const parsedBody = JSON.parse(body || null);
+
+    if(callback){
+      callback();
+    }
+
+    if(apiker.debug){
+      console.log('deleteObjectState', propertyName, parsedBody);
+    }
+
+    return parsedBody;
   };
 
-export const deleteAllObjectState = (obj: any) =>
+export const deleteAllObjectState = (obj: any, callback: any) =>
   async () => {
     const result = await obj.fetch("/deleteall", {
       method: "POST"
     });
 
     const body = await result.text();
-    return JSON.parse(body || null);
+    const parsedBody = JSON.parse(body || null);
+
+    if(callback){
+      callback();
+    }
+
+    if(apiker.debug){
+      console.log('deleteAllObjectState', parsedBody);
+    }
+
+    return parsedBody;
   };
 
-export const getObjectState = (obj: any) =>
+export const getObjectState = (obj: any, callback: any) =>
   async (propertyName: string) => {
     const result = await obj.fetch("/get", {
       method: "POST",
@@ -95,10 +117,20 @@ export const getObjectState = (obj: any) =>
     });
 
     const body = await result.text();
-    return JSON.parse(body || null);
+    const parsedBody = JSON.parse(body || null);
+
+    if(callback){
+      callback();
+    }
+
+    if(apiker.debug){
+      console.log('getObjectState', propertyName, parsedBody);
+    }
+
+    return parsedBody;
   };
 
-export const listObjectState = (obj: any) =>
+export const listObjectState = (obj: any, callback: any) =>
   async (payload: any) => {
     const result = await obj.fetch("/list", {
       method: "POST",
@@ -109,10 +141,20 @@ export const listObjectState = (obj: any) =>
     });
 
     const body = await result.text();
-    return JSON.parse(body || null);
+    const parsedBody = JSON.parse(body || null);
+
+    if(callback){
+      callback();
+    }
+
+    if(apiker.debug && !payload?.prefix?.includes("firewall")){
+      console.log('listObjectState', payload, parsedBody);
+    }
+
+    return parsedBody;
   };
 
-export const putObjectState = (obj: any) =>
+export const putObjectState = (obj: any, callback: any) =>
   async (payload: any) => {
     const result = await obj.fetch("/put", {
       method: "POST",
@@ -123,6 +165,16 @@ export const putObjectState = (obj: any) =>
     });
 
     const body = await result.text();
+    const parsedBody = JSON.parse(body || null);
+
+    if(callback){
+      callback();
+    }
+
+    if(apiker.debug){
+      console.log('putObjectState', payload, parsedBody);
+    }
+
     return JSON.parse(body || null);
   };
 

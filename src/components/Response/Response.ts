@@ -12,6 +12,7 @@ export const res_400 = (input?: any, options = null) => res(input ? parseInput(i
 export const res_401 = (input?: any, options = null) => res(input ? parseInput(input) : RESPONSE_MESSAGES[401], options || 401);
 export const res_404 = (input?: any, options = null) => res(input ? parseInput(input) : RESPONSE_MESSAGES[404], options || 404);
 export const res_429 = (input?: any, options = null) => res(input ? parseInput(input) : RESPONSE_MESSAGES[429], options || 429);
+export const res_500 = (input?: any, options = null) => res(input ? parseInput(input) : RESPONSE_MESSAGES[500], options || 500);
 
 export const res = (input: any, options = {} as any) => {
   const data = parseInput(input);

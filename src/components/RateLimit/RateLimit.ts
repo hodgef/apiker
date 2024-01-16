@@ -38,7 +38,7 @@ export const rateLimitRequest = async (prefix: string, params: RequestParams, ha
     }
 
     if(handlerFn){
-        handlerFn(params);
+        return handlerFn(params);
     }
 };
 

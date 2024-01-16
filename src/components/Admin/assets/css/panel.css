@@ -12,7 +12,8 @@ html, body, #app {
 }
 
 .action-dropdown,
-.form-control {
+.form-control,
+.input-group {
     border: 2px solid #ccc;
     display: flex;
     justify-content: space-between;
@@ -123,4 +124,46 @@ a.dropdown-item {
     white-space: nowrap;
     overflow: hidden;
     flex: 1;
+}
+
+.action-wrapper pre {
+    background: #e5e5e5;
+    padding: 15px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
+}
+
+.input-group {
+    border-radius: 10px;
+    overflow: hidden;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.input-group input {
+    border: none !important;
+    outline: none !important;
+    flex: 1;
+    padding: 10px 15px;
+    font-size: 20px;
+}
+
+.input-group .btn {
+    background: #2e3191;
+    color: white;
+    position: absolute;
+    right: 7px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 5px !important;
+}
+
+.action-wrapper textarea {
+    width: 100%;
+    padding: 18px;
+    height: 240px;
 }

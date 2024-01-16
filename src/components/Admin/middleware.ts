@@ -19,9 +19,18 @@ export const adminLoginMiddleware: Middleware = async (params, handlerFn?: Handl
 export const adminCsrfCheckMiddleware: Middleware = async (params, handlerFn?: Handler) => {
     const { headers } = apiker.requestParams;
     const csrfToken = headers.get("X-Apiker-Csrf") as string;
+    const parsedCsrfToken = parseJWT(csrfToken);
 
-    if(!csrfToken || !parseJWT(csrfToken)){
+    if(!csrfToken || !parsedCsrfToken){
         return res_401();
+    }
+
+    if(parsedCsrfToken.sub){
+        const user = await getCurrentUser();
+
+        if(user?.id !== parsedCsrfToken.sub){
+            return res_401();
+        }
     }
 
     if(handlerFn){

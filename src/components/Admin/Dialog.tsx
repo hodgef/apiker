@@ -13,6 +13,12 @@ export const Dialog: React.FC<AdminPanelPageProps> = (props) => {
             dialog: undefined
         })
     }
+
+    React.useEffect(() => {
+        if(dialog && !document.querySelector(".dropdown-menu.show")){
+            setTimeout(onClose, 2000);
+        }
+    }, [dialog]);
     
     return (
         <div>

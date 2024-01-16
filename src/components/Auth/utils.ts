@@ -55,7 +55,7 @@ export const createJWT = (data: any, expirationInMinutes = 0) => {
  * @param token JWT token
  * @returns 
  */
-export const parseJWT = (token: string) => {
+export const parseJWT = (token: string, disableClientIdCheck?: boolean) => {
   if(!token){
     return;
   }
@@ -74,6 +74,7 @@ export const parseJWT = (token: string) => {
     );
 
     const isSameClient = (
+      disableClientIdCheck ||
       resPayload.clientId === getClientId() ||
       !resPayload.clientId
     );
@@ -110,7 +111,7 @@ export const compare_bcrypt = (message: string, hash: string): boolean => {
  */
 export const sign = (message): string => {
   if(!apiker.env.APIKER_SECRET_KEY){
-    throw new Error("Apiker secret key is undefined. Please consult the documentation");
+    throw new Error("env.APIKER_SECRET_KEY is undefined. Please consult the documentation");
   }
 
   const signature = CryptoJS.HmacSHA256(message, apiker.env.APIKER_SECRET_KEY);
@@ -122,7 +123,7 @@ export const sign = (message): string => {
  */
 export const sign_sha256 = (message: string): string => {
   if(!apiker.env.APIKER_SECRET_KEY){
-    throw new Error("Apiker secret key is undefined. Please consult the documentation");
+    throw new Error("env.APIKER_SECRET_KEY is undefined. Please consult the documentation");
   }
 
   return CryptoJS.HmacSHA256(message, apiker.env.APIKER_SECRET_KEY).toString(CryptoJS.enc.Hex);
@@ -133,7 +134,7 @@ export const sign_sha256 = (message: string): string => {
  */
 export const sign_sha1 = (message: string): string => {
   if(!apiker.env.APIKER_SECRET_KEY){
-    throw new Error("Apiker secret key is undefined. Please consult the documentation");
+    throw new Error("env.APIKER_SECRET_KEY is undefined. Please consult the documentation");
   }
 
   return CryptoJS.HmacSHA1(message, apiker.env.APIKER_SECRET_KEY).toString(CryptoJS.enc.Hex);
@@ -170,7 +171,7 @@ export const getClientId = () => {
 /**
  * Retrieves the auth tokens from the request headers or cookies.
  */
-export const extractToken = () => {
+export const extractToken = (): string => {
   const { headers, request } = apiker.requestParams;
   const url = new URL(request.url);
   const params = new URLSearchParams(url.search);
@@ -182,13 +183,15 @@ export const extractToken = () => {
 
   if(authValue?.includes("Bearer")){
     return authValue.split(" ")[1];
+  } else {
+    return "";
   }
 };
 
 /**
  * Fetches the current user by checking for the auth token in the request headers or in the cookies.
  */
-export const getCurrentUser = async (): Promise<User | undefined> => {
+export const getCurrentUser = async (disableClientIdCheck?: boolean): Promise<User | undefined> => {
   const { state } = apiker.requestParams;
   const token = extractToken();
 
@@ -196,7 +199,7 @@ export const getCurrentUser = async (): Promise<User | undefined> => {
     return;
   }
 
-  const payload = parseJWT(token);
+  const payload = parseJWT(token, disableClientIdCheck);
 
   if(!payload){
     return;

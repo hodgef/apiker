@@ -42,7 +42,7 @@ class Apiker {
         firewall,
         adminPanel = false,
         authRoutes = false,
-        name,
+        name = "Apiker",
         email,
         debug
       } = options;

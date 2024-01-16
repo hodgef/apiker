@@ -1,1 +1,0 @@
-export type EmailTemplate = (params: any) => string;

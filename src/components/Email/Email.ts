@@ -17,7 +17,7 @@ export const sendEmail = async (
       !apiker.email ||
 
       // No API key
-      !apiker.env.SENDINBLUE_API_KEY ||
+      !apiker.env.BREVO_API_KEY ||
 
       // No receipients
       !to.length ||
@@ -31,20 +31,27 @@ export const sendEmail = async (
       return;
     }
 
+    const bodyParams = {
+      subject,
+      sender,
+      to,
+      htmlContent: content
+    };
+
     const response = await fetch(EMAIL_API_ENDPOINT, {
-      body: JSON.stringify({
-        subject,
-        sender,
-        to,
-        htmlContent: content
-      }),
+      body: JSON.stringify(bodyParams),
       headers: {
-        'api-key': apiker.env.SENDINBLUE_API_KEY,
+        'api-key': apiker.env.BREVO_API_KEY,
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       },
       method: 'POST',
     });
+
+    if(apiker.debug){
+      console.log("bodyParams", bodyParams);
+      console.log("response", response);
+    }
 
     return response;
   }

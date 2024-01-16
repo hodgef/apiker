@@ -12,5 +12,6 @@ export const RESPONSE_MESSAGES = {
   400: "Bad request",
   401: "Forbidden",
   404: "Not found",
-  429: "Too many requests"
+  429: "Too many requests",
+  500: "Internal Server Error"
 };

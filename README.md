@@ -39,7 +39,7 @@ Note: To run Apiker, you need a Cloudflare account with [Durable Objects access]
 - ⚡️Automatically updates [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) migrations, classes and bindings so you don't have to.
 - 🛑 Rate Limiting / Flooding mitigation
 - 🛡️ Firewall support (IP bans with Cloudflare Firewall)
-- 📧 Email support (with Sendinblue)
+- 📧 Email support (with [Brevo](https://www.brevo.com/products/transactional-email/))
 - ⚙️ Simple Admin panel
 - 👤 Geolocation handlers
 - 📝 Logging handlers

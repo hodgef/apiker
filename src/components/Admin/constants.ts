@@ -21,5 +21,13 @@ export const authActions: Actions = [
     {
         id: "searchBans",
         displayName: "Search Bans"
+    },
+    {
+        id: "sendEmail",
+        displayName: "Send Email"
+    },
+    {
+        id: "updateUser",
+        displayName: "Update User"
     }
 ];

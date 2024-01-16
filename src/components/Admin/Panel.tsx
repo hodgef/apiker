@@ -16,15 +16,17 @@ import { authActions, defaultActions } from "./constants";
 import { BanUser } from "./Actions/BanUser";
 import { UnbanUser } from "./Actions/UnbanUser";
 import { SearchBans } from "./Actions/SearchBans";
+import { SendEmail } from "./Actions/SendEmail";
+import { UpdateUser } from "./Actions/UpdateUser";
 
 export const adminPanelPage: Handler = async ({ state }) => {
     const pageName = "AdminPanelPage";
     const adminIds = await state(OBN.COMMON).get("adminIds");
     const hasAdmins = !!adminIds?.length;
-    const csrfToken = createJWT({ pageName }, 60);
-
+    
     const user = await getCurrentUser();
     const isAdminLoggedIn = user?.role === "admin";
+    const csrfToken = createJWT({ sub: user?.id, pageName }, 60);
 
     const userSignedIp = isAdminLoggedIn ? getSignedIp() : undefined;
 
@@ -36,7 +38,9 @@ const actionsComponent = {
     login: Login,
     banUser: BanUser,
     unbanUser: UnbanUser,
-    searchBans: SearchBans
+    searchBans: SearchBans,
+    sendEmail: SendEmail,
+    updateUser: UpdateUser
 };
 
 export const AdminPanelPage: React.FC<AdminPanelPageProps> = (props) => {

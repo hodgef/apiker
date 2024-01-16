@@ -1,7 +1,7 @@
 import { apiker } from "../Apiker";
 import { OBN } from "../ObjectBase";
 import { Handler } from "../Request";
-import { res, res_400 } from "../Response";
+import { res, res_401 } from "../Response";
 import { isEmail, isRequiredLength } from "../Validation";
 import { User } from "./interfaces";
 import { compare_bcrypt, getTokens } from "./utils";
@@ -14,7 +14,7 @@ export const loginUser: Handler = async ({ body }) => {
     if(tokens) {
       return res(tokens);
     } else {
-      return res_400();
+      return res_401();
     }
 };
 

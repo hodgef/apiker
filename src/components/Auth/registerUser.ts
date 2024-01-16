@@ -55,6 +55,7 @@ export const registerUserAction = async (email: string, password: string, extraP
     email,
     password: signedPassword,
     createdAt: Date.now(),
+    updatedAt: Date.now(),
     ...extraParams,
   };
 

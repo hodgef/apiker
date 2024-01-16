@@ -6,6 +6,7 @@ import { string } from "rollup-plugin-string";
 import image from '@rollup/plugin-image';
 import alias from '@rollup/plugin-alias';
 import path from 'path';
+import terser from '@rollup/plugin-terser';
 
 const globals = {
   "react": "React",
@@ -46,9 +47,22 @@ export default [
         // Required to be specified
         include: "**/*.css",
       }),
+      terser({ mangle: false }),
       {
         name: 'modify-output',
-        renderChunk: (source) => ({ code: `export const apikerPagesStatic = \`${source}\`;` })
+        renderChunk: (source) => {
+          // Minify email templates in bundle
+          let result = source;
+          const regex = /<html>(?:[^<]|<(?!\/html>))*<\/html>/gm;
+          const matches = result.match(regex);
+
+          matches.forEach((foundMatch) => {
+            const foundEdit = foundMatch.replace(/\s\s+/g, '').replace(/\\n/g, '').replace(/'/g, "\\'")
+            result = result.replace(foundMatch, foundEdit);
+          });
+
+          return { code: `export const apikerPagesStatic = \`${result}\`;` }
+        }
       },
     ],
   }
