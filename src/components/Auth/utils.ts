@@ -12,7 +12,6 @@ const Bcrypt = bcrypt();
 /**
  * Encodes an input into Base64
  * @param inputStr Base64 input to decode
- * @returns 
  */
 export const encodeString = (inputStr: any) => {
   const wordArr = CryptoJS.enc.Utf8.parse(inputStr);
@@ -23,7 +22,6 @@ export const encodeString = (inputStr: any) => {
 /**
  * Decodes a Base64 input
  * @param inputStr Base64 input to decode
- * @returns 
  */
 export const decodeString = (inputStr: any) => {
   const keyb64 = inputStr.toString(CryptoJS.enc.Base64);
@@ -35,7 +33,6 @@ export const decodeString = (inputStr: any) => {
  * Generates a JWT token
  * @param data Payload to include in the token
  * @param expirationInMinutes Expiration of the token (in minutes)
- * @returns 
  */
 export const createJWT = (data: any, expirationInMinutes = 0) => {
   if(expirationInMinutes > 0){
@@ -53,7 +50,6 @@ export const createJWT = (data: any, expirationInMinutes = 0) => {
 /**
  * Parses a JWT token
  * @param token JWT token
- * @returns 
  */
 export const parseJWT = (token: string, disableClientIdCheck?: boolean) => {
   if(!token){
@@ -88,7 +84,6 @@ export const parseJWT = (token: string, disableClientIdCheck?: boolean) => {
 /**
  * Generates a bcrypt hash of a given message
  * @param message Message to hash
- * @returns 
  */
 export const hash_bcrypt = (message: string): string => {
   const salt = Bcrypt.genSaltSync(7);
@@ -100,7 +95,6 @@ export const hash_bcrypt = (message: string): string => {
  * Compares a raw value with a bcrypt hash
  * @param message Raw input to compare
  * @param hash Hash to compare against
- * @returns 
  */
 export const compare_bcrypt = (message: string, hash: string): boolean => {
   return Bcrypt.compareSync(message, hash);
@@ -235,7 +229,6 @@ export const isCurrentUserAdmin = async (): Promise<boolean> => {
  * Generates auth tokens for a given user
  * @param userId The user's ID
  * @param expirationInMinutes The expiration time for the action token. The refresh token does not expire.
- * @returns 
  */
 export const getTokens = (userId: string, expirationInMinutes = AUTH_TOKEN_DURATION_MINS_DEFAULT) => {
   const clientId = getClientId();

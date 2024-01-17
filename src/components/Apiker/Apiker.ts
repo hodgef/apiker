@@ -6,7 +6,11 @@ import { handleEntryRequest, RequestParams } from "../Request";
 import type { Controllers, EmailOptions, Firewall, ObjectStateMapping, Options, Routes, Timings } from "./interfaces";
 import { ResponseParams } from "./utils";
 
-class Apiker {
+/**
+ * Apiker class definition.
+ * ⚠️ Please do not instantiate this class and use the "apiker" exported instance instead.
+ */
+export class Apiker {
   name = "Apiker";
   routes: Routes = {};
   controllers: Controllers = {};
@@ -127,5 +131,8 @@ class Apiker {
   }
 }
 
+/**
+ * Instance of the Apiker class
+ */
 const apiker = new Apiker();
 export { apiker };
