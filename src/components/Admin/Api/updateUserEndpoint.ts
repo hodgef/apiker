@@ -43,13 +43,15 @@ export const updateUserEndpoint: Handler = async ({ state, body, request }) => {
     }
   }
 
-  let updatedFields: { email?: string } = {};
-  if(request.method === "PUT"){
-    /** Do not allow user update of admin, unless same user */
+  /** Do not allow user update of admin, unless same user */
+  if(request.method === "PUT" || request.method === "DELETE"){
     if(user?.email !== userEmail && user?.role === "admin"){
       return res_401();
     }
+  }
 
+  let updatedFields: { email?: string } = {};
+  if(request.method === "PUT"){
     const { email } = body?.updatedUser ? JSON.parse(body.updatedUser) : {} as User;
 
     if(apiker.debug){
