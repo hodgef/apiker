@@ -16,7 +16,7 @@ export const unbanEntity = async (entity: string) => {
 };
 
 export const isEntityBanned = async (entity: string) => {
-    const entries = await getUserLogEntries(BANS_PREFIX, 1, OBN.BANS, entity);
+    const entries = await getAllLogEntries(OBN.BANS, 1, entity);
     return entries && entries.length;
 };
 
