@@ -1,10 +1,7 @@
 import { Handler, RequestParams } from "../Request";
 import { resRaw } from "../Response";
 import { apikerPagesStatic } from "../Static";
-import { bansEndpoint, searchBansEndpoint } from "./Api/bansEndpoint";
-import { loginEndpoint } from "./Api/loginEndpoint";
-import { sendEmailEndpoint } from "./Api/sendEmailEndpoint";
-import { updateUserEndpoint } from "./Api/updateUserEndpoint";
+import { bansEndpoint, loginEndpoint, searchBansEndpoint, sendEmailEndpoint, updateUserEndpoint } from "./Api";
 import { adminPanelPage } from "./Panel";
 import { adminCsrfCheckMiddleware, adminMiddleware } from "./middleware";
 
