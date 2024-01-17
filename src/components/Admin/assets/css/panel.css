@@ -23,6 +23,9 @@ html, body, #app {
     padding: 0.5rem 1rem;
     font-size: 20px;
     width: 100%;
+}
+
+.container .btn.action-btn.btn-primary {
     background: #2e3191;
     border-color: #2e3191;
 }

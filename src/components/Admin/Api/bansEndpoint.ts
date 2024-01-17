@@ -1,4 +1,4 @@
-import { banSignedIP, getBannedEntries, unbanSignedIP } from '../../Bans';
+import { banEntity, getBannedEntries, unbanEntity } from '../../Bans';
 import { Handler } from '../../Request';
 import { res, res_200, res_400 } from '../../Response';
 
@@ -12,10 +12,10 @@ export const bansEndpoint: Handler = async (params) => {
 
   try {
     if(request.method === "POST"){
-      await banSignedIP(userId);
+      await banEntity(userId);
   
     } else if (request.method === "DELETE") {
-      await unbanSignedIP(userId);
+      await unbanEntity(userId);
     }
   } catch(e: any) {
     return res_400();

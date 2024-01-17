@@ -29,5 +29,9 @@ export const authActions: Actions = [
     {
         id: "updateUser",
         displayName: "Update User"
-    }
+    },
+    {
+        id: "deleteUser",
+        displayName: "Delete User"
+    },
 ];

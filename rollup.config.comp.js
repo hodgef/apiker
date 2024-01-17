@@ -47,7 +47,7 @@ export default [
         // Required to be specified
         include: "**/*.css",
       }),
-      terser({ mangle: false }),
+      terser(),
       {
         name: 'modify-output',
         renderChunk: (source) => {

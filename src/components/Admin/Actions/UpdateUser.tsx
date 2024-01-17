@@ -100,7 +100,7 @@ export const UpdateUser: React.FC<UpdateUserPageProps> = (props) => {
         formData.append("updatedUser", partialUser);
 
         fetch('/admp/user', {
-            method: 'post',
+            method: 'put',
             body: formData,
             headers: { "X-Apiker-Csrf": csrfToken }
         })

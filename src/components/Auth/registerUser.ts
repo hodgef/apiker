@@ -19,7 +19,7 @@ export const registerUser: Handler = async ({ body }) => {
     const tokens = getTokens(user?.id);
   
     if(tokens) {
-      return res(tokens);
+      return res({ email: user.email, ...tokens });
     } else {
       return res_400();
     }
@@ -54,6 +54,7 @@ export const registerUserAction = async (email: string, password: string, extraP
     id,
     email,
     password: signedPassword,
+    verified: false,
     createdAt: Date.now(),
     updatedAt: Date.now(),
     ...extraParams,

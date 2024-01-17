@@ -26,7 +26,7 @@ export const loginUserAction = async (email: string, password: string) => {
   const user = await checkUser(email, password);
 
   if(user?.password && compare_bcrypt(password, user.password)){
-    return getTokens(user.id);
+    return { email: user.email, ...getTokens(user.id) };
   }
 }
 

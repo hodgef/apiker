@@ -1,10 +1,11 @@
 import React from "react";
 import { SendEmailPageProps } from "../interfaces";
 import { getAppHelper } from "../Utils";
-import { forgotPasswordTemplate } from "../../EmailTemplates";
+import { forgotPasswordTemplate, verifyAccountTemplate } from "../../EmailTemplates";
 
 export const emailTemplates = {
-    forgotPassword: forgotPasswordTemplate
+    forgotPassword: forgotPasswordTemplate,
+    verifyAccount: verifyAccountTemplate
 }
 
 export const SendEmail: React.FC<SendEmailPageProps> = (props) => {
@@ -72,7 +73,7 @@ export const SendEmail: React.FC<SendEmailPageProps> = (props) => {
 
     return (
         <div className="action-wrapper">
-            <div className="alert alert-warning mb-0" role="alert">
+            <div className="alert alert-warning mb-0 mt-2" role="alert">
                 <b>Note:</b> This option requires the "email" and "authRoutes" options to be enabled.
             </div>
             <form className="login-form" onSubmit={onSubmit}>

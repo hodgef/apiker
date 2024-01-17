@@ -18,6 +18,7 @@ import { UnbanUser } from "./Actions/UnbanUser";
 import { SearchBans } from "./Actions/SearchBans";
 import { SendEmail } from "./Actions/SendEmail";
 import { UpdateUser } from "./Actions/UpdateUser";
+import { DeleteUser } from "./Actions/DeleteUser";
 
 export const adminPanelPage: Handler = async ({ state }) => {
     const pageName = "AdminPanelPage";
@@ -40,7 +41,8 @@ const actionsComponent = {
     unbanUser: UnbanUser,
     searchBans: SearchBans,
     sendEmail: SendEmail,
-    updateUser: UpdateUser
+    updateUser: UpdateUser,
+    deleteUser: DeleteUser
 };
 
 export const AdminPanelPage: React.FC<AdminPanelPageProps> = (props) => {

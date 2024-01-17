@@ -63,9 +63,14 @@ export const getLogEntries = async (prefix: string, limit: number | null = 10, o
     return Object.values(entries) as LogObject[];
 };
 
+export const deleteAllLogsInObject = async (objectName: string, signedIp: string) => {
+    const { state } = apiker.requestParams;
+    return await state(objectName, signedIp).deleteAll();
+};
+
 export const deleteUserLogEntries = async (prefix: string, objectName = OBN.LOGS, signedIp: string | undefined = undefined) => {
     const userPrefix = getUserLogPropertyName(prefix, signedIp);
-    await deleteLogEntries(userPrefix, objectName);
+    return await deleteLogEntries(userPrefix, objectName);
 };
 
 export const deleteLogEntries = async (prefix: string, objectName = OBN.LOGS) => {

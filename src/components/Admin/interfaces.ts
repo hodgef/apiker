@@ -52,3 +52,4 @@ export interface UnbanUserPageProps extends AdminPanelPageProps {}
 export interface SearchBansPageProps extends AdminPanelPageProps {}
 export interface SendEmailPageProps extends AdminPanelPageProps {}
 export interface UpdateUserPageProps extends AdminPanelPageProps {}
+export interface DeleteUserPageProps extends AdminPanelPageProps {}
