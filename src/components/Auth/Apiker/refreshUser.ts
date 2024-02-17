@@ -1,5 +1,5 @@
-import { Handler } from "../Request";
-import { res, res_400 } from "../Response";
+import { Handler } from "../../Request";
+import { res, res_400 } from "../../Response";
 import { getCurrentUser, getTokens } from "./utils";
 
 export const refreshUser: Handler = async () => {

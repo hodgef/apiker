@@ -1,8 +1,8 @@
-import { apiker } from "../Apiker";
+import { apiker } from "../../Apiker";
 import { parse } from "cookie"
 import cryptojs from "cfw-crypto";
 import bcrypt from "cfw-bcrypt";
-import { OBN } from "../ObjectBase";
+import { OBN } from "../../ObjectBase";
 import { User } from "./interfaces";
 import { AUTH_TOKEN_DURATION_MINS_DEFAULT } from "./constants";
 

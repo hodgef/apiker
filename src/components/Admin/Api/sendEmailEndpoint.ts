@@ -1,5 +1,5 @@
 import { forgotUserAction } from '../../Auth';
-import { verifyUserAction } from '../../Auth/verifyUser';
+import { verifyUserAction } from '../../Auth/Apiker/verifyUser';
 import { Handler } from '../../Request';
 import { res_400 } from '../../Response';
 

@@ -1,8 +1,8 @@
-import { apiker } from "../Apiker";
-import { OBN } from "../ObjectBase";
-import { Handler } from "../Request";
-import { res, res_401 } from "../Response";
-import { isEmail, isRequiredLength } from "../Validation";
+import { apiker } from "../../Apiker";
+import { OBN } from "../../ObjectBase";
+import { Handler } from "../../Request";
+import { res, res_401 } from "../../Response";
+import { isEmail, isRequiredLength } from "../../Validation";
 import { User } from "./interfaces";
 import { compare_bcrypt, getTokens } from "./utils";
 

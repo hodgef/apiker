@@ -1,7 +1,7 @@
-import { apiker } from "../Apiker";
-import { OBN } from "../ObjectBase";
-import { Handler } from "../Request";
-import { res_200, res_400 } from "../Response";
+import { apiker } from "../../Apiker";
+import { OBN } from "../../ObjectBase";
+import { Handler } from "../../Request";
+import { res_200, res_400 } from "../../Response";
 import { User } from "./interfaces";
 import { getCurrentUser } from "./utils";
 

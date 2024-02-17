@@ -1,5 +1,5 @@
 import { getAdminRoutes } from "../Admin";
-import { getAuthRoutes } from "../Auth";
+import { getApikerAuthRoutes } from "../Auth";
 import { OBMT } from "../ObjectBase";
 import ObjectBase from "../ObjectBase/ObjectBase";
 import { handleEntryRequest, RequestParams } from "../Request";
@@ -79,7 +79,7 @@ export class Apiker {
        */
       if(authRoutes){
         this.routes = {
-          ...getAuthRoutes(),
+          ...getApikerAuthRoutes(),
           ...this.routes
         };
       }

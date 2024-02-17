@@ -35,7 +35,8 @@ Note: To run Apiker, you need a Cloudflare account with [Durable Objects access]
 ## ⭐ Features
 
 - 📕 Routing and State management
-- 🔑 Auth, JWT-based (Register, Login, Refresh token, Delete user)
+- 🔑 Auth, JWT-based (Register, Login, Refresh token, Delete user, Forgot user, Verify user email)
+- ✅ OAuth handlers (GitHub)
 - ⚡️Automatically updates [Durable Object](https://developers.cloudflare.com/workers/learning/using-durable-objects) migrations, classes and bindings so you don't have to.
 - 🛑 Rate Limiting / Flooding mitigation
 - 🛡️ Firewall support (IP bans with Cloudflare Firewall)
@@ -46,7 +47,7 @@ Note: To run Apiker, you need a Cloudflare account with [Durable Objects access]
 
 ## 📕 Examples
 
-### 1. Basic route handler example
+### 1. Route example
 ```js
 import { res, res_400 } from "apiker";
 

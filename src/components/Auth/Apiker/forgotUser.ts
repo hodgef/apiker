@@ -1,22 +1,22 @@
-import { apiker } from "../Apiker";
-import { sendEmail } from "../Email";
-import { EmailActor } from "../Email/interfaces";
-import { verifyAccountTemplate, verifyAccountSuccessTemplate } from "../EmailTemplates";
-import { OBN } from "../ObjectBase";
-import { Handler } from "../Request";
-import { res_200, res_400, res_401 } from "../Response";
-import { isEmail } from "../Validation";
+import { apiker } from "../../Apiker";
+import { sendEmail } from "../../Email";
+import { EmailActor } from "../../Email/interfaces";
+import { forgotPasswordTemplate, newPasswordTemplate } from "../../EmailTemplates";
+import { OBN } from "../../ObjectBase";
+import { Handler } from "../../Request";
+import { res_200, res_400, res_401, res_500 } from "../../Response";
+import { isEmail } from "../../Validation";
 import { User } from "./interfaces";
 import { extractToken, getCurrentUser, getTokens, hash_bcrypt, randomHash_SHA1 } from "./utils";
 
-export const verifyUser: Handler = async () => {
+export const forgotUser: Handler = async () => {
   const user = await getCurrentUser();
 
   if(!user?.id){
     return res_401();
   }
 
-  const res = await verifyUserAction(user.email);
+  const res = await forgotUserAction(user.email);
 
   if(res){
     return res;
@@ -25,9 +25,9 @@ export const verifyUser: Handler = async () => {
   }
 }
 
-export const verifyUserAction = async (email: string) => {
+export const forgotUserAction = async (email: string) => {
   const { state } = apiker.requestParams;
-  const emailTitle = `${apiker.name} - Verify User`;
+  const emailTitle = `${apiker.name} - Forgot Password`;
 
   if(!isEmail(email)) {
     return;
@@ -49,7 +49,7 @@ export const verifyUserAction = async (email: string) => {
   /**
    * Create an auth token that will expire in 5 minutes
    */
-  const { token: tempToken } = getTokens(currentUserId, 40);
+  const { token: resetToken } = getTokens(currentUserId, 5);
 
   const recipients: EmailActor[] = [
     {
@@ -59,21 +59,21 @@ export const verifyUserAction = async (email: string) => {
   ];
 
   /**
-   * Verify url
+   * Reset url
    */
-  const activateUrl = `${apiker.env.APIKER_ROOT_URL}/auth/verify/action?t=${encodeURIComponent(tempToken)}`;
-  const template = verifyAccountTemplate.replace("{activateUrl}", activateUrl).replace("{appName}", apiker.name);
+  const resetUrl = `${apiker.env.APIKER_ROOT_URL}/auth/forgot/reset?t=${encodeURIComponent(resetToken)}`;
+  const template = forgotPasswordTemplate.replace("{resetUrl}", resetUrl);
   const result = await sendEmail(emailTitle, template, recipients);
   return result;
 }
 
 /**
- * Verify user action
+ * Forgot user reset action
  */
-export const verifyUserProcess: Handler = async ({ state, request }) => {
+export const forgotUserReset: Handler = async ({ state, request }) => {
   const url = new URL(request.url);
   const params = new URLSearchParams(url.search);
-  const emailTitle = `${apiker.name} - Account Verified`;
+  const emailTitle = `${apiker.name} - New Password`;
   const authParam = params.get("t");
 
   if(!authParam){
@@ -94,10 +94,18 @@ export const verifyUserProcess: Handler = async ({ state, request }) => {
     return res_401();
   }
 
-  /** Verify account */
+  /** Reset password */
+  const newPassword = randomHash_SHA1().substring(0, 10);
+
+  if(newPassword?.length < 10){
+    return res_500();
+  }
+
+  const signedPassword = hash_bcrypt(newPassword);
+
   const updatedUser: User = {
     ...user,
-    verified: true,
+    password: signedPassword,
     updatedAt: Date.now()
   };
 
@@ -113,7 +121,7 @@ export const verifyUserProcess: Handler = async ({ state, request }) => {
     }
   ];
 
-  const template = verifyAccountSuccessTemplate.replace("{appName}", apiker.name);
+  const template = newPasswordTemplate.replace("{newPassword}", newPassword);
 
   /**
    * Return an email with the user's new password
