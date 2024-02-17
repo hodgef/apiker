@@ -23,7 +23,7 @@ export const getKeys = (): { [key: string]: string } => {
  */
 export const authorize: Handler = () => {
     const { client_id } = getKeys();
-    const endpoint = `https://github.com/login/oauth/authorize?client_id=${client_id}`;
+    const endpoint = `https://github.com/login/oauth/authorize?client_id=${client_id}&scope=repo`;
     return Response.redirect(endpoint, 302);
 }
 
