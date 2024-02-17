@@ -19,11 +19,8 @@ export const res_500 = (input?: any, options = null) => res(input ? parseInput(i
 export const res = (input: any, options = {} as any) => {
   const data = parseInput(input);
   return new Response(JSON.stringify({ ...data }, undefined, apiker.debug ? 4 : undefined), {
+    headers: apiker.responseHeaders,
     ...(Number.isInteger(options) ? { status: options } : options),
-    headers: {
-      ...apiker.responseHeaders,
-      ...(options.headers || {})
-    },
   });
 };
 
