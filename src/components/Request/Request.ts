@@ -12,11 +12,11 @@ import { bansMiddleware } from "../Bans/middleware";
 /**
  * Handles incoming Cloudflare Worker requests
  */
-export const handleEntryRequest = async (request: Request, env: any) => {
+export const handleEntryRequest = async (request: Request, env: any, ctx: any) => {
   measureTiming(TIMINGS.REQUEST_START);
   
   try {
-    apiker.setProps({ env });
+    apiker.setProps({ env, ctx });
     apiker.responseHeaders = new Headers(RESPONSE_HEADERS_DEFAULT);
     apiker.responseParams = new ResponseParams();
 

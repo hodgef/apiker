@@ -17,6 +17,7 @@ export interface Options {
   objects?: string[];
   objectStateMapping?: ObjectStateMapping;
   env?: any;
+  ctx?: any;
   authRoutes?: boolean;
   requestParams?: RequestParams;
   firewall?: Firewall | boolean;

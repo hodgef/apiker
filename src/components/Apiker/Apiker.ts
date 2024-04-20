@@ -20,6 +20,7 @@ export class Apiker {
   objectStateMapping!: ObjectStateMapping;
   authRoutes!: boolean;
   env: any;
+  ctx: any;
   requestParams!: RequestParams;
   responseParams = new ResponseParams();
   responseHeaders!: Headers;
