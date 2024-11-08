@@ -23,6 +23,10 @@ export const authActions: Actions = [
         displayName: "Search Bans"
     },
     {
+        id: "listLogs",
+        displayName: "List Logs"
+    },
+    {
         id: "sendEmail",
         displayName: "Send Email"
     },

@@ -19,6 +19,7 @@ import { SearchBans } from "./Actions/SearchBans";
 import { SendEmail } from "./Actions/SendEmail";
 import { UpdateUser } from "./Actions/UpdateUser";
 import { DeleteUser } from "./Actions/DeleteUser";
+import { ListLogs } from "./Actions/ListLogs";
 
 export const adminPanelPage: Handler = async ({ state }) => {
     const pageName = "AdminPanelPage";
@@ -40,6 +41,7 @@ const actionsComponent = {
     banUser: BanUser,
     unbanUser: UnbanUser,
     searchBans: SearchBans,
+    listLogs: ListLogs,
     sendEmail: SendEmail,
     updateUser: UpdateUser,
     deleteUser: DeleteUser
@@ -52,6 +54,8 @@ export const AdminPanelPage: React.FC<AdminPanelPageProps> = (props) => {
 
     if(isAdminLoggedIn){
         actions = authActions;
+    } else {
+        actions = defaultActions;
     }
 
     const onDropdownItemClick = (action: Action) => {

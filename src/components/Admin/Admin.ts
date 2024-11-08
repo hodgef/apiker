@@ -1,7 +1,7 @@
 import { Handler, RequestParams } from "../Request";
 import { resRaw } from "../Response";
 import { apikerPagesStatic } from "../Static";
-import { bansEndpoint, loginEndpoint, searchBansEndpoint, sendEmailEndpoint, updateUserEndpoint } from "./Api";
+import { searchLogsEndpoint, bansEndpoint, loginEndpoint, searchBansEndpoint, sendEmailEndpoint, updateUserEndpoint } from "./Api";
 import { adminPanelPage } from "./Panel";
 import { adminCsrfCheckMiddleware, adminMiddleware } from "./middleware";
 
@@ -17,6 +17,7 @@ export const getAdminRoutes = () => ({
     "/admp/login": (params: RequestParams) => adminCsrfCheckMiddleware(params, loginEndpoint),
 
     // Check for admin logged in and CSRF
+    "/admp/logs": (params: RequestParams) => adminMiddleware(params, searchLogsEndpoint),
     "/admp/bans": (params: RequestParams) => adminMiddleware(params, bansEndpoint),
     "/admp/bans/:userId": (params: RequestParams) => adminMiddleware(params, searchBansEndpoint),
     "/admp/email": (params: RequestParams) => adminMiddleware(params, sendEmailEndpoint),

@@ -50,6 +50,7 @@ export interface LoginPageProps extends AdminPanelPageProps {}
 export interface BanUserPageProps extends AdminPanelPageProps {}
 export interface UnbanUserPageProps extends AdminPanelPageProps {}
 export interface SearchBansPageProps extends AdminPanelPageProps {}
+export interface ListLogsPageProps extends AdminPanelPageProps {}
 export interface SendEmailPageProps extends AdminPanelPageProps {}
 export interface UpdateUserPageProps extends AdminPanelPageProps {}
 export interface DeleteUserPageProps extends AdminPanelPageProps {}

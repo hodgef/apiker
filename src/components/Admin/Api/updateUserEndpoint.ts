@@ -44,8 +44,14 @@ export const updateUserEndpoint: Handler = async ({ state, body, request }) => {
   }
 
   /** Do not allow user update of admin, unless same user */
-  if(request.method === "PUT" || request.method === "DELETE"){
+  if(request.method === "PUT"){
     if(user?.email !== userEmail && user?.role === "admin"){
+      return res_401();
+    }
+  }
+
+  if(request.method === "DELETE"){
+    if(user?.role === "admin"){
       return res_401();
     }
   }
