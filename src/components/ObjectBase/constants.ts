@@ -13,3 +13,5 @@ export const OBMT = {
   CLIENTID: "clientId",
   IP: "ip"
 }
+
+export const OB_ENDPOINT = `https://durable-object`;

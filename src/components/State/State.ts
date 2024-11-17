@@ -1,7 +1,7 @@
 import { MatchResult } from "path-to-regexp";
 import { apiker } from "../Apiker";
 import { getClientId, getRawIp, getSignedIp } from "../Auth";
-import { OBMT } from "../ObjectBase";
+import { OB_ENDPOINT, OBMT } from "../ObjectBase";
 import { StateFn, StateMethods } from "./interfaces";
 
 export const getStateMethods = (defaultObjectName: string, matches?: MatchResult<any>) : StateFn =>
@@ -60,7 +60,7 @@ export const parseObjectStateMapping = (objectStateMapping: string, matches?: Ma
 
 export const deleteObjectState = (obj: any, callback: any) =>
   async (propertyName: string) => {
-    const result = await obj.fetch("/delete", {
+    const result = await obj.fetch(OB_ENDPOINT + "/delete", {
       method: "POST",
       body: JSON.stringify({
         propertyName
@@ -86,7 +86,7 @@ export const deleteObjectState = (obj: any, callback: any) =>
 
 export const deleteAllObjectState = (obj: any, callback: any) =>
   async () => {
-    const result = await obj.fetch("/deleteall", {
+    const result = await obj.fetch(OB_ENDPOINT + "/deleteall", {
       method: "POST"
     });
 
@@ -106,7 +106,7 @@ export const deleteAllObjectState = (obj: any, callback: any) =>
 
 export const getObjectState = (obj: any, callback: any) =>
   async (propertyName: string) => {
-    const result = await obj.fetch("/get", {
+    const result = await obj.fetch(OB_ENDPOINT + "/get", {
       method: "POST",
       body: JSON.stringify({
         propertyName
@@ -132,7 +132,7 @@ export const getObjectState = (obj: any, callback: any) =>
 
 export const listObjectState = (obj: any, callback: any) =>
   async (payload: any) => {
-    const result = await obj.fetch("/list", {
+    const result = await obj.fetch(OB_ENDPOINT + "/list", {
       method: "POST",
       body: payload ? JSON.stringify(payload) : "",
       headers: {
@@ -156,7 +156,7 @@ export const listObjectState = (obj: any, callback: any) =>
 
 export const putObjectState = (obj: any, callback: any) =>
   async (payload: any) => {
-    const result = await obj.fetch("/put", {
+    const result = await obj.fetch(OB_ENDPOINT + "/put", {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
