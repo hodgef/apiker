@@ -46,7 +46,11 @@ export const getFirewallBannedEntryId = async (ip: string): Promise<string> => {
         },
     });
 
-    return result[0].id;
+    if(apiker.debug){
+        console.log("getFirewallBannedEntryId", result);
+    }
+
+    return result?.[0]?.id || "";
 };
 
 export const firewallUnbanIP = async (ip: string) => {
@@ -61,6 +65,9 @@ export const firewallUnbanIP = async (ip: string) => {
     const entryId = await getFirewallBannedEntryId(ip);
 
     if(!entryId) {
+       if(apiker.debug){
+            console.log("firewallUnbanIP", "No entry found for ip", ip);
+       }
         return;
     }
 
