@@ -151,6 +151,22 @@ export const randomHash_SHA1 = (): string => {
 };
 
 /**
+ * Creates SHA256 hash
+ */
+export const stringHash = (content: string) => {
+  const wordArray = CryptoJS.lib.WordArray.create(content);
+  return CryptoJS.SHA256(wordArray).toString(CryptoJS.enc.Hex);
+};
+
+/**
+ * Creates a random SHA1 hash
+ */
+export const stringHash_SHA1 = (content): string => {
+  const wordArray = CryptoJS.lib.WordArray.create(content);
+  return CryptoJS.SHA1(wordArray).toString(CryptoJS.enc.Hex);
+};
+
+/**
  * Generating a clientId
  * This value is returned to client and not stored
  */
