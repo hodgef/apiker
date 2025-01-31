@@ -249,7 +249,7 @@ export const isCurrentUserAdmin = async (): Promise<boolean> => {
 export const getTokens = (userId: string, expirationInMinutes = AUTH_TOKEN_DURATION_MINS_DEFAULT) => {
   const clientId = getClientId();
   const token = createJWT({ sub: userId, clientId }, expirationInMinutes);
-  const refreshToken = createJWT({ sub: userId, clientId });
+  const refreshToken = createJWT({ sub: userId, clientId, isRefreshToken: true });
 
   return { userId, token, refreshToken };
 };
