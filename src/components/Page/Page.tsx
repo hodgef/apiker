@@ -61,7 +61,7 @@ export const adminPageFooter = (prepend = "") => `
     </html>
 `;
 
-export const wrapPage = (pageContent: string, styles = "") => resRaw(pageHeader(styles) + pageContent + pageFooter());
+export const wrapPage = (pageContent: string, headHtml = "", footerHtml = "") => resRaw(pageHeader(headHtml) + pageContent + pageFooter(footerHtml));
 
 export const wrapReactPage = (componentName: string, pageComponent: React.ReactElement, props = {}, styles = "") => {
     let pageContent = ReactDOMServer.renderToString(pageComponent);
