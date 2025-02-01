@@ -4,7 +4,7 @@ import css from "@panelAssets/css/panel.css";
 import React from "react";
 import { Header } from "./Header";
 import { Content } from "./Content";
-import { wrapReactPage } from "../Page";
+import { wrapAdminReactPage } from "../Page";
 import { Handler } from "../Request";
 import { getAppHelper } from "./Utils";
 import { Action, AdminPanelPageProps } from "./interfaces";
@@ -33,7 +33,7 @@ export const adminPanelPage: Handler = async ({ state }) => {
     const userSignedIp = isAdminLoggedIn ? getSignedIp() : undefined;
 
     const props = { isSetup: !hasAdmins, pageName, csrfToken, isAdminLoggedIn, userSignedIp } as AdminPanelPageProps;
-    return wrapReactPage('AdminPanelPage', <AdminPanelPage {...props} />, props, css);
+    return wrapAdminReactPage('AdminPanelPage', <AdminPanelPage {...props} />, props, css);
 }
 
 const actionsComponent = {
