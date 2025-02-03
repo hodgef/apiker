@@ -43,12 +43,12 @@ export const getUserLogPropertyName = (prefix: string, signedIp: string | null =
     return propertyName;
 };
 
-export const getUserLogEntries = async (prefix: string, limit = 10, objectName = OBN.LOGS, signedIp: string | undefined = undefined) => {
+export const getUserLogEntries = async (prefix: string, limit = 10, objectName = OBN.LOGS, signedIp: string | undefined = undefined, objectId?: string) => {
     const propertyName = getUserLogPropertyName(prefix, signedIp);
-    return getLogEntries(propertyName, limit, objectName);
+    return getLogEntries(propertyName, limit, objectName, objectId);
 };
 
-export const getLogEntries = async (prefix: string, limit: number | null = 10, objectName = OBN.LOGS) => {
+export const getLogEntries = async (prefix: string, limit: number | null = 10, objectName = OBN.LOGS, objectId?: string) => {
     const { state } = apiker.requestParams;
     const payload = {
         prefix,
@@ -59,7 +59,7 @@ export const getLogEntries = async (prefix: string, limit: number | null = 10, o
     if(limit){
         payload.limit = limit; 
     }
-    const entries = await state(objectName).list(payload);
+    const entries = await state(objectName, objectId).list(payload);
     return Object.values(entries) as LogObject[];
 };
 
