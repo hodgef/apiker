@@ -49,7 +49,8 @@ export class Apiker {
         authRoutes = false,
         name = "Apiker",
         email,
-        debug
+        debug,
+        scheduled,
       } = options;
 
       /**
@@ -100,7 +101,8 @@ export class Apiker {
        */
       const workerExports = {
         handlers: {
-          fetch: handleEntryRequest
+          fetch: handleEntryRequest,
+          scheduled,
         }
       };
 

@@ -24,6 +24,7 @@ export interface Options {
   adminPanel?: boolean;
   name?: string;
   email?: EmailOptions;
+  scheduled?: (event: any, env: any, ctx: any) => Promise<void>;
 }
 
 export type Timings = { [timingName: string]: number };
