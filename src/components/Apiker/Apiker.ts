@@ -2,7 +2,7 @@ import { getAdminRoutes } from "../Admin";
 import { getApikerAuthRoutes } from "../Auth";
 import { OBMT } from "../ObjectBase";
 import ObjectBase from "../ObjectBase/ObjectBase";
-import { handleEntryRequest, RequestParams } from "../Request";
+import { handleEntryRequest, handleScheduledRequest, RequestParams } from "../Request";
 import type { Controllers, EmailOptions, Firewall, ObjectStateMapping, Options, Routes, Timings } from "./interfaces";
 import { ResponseParams } from "./utils";
 
@@ -102,7 +102,8 @@ export class Apiker {
       const workerExports = {
         handlers: {
           fetch: handleEntryRequest,
-          scheduled,
+          scheduled: scheduled ?
+            (event: any, env: any, ctx: any) => handleScheduledRequest(event, env, ctx, scheduled) : undefined,
         }
       };
 

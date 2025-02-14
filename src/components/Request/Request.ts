@@ -2,7 +2,7 @@ import { apiker, ResponseParams } from "../Apiker";
 import { match } from "path-to-regexp";
 import { RESPONSE_HEADERS_DEFAULT, res_404 } from "../Response";
 import { getStateMethods } from "../State";
-import { Handler, RequestParams } from "./interfaces";
+import { Handler, RequestParams, ScheduledParams } from "./interfaces";
 import { firewallMiddleware } from "../Firewall/middleware";
 import { forwardToMiddleware, Middleware } from "../Middleware";
 import { measureTiming } from "../Timings";
@@ -78,6 +78,27 @@ export const handleEntryRequest = async (request: Request, env: any, ctx: any) =
 
   } catch (e: any) {
     return new Response(e.message);
+  }
+};
+
+/**
+ * Handle scheduled worker requests
+ */
+export const handleScheduledRequest = async (
+  event: any,
+  env: any,
+  ctx: any,
+  callback: (params: ScheduledParams) => Promise<void>
+) => {
+  measureTiming(TIMINGS.REQUEST_START);
+  
+  try {
+    apiker.setProps({ env, ctx });
+    const state = getStateMethods(apiker.defaultObjectName);
+    const params = { event, env, ctx, state } as ScheduledParams;
+    await callback(params);
+  } catch (e: any) {
+    console.log("ERR handleScheduledRequest", e);
   }
 };
 

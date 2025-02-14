@@ -9,6 +9,13 @@ export interface RequestParams {
   request: Request;
 }
 
+export interface ScheduledParams {
+  state: StateFn;
+  event?: any;
+  env?: any;
+  ctx?: any;
+}
+
 export type Handler = ((params: RequestParams) => Response | Promise<Response>);
 
 export interface RouteObject {

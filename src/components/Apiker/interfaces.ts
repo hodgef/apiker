@@ -1,4 +1,4 @@
-import { RequestParams } from "../Request";
+import { RequestParams, ScheduledParams } from "../Request";
 
 export interface Routes {
   [route: string]: any;
@@ -24,7 +24,7 @@ export interface Options {
   adminPanel?: boolean;
   name?: string;
   email?: EmailOptions;
-  scheduled?: (event: any, env: any, ctx: any) => Promise<void>;
+  scheduled?: (params: ScheduledParams) => Promise<void>;
 }
 
 export type Timings = { [timingName: string]: number };
