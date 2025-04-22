@@ -17,7 +17,7 @@ export const firewallBanIP = async (ip: string) => {
             mode:"block",
             configuration:
             { target:"ip",value: ip },
-            notes: `Banned by Apiker. id: ${getSignedIp()}`
+            notes: `Banned by Apiker on ${new Date().toISOString()}. id: ${getSignedIp()}`
         }),
         headers: {
             "Content-Type": "application/json",
