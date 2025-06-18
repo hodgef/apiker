@@ -49,10 +49,13 @@ export const getObjectInstancesByNamespaceId = async (namespaceId: string, reque
 
 /**
  * Fetches the list of instances for the object
+ * @param appName The name of the application (script). This is the "name" field in app.toml
+ * @param objectName The name of the object (class)
+ * @param requestOptions Additional options for the request
  */
-export const getInstanceList = async (objectName: string, requestOptions = {}) => {
+export const getInstanceList = async (appName: string, objectName: string, requestOptions = {}) => {
   const namespacesResponse = await getObjectNamespaces() as { result: any[] } | undefined;
-  const namespace = namespacesResponse?.result?.find((ns: any) => ns.class === objectName);
+  const namespace = namespacesResponse?.result?.find((ns: any) => ns.script === appName && ns.class === objectName);
   const namespaceId = namespace?.id;
 
   if(!namespaceId){
