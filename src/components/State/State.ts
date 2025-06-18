@@ -178,8 +178,26 @@ export const putObjectState = (obj: any, callback: any) =>
     return JSON.parse(body || null);
   };
 
+/**
+ * Retrieves an object instance by its name and derived ID.
+ * @param objectName The name of the durable object Class
+ * @param objectId string that will be used to generate the ID for the object. If undefined, "default" will be used.
+ * @returns 
+ */
 export const getEnvObject = (objectName: string, objectId: string | undefined) => {
   const id = apiker.env[objectName]?.idFromName(objectId);
   const obj = apiker.env[objectName]?.get(id);
   return obj;
 };
+
+/**
+ * Retrieves an object instance by its name and Cloudflare-given ID.
+ * The Cloudflare ID for the object instance can be found through getInstanceList()
+ * @param objectName The name of the durable object Class
+ * @param cloudflareObjectId The Cloudflare ID of the object instance.
+ * @returns 
+ */
+export const getEnvObjectByCloudflareId = (objectName: string, cloudflareObjectId: string) => {
+  const obj = apiker.env[objectName]?.get(cloudflareObjectId);
+  return obj;
+}

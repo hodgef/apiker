@@ -16,7 +16,7 @@ export const addLogEntry = async (prefix: string, additionalParams = {} as any, 
     if(apiker.objects.includes(objectName)){
         const { state } = apiker.requestParams;
         const { objectId = null } = additionalParams;
-        const propertyName = getUserLogPropertyName(prefix, signedIp) + Date.now();
+        const propertyName = getUserLogPropertyName(prefix, signedIp) + ":" + Date.now();
         const logParams = getLogParams(propertyName, signedIp, clientId, additionalParams);
         await state(objectName, objectId).put({ [propertyName]: logParams });
     }
@@ -63,6 +63,20 @@ export const getLogEntries = async (prefix: string, limit: number | null = 10, o
     return Object.values(entries) as LogObject[];
 };
 
+export const getAllLogEntries = async (objectName = OBN.LOGS, limit: number | null = null, objectId?: string) => {
+    const { state } = apiker.requestParams;
+    const payload = {
+        reverse: true,
+        noCache: objectName !== OBN.LOGS
+    } as ListRequestObject;
+
+    if(limit){
+        payload.limit = limit; 
+    }
+    const entries = await state(objectName, objectId).list(payload);
+    return Object.values(entries) as LogObject[];
+};
+
 export const deleteAllLogsInObject = async (objectName: string, signedIp: string) => {
     const { state } = apiker.requestParams;
     return await state(objectName, signedIp).deleteAll();
@@ -78,18 +92,4 @@ export const deleteLogEntries = async (prefix: string, objectName = OBN.LOGS) =>
     const entries = await getLogEntries(prefix, null, objectName);
     const promises = entries.map(({ propertyName }: LogObject) => state(objectName).delete(propertyName));
     return Promise.all(promises);
-};
-
-export const getAllLogEntries = async (objectName = OBN.LOGS, limit: number | null = null, objectId?: string) => {
-    const { state } = apiker.requestParams;
-    const payload = {
-        reverse: true,
-        noCache: objectName !== OBN.LOGS
-    } as ListRequestObject;
-
-    if(limit){
-        payload.limit = limit; 
-    }
-    const entries = await state(objectName, objectId).list(payload);
-    return Object.values(entries) as LogObject[];
 };
