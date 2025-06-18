@@ -2,6 +2,7 @@ export * from "./Apiker";
 export * from "./Admin/Api";
 export * from "./Auth";
 export * from "./Bans";
+export * from "./Cloudflare";
 export * from "./Email";
 export * from "./EmailTemplates";
 export * from "./Firewall";
