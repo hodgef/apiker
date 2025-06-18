@@ -5,7 +5,12 @@ import { OB_ENDPOINT, OBMT } from "../ObjectBase";
 import { StateFn, StateMethods } from "./interfaces";
 
 export const getStateMethods = (defaultObjectName: string, matches?: MatchResult<any>) : StateFn =>
-  (objectName = defaultObjectName, objectId?) => {
+  /**
+   * @param objectName The name of the durable object Class. If not provided, it will default to "Common"
+   * @param objectId string that will be used to generate the ID for the object. If undefined, "default" will be used.
+   * @param isCloudflareObjectId If true, the objectId will be treated as the Cloudflare-given ID for the object instance, and it will be used as-is.
+   */
+  (objectName = defaultObjectName, objectId?, isCloudflareObjectId?: boolean) => {
     /**
      * If there's an existing object state mapping, using that as default
      */
@@ -13,7 +18,7 @@ export const getStateMethods = (defaultObjectName: string, matches?: MatchResult
       objectId = parseObjectStateMapping(apiker.objectStateMapping[objectName], matches) || OBMT.DEFAULT;
     }
 
-    const obj = getEnvObject(objectName, objectId);
+    const obj = isCloudflareObjectId ? getEnvObjectByCloudflareId(objectName, objectId) : getEnvObject(objectName, objectId);
 
     const callback = (operationName: string) => {
       if(apiker.debug){
@@ -198,6 +203,7 @@ export const getEnvObject = (objectName: string, objectId: string | undefined) =
  * @returns 
  */
 export const getEnvObjectByCloudflareId = (objectName: string, cloudflareObjectId: string) => {
-  const obj = apiker.env[objectName]?.get(cloudflareObjectId);
+  const id = apiker.env[objectName]?.idFromString(cloudflareObjectId);
+  const obj = apiker.env[objectName]?.get(id);
   return obj;
 }

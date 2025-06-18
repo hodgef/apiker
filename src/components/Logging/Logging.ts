@@ -15,10 +15,10 @@ export const addUniqueLogEntry = async (prefix: string, additionalParams = {}, o
 export const addLogEntry = async (prefix: string, additionalParams = {} as any, objectName = OBN.LOGS, signedIp: string | undefined = undefined, clientId: string | undefined = undefined) => {
     if(apiker.objects.includes(objectName)){
         const { state } = apiker.requestParams;
-        const { objectId = null } = additionalParams;
+        const { objectId = null, isCloudflareObjectId = null } = additionalParams;
         const propertyName = getUserLogPropertyName(prefix, signedIp) + ":" + Date.now();
         const logParams = getLogParams(propertyName, signedIp, clientId, additionalParams);
-        await state(objectName, objectId).put({ [propertyName]: logParams });
+        await state(objectName, objectId, isCloudflareObjectId).put({ [propertyName]: logParams });
     }
 };
 
@@ -48,7 +48,7 @@ export const getUserLogEntries = async (prefix: string, limit = 10, objectName =
     return getLogEntries(propertyName, limit, objectName, objectId);
 };
 
-export const getLogEntries = async (prefix: string, limit: number | null = 10, objectName = OBN.LOGS, objectId?: string) => {
+export const getLogEntries = async (prefix: string, limit: number | null = 10, objectName = OBN.LOGS, objectId?: string, isCloudflareObjectId?: boolean) => {
     const { state } = apiker.requestParams;
     const payload = {
         prefix,
@@ -59,11 +59,11 @@ export const getLogEntries = async (prefix: string, limit: number | null = 10, o
     if(limit){
         payload.limit = limit; 
     }
-    const entries = await state(objectName, objectId).list(payload);
+    const entries = await state(objectName, objectId, isCloudflareObjectId).list(payload);
     return Object.values(entries) as LogObject[];
 };
 
-export const getAllLogEntries = async (objectName = OBN.LOGS, limit: number | null = null, objectId?: string) => {
+export const getAllLogEntries = async (objectName = OBN.LOGS, limit: number | null = null, objectId?: string, isCloudflareObjectId?: boolean) => {
     const { state } = apiker.requestParams;
     const payload = {
         reverse: true,
@@ -73,7 +73,7 @@ export const getAllLogEntries = async (objectName = OBN.LOGS, limit: number | nu
     if(limit){
         payload.limit = limit; 
     }
-    const entries = await state(objectName, objectId).list(payload);
+    const entries = await state(objectName, objectId, isCloudflareObjectId).list(payload);
     return Object.values(entries) as LogObject[];
 };
 

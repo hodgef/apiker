@@ -9,7 +9,7 @@ export interface ListRequestObject {
     noCache?: boolean;
 }
 
-export type StateFn = (objectName?: string, objectId?: string) => StateMethods;
+export type StateFn = (objectName?: string, objectId?: string, isCloudflareObjectId?: boolean) => StateMethods;
 
 export interface StateMethods {
     get: (propertyName: string) => Promise<any>;
