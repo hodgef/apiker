@@ -1,5 +1,11 @@
 module.exports = {
     preset: 'ts-jest',
+    testEnvironment: '<rootDir>/scripts/jestEnv.js',
+    globals: {
+        // Transpile each file without whole-program type-checking (fast, low memory).
+        // Type-checking is still enforced by the editor and the build (rollup + tsc).
+        'ts-jest': { isolatedModules: true }
+    },
     testMatch: ["<rootDir>/**/tests/*.(js|jsx|ts|tsx)"],
     transform: {
         '^.+\\.(ts|tsx)?$': 'ts-jest',

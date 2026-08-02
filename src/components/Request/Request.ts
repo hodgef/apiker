@@ -102,6 +102,16 @@ export const handleScheduledRequest = async (
   }
 };
 
+/**
+ * Parses a request body according to its `Content-Type`.
+ *
+ * Supports JSON, plain/HTML text, and form data (URL-encoded or multipart);
+ * anything else is read as raw text. An empty body resolves to `null`.
+ *
+ * @param request The incoming request.
+ * @returns The parsed body (object for JSON/form, string for text, or `null`).
+ * @throws If the body cannot be parsed.
+ */
 export const readRequestBody = async (request) => {
   let resBody;
 

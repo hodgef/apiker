@@ -4,6 +4,15 @@ import { getClientId, getRawIp, getSignedIp } from "../Auth";
 import { OB_ENDPOINT, OBMT } from "../ObjectBase";
 import { StateFn, StateMethods } from "./interfaces";
 
+/**
+ * Creates the `state` factory bound to a default object name and the current
+ * route match. Invoking the returned factory yields the async storage methods
+ * (`get`, `put`, `delete`, `deleteAll`, `list`) for a Durable Object instance.
+ *
+ * @param defaultObjectName Object name used when the caller omits one (usually `"Common"`).
+ * @param matches Current route match, used to derive the instance id from `objectStateMapping`.
+ * @returns A {@link StateFn} factory.
+ */
 export const getStateMethods = (defaultObjectName: string, matches?: MatchResult<any>) : StateFn =>
   /**
    * @param objectName The name of the durable object Class. If not provided, it will default to "Common"
@@ -35,6 +44,17 @@ export const getStateMethods = (defaultObjectName: string, matches?: MatchResult
     } as StateMethods;
   };
 
+/**
+ * Resolves an object-state-mapping token to a concrete Durable Object instance id.
+ *
+ * The special tokens map to the caller's identity (`signedIp`, `clientId`, `ip`);
+ * any other token is treated as a route-parameter name, falling back to the
+ * literal token when that param is absent.
+ *
+ * @param objectStateMapping The mapping token configured for the object.
+ * @param matches Current route match, used to resolve route-parameter tokens.
+ * @returns The derived instance id.
+ */
 export const parseObjectStateMapping = (objectStateMapping: string, matches?: MatchResult<any>) => {
   let value = objectStateMapping;
 
@@ -63,6 +83,7 @@ export const parseObjectStateMapping = (objectStateMapping: string, matches?: Ma
   return value;
 }
 
+/** Returns an async function that deletes a single property from the object's storage. */
 export const deleteObjectState = (obj: any, callback: any) =>
   async (propertyName: string) => {
     const result = await obj.fetch(OB_ENDPOINT + "/delete", {
@@ -89,6 +110,7 @@ export const deleteObjectState = (obj: any, callback: any) =>
     return parsedBody;
   };
 
+/** Returns an async function that deletes every property from the object's storage. */
 export const deleteAllObjectState = (obj: any, callback: any) =>
   async () => {
     const result = await obj.fetch(OB_ENDPOINT + "/deleteall", {
@@ -109,6 +131,7 @@ export const deleteAllObjectState = (obj: any, callback: any) =>
     return parsedBody;
   };
 
+/** Returns an async function that reads a single property from the object's storage. */
 export const getObjectState = (obj: any, callback: any) =>
   async (propertyName: string) => {
     const result = await obj.fetch(OB_ENDPOINT + "/get", {
@@ -135,6 +158,7 @@ export const getObjectState = (obj: any, callback: any) =>
     return parsedBody;
   };
 
+/** Returns an async function that lists stored entries, optionally filtered by a `list` payload. */
 export const listObjectState = (obj: any, callback: any) =>
   async (payload: any) => {
     const result = await obj.fetch(OB_ENDPOINT + "/list", {
@@ -159,6 +183,7 @@ export const listObjectState = (obj: any, callback: any) =>
     return parsedBody;
   };
 
+/** Returns an async function that persists one or more properties to the object's storage. */
 export const putObjectState = (obj: any, callback: any) =>
   async (payload: any) => {
     const result = await obj.fetch(OB_ENDPOINT + "/put", {

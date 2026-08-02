@@ -1,12 +1,29 @@
 import { readRequestBody } from "../Request";
 import { res, res_404 } from "../Response";
+
+/**
+ * Base class for every named Durable Object. Apiker generates a subclass of this
+ * per entry in `apiker.init({ objects })`.
+ *
+ * Its `fetch` handler exposes the object's persistent storage over HTTP-style
+ * routes (`/get`, `/put`, `/delete`, `/deleteall`, `/list`) that the client-side
+ * `state` proxy calls into.
+ */
 export default class {
+    /** The Durable Object state provided by the Workers runtime (holds `storage`). */
     state;
 
     constructor(state){
       this.state = state;
     }
 
+    /**
+     * Dispatches a storage operation based on the request pathname.
+     *
+     * @param request Request whose path selects the operation and whose body
+     *   carries the operation arguments.
+     * @returns The operation result, or a `404` for an unknown path.
+     */
     fetch = async (request) => {
       const url = new URL(request.url);
       const { pathname } = url;

@@ -1,3 +1,7 @@
+/**
+ * Default headers applied to every response built by {@link res}. Enables
+ * permissive CORS and a JSON content type.
+ */
 export const RESPONSE_HEADERS_DEFAULT = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "*",
@@ -6,6 +10,7 @@ export const RESPONSE_HEADERS_DEFAULT = {
   "content-type": "application/json"
 };
 
+/** Default `{ message }` text used by each `res_xxx` helper, keyed by HTTP status. */
 export const RESPONSE_MESSAGES = {
   200: "Success",
   201: "Created",

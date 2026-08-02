@@ -16,7 +16,7 @@
     "build": "npm run clean && rollup -c rollup.config.comp.js && rollup -c rollup.config.main.js",
     "prepare": "npm run build",
     "trypublish": "npm publish || true",
-    "docs": "typedoc --out docs ./src"
+    "docs": "typedoc --plugin typedoc-material-theme --name Apiker --themeColor \"#204495\" --out docs --exclude \"**/tests/**\" ./src"
   },
   "repository": {
     "type": "git",
@@ -72,6 +72,7 @@
     "ts-jest": "^27.1.4",
     "tslib": "^2.3.1",
     "typedoc": "^0.25.7",
+    "typedoc-material-theme": "~1.0.2",
     "typescript": "^4.6.3"
   },
   "dependencies": {

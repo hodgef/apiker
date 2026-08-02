@@ -1,0 +1,86 @@
+import { describe, it, expect, beforeEach, jest } from "@jest/globals";
+import { apiker } from "../../Apiker";
+import ObjectBase from "../ObjectBase";
+
+/**
+ * A mock of the Durable Object `state.storage` API backed by a plain object.
+ */
+const makeStorage = () => {
+  const store: Record<string, any> = {};
+  return {
+    store,
+    get: jest.fn(async (k: string) => store[k]),
+    put: jest.fn(async (k: string, v: any) => {
+      store[k] = v;
+    }),
+    delete: jest.fn(async (k: string) => {
+      delete store[k];
+    }),
+    deleteAll: jest.fn(async () => {
+      Object.keys(store).forEach((k) => delete store[k]);
+    }),
+    list: jest.fn(async () => new Map(Object.entries(store))),
+  };
+};
+
+const req = (path: string, body?: any) =>
+  new Request(`https://durable-object${path}`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+
+/**
+ * Unit tests for the ObjectBase Durable Object request dispatcher.
+ */
+describe("ObjectBase.fetch", () => {
+  let storage: ReturnType<typeof makeStorage>;
+  let ob: any;
+
+  beforeEach(() => {
+    apiker.responseHeaders = new Headers({ "content-type": "application/json" });
+    apiker.debug = false;
+    storage = makeStorage();
+    ob = new ObjectBase({ storage });
+  });
+
+  it("/put stores every property in the body", async () => {
+    const r = await ob.fetch(req("/put", { a: 1, b: 2 }));
+    expect(r.status).toBe(200);
+    expect(storage.put).toHaveBeenCalledTimes(2);
+    expect(storage.store).toEqual({ a: 1, b: 2 });
+  });
+
+  it("/get returns a stored value", async () => {
+    storage.store.name = "Ada";
+    const r = await ob.fetch(req("/get", { propertyName: "name" }));
+    expect(await r.json()).toBe("Ada");
+  });
+
+  it("/delete removes a single property", async () => {
+    storage.store.name = "Ada";
+    await ob.fetch(req("/delete", { propertyName: "name" }));
+    expect(storage.delete).toHaveBeenCalledWith("name");
+    expect(storage.store.name).toBeUndefined();
+  });
+
+  it("/deleteall clears all properties", async () => {
+    storage.store.a = 1;
+    storage.store.b = 2;
+    await ob.fetch(req("/deleteall"));
+    expect(storage.deleteAll).toHaveBeenCalled();
+    expect(storage.store).toEqual({});
+  });
+
+  it("/list returns all entries as an object", async () => {
+    storage.store.a = 1;
+    storage.store.b = 2;
+    const r = await ob.fetch(req("/list", {}));
+    expect(await r.json()).toEqual({ a: 1, b: 2 });
+  });
+
+  it("returns 404 for an unknown path", async () => {
+    const r = await ob.fetch(req("/unknown", {}));
+    expect(r.status).toBe(404);
+  });
+});
