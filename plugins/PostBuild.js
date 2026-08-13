@@ -2,6 +2,9 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 
+/** Variables every project needs; each is generated once and kept in .env. */
+const REQUIRED_ENV_KEYS = ["APIKER_SECRET_KEY", "ADMP_SETUP_SECRET"];
+
 module.exports = class PostBuild {
     constructor(curDir, TOML, dotenv){
         this.TOML = TOML;
@@ -11,7 +14,8 @@ module.exports = class PostBuild {
     apply(compiler) {
       const objects = require(path.join(this.curDir, "src/objects.json"));
       compiler.hooks["afterEmit"].tap("PostBuild", () => {
-        const { parsed: env = this.createEnv() } = this.dotenv.config();
+        const { parsed } = this.dotenv.config();
+        const env = parsed ? this.ensureEnv(parsed) : this.createEnv();
 
         try {
             const missingObjects = [];
@@ -146,16 +150,49 @@ module.exports = class PostBuild {
     }
 
     createEnv() {
-        const key = crypto.randomBytes(30).toString("hex");
+        const env = {};
+        REQUIRED_ENV_KEYS.forEach((key) => { env[key] = this.getSecret(); });
+
         const contents =
             "# ----------------------------------------------------------------------\n" +
             "# Define environment variables here\n" +
             "# Do not commit this file!\n"+
             "# ----------------------------------------------------------------------\n\n"+
-            `APIKER_SECRET_KEY = "${key}"`;
+            this.serializeEnv(env) + "\n";
 
         fs.writeFileSync(path.join(this.curDir, ".env"), contents);
-        return { APIKER_SECRET_KEY: key };
+        return env;
+    }
+
+    /**
+     * Adds variables introduced after a project was created. Without this an
+     * existing .env never gains them, and the worker deploys without the vars.
+     */
+    ensureEnv(env) {
+        const generated = REQUIRED_ENV_KEYS
+            .filter((key) => !env[key])
+            .map((key) => [key, this.getSecret()]);
+
+        if(!generated.length){
+            return env;
+        }
+
+        const additions = {};
+        generated.forEach(([key, value]) => {
+            additions[key] = value;
+            env[key] = value;
+        });
+
+        fs.appendFileSync(path.join(this.curDir, ".env"), `\n${this.serializeEnv(additions)}\n`);
+        return env;
+    }
+
+    serializeEnv(env) {
+        return Object.entries(env).map(([key, value]) => `${key} = "${value}"`).join("\n");
+    }
+
+    getSecret(){
+        return crypto.randomBytes(30).toString("hex");
     }
 
     getRandId(){
