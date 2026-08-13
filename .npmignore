@@ -16,6 +16,7 @@
 .env.production.local
 /.github
 /demo
+/dev
 .esdoc.json
 
 npm-debug.log*

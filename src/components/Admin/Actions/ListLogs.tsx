@@ -1,6 +1,7 @@
 import React from "react";
 import { LogResults, ListLogsPageProps } from "../interfaces";
 import { getAppHelper } from "../Utils";
+import { Button, DataList, Field, Form, Input } from "../ui";
 
 export const ListLogs: React.FC<ListLogsPageProps> = (props) => {
     const { pageName = "", csrfToken = "" } = props;
@@ -39,7 +40,9 @@ export const ListLogs: React.FC<ListLogsPageProps> = (props) => {
                     dialog: { className: isSucessful ? "alert-primary" : "alert-danger", message }
                 });
 
-                setResults(entries);
+                setResults(entries.map(({ time, id, clientId, countryCode, pathname, issuedBy }) => ({
+                    time, id, clientId, countryCode, pathname, issuedBy
+                })) as LogResults[]);
             })
             .catch(error => {
                 setProps({
@@ -50,24 +53,21 @@ export const ListLogs: React.FC<ListLogsPageProps> = (props) => {
     };
 
     return (
-        <div className="action-wrapper">
-            <form className="login-form" onSubmit={onSubmit}>
-                <input className="form-control form-control-lg mt-2" id="logId" type="text" placeholder="Log ID" />
-                <button className="btn btn-primary mt-2 action-btn" type="submit">Submit</button>
-            </form>
-            {(results && results.length) ? results.map((result) => (
-                <div className="results-container">
-                    <div className="results-item">
-                        <ul>
-                            {Object.keys(result).map((key) => (
-                                <li><span className="title">{key}</span> <span className="text" title={key === "time" ? new Date(result[key] as string).toLocaleString() : result[key]}>
-                                    {key === "time" ? new Date(result[key] as string).toLocaleString() : result[key]}
-                                </span></li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-            )) : null}
+        <div className="admp-action">
+            <Form onSubmit={onSubmit}>
+                <Field label="Log ID" htmlFor="logId">
+                    <Input id="logId" type="text" placeholder="Log ID" />
+                </Field>
+                <Button type="submit">List logs</Button>
+            </Form>
+            {!!results?.length && (
+                <DataList
+                    rows={results.map((result) => ({
+                        ...result,
+                        time: result.time ? new Date(result.time).toLocaleString() : result.time
+                    })) as any}
+                />
+            )}
         </div>
     );
 }

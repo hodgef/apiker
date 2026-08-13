@@ -1,172 +1,732 @@
+/*
+ * Admin panel design system.
+ *
+ * apiker ships no runtime dependencies, so this is the whole component library:
+ * plain CSS behind the primitives in `Admin/ui`. Tokens first, components after.
+ */
+
+:root {
+    --admp-background: #ffffff;
+    --admp-foreground: #09090b;
+    --admp-muted: #f4f4f5;
+    --admp-muted-foreground: #71717a;
+    --admp-border: #e4e4e7;
+    --admp-primary: #18181b;
+    --admp-primary-foreground: #fafafa;
+    --admp-accent: #2e3191;
+    --admp-radius: 0.5rem;
+    --admp-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --admp-shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+    --admp-ring: 0 0 0 3px rgb(161 161 170 / 0.25);
+    --admp-topbar-height: 3.5rem;
+    --admp-sidebar-width: 15rem;
+}
+
 html, body, #app {
     height: 100%;
     margin: 0;
 }
 
-.navbar {
-    padding: 50px !important;
+body {
+    background: var(--admp-muted);
+    color: var(--admp-foreground);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
 }
 
-.btn-group {
-    display: flex;
-}
-
-.action-dropdown,
-.form-control,
-.input-group {
-    border: 2px solid #ccc;
-    display: flex;
-    justify-content: space-between;
-}
-
-.container .btn.action-btn {
-    padding: 0.5rem 1rem;
+.admp-icon {
     font-size: 20px;
+    line-height: 1;
+}
+
+/* ------------------------------------------------------------------ shell */
+
+.admp-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: var(--admp-topbar-height);
+    padding: 0 1.25rem;
+    background: var(--admp-background);
+    border-bottom: 1px solid var(--admp-border);
+    box-sizing: border-box;
+}
+
+.admp-topbar__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--admp-foreground);
+    text-decoration: none;
+}
+
+.admp-topbar__brand img {
+    height: 26px;
+    width: auto;
+}
+
+.admp-badge {
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--admp-border);
+    border-radius: 999px;
+    background: var(--admp-muted);
+    color: var(--admp-muted-foreground);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.admp-topbar__identity {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    max-width: 40%;
+    margin-left: auto;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--admp-border);
+    border-radius: 999px;
+    background: var(--admp-background);
+    color: var(--admp-muted-foreground);
+    font-size: 0.75rem;
+}
+
+.admp-topbar__identity .material-symbols-outlined {
+    font-size: 16px;
+}
+
+.admp-topbar__identity-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.admp-layout {
+    display: flex;
+    align-items: flex-start;
+    min-height: calc(100% - var(--admp-topbar-height));
+}
+
+/* ---------------------------------------------------------------- sidebar */
+
+.admp-sidebar {
+    position: sticky;
+    top: var(--admp-topbar-height);
+    flex: 0 0 var(--admp-sidebar-width);
+    width: var(--admp-sidebar-width);
+    height: calc(100vh - var(--admp-topbar-height));
+    padding: 1rem 0.75rem;
+    background: var(--admp-background);
+    border-right: 1px solid var(--admp-border);
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.admp-nav {
+    display: flex;
+    flex-flow: column;
+    gap: 0.125rem;
+}
+
+.admp-nav__group {
+    display: flex;
+    flex-flow: column;
+    gap: 0.125rem;
+    margin-top: 1rem;
+}
+
+.admp-nav__label {
+    padding: 0 0.625rem 0.375rem;
+    color: var(--admp-muted-foreground);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.admp-nav__item {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    padding: 0.5rem 0.625rem;
+    border: none;
+    border-radius: var(--admp-radius);
+    background: transparent;
+    color: var(--admp-muted-foreground);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color .15s ease, color .15s ease;
+}
+
+.admp-nav__item:hover {
+    background: var(--admp-muted);
+    color: var(--admp-foreground);
+}
+
+.admp-nav__item.is-active {
+    background: var(--admp-muted);
+    color: var(--admp-foreground);
+    box-shadow: inset 2px 0 0 var(--admp-accent);
+}
+
+.admp-nav__item:focus-visible {
+    outline: none;
+    box-shadow: var(--admp-ring);
+}
+
+/* ------------------------------------------------------------------- main */
+
+.admp-main {
+    flex: 1;
+    min-width: 0;
+    max-width: 48rem;
+    padding: 2rem 2rem 4rem;
+}
+
+.admp-heading {
+    margin-bottom: 1.5rem;
+}
+
+.admp-heading h1 {
+    margin: 0 0 0.25rem;
+    font-size: 1.375rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.admp-heading p {
+    margin: 0;
+    color: var(--admp-muted-foreground);
+}
+
+/* ------------------------------------------------------------------ tiles */
+
+.admp-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 0.75rem;
+}
+
+.admp-tile {
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding: 1rem;
+    border: 1px solid var(--admp-border);
+    border-radius: calc(var(--admp-radius) + 0.25rem);
+    background: var(--admp-background);
+    box-shadow: var(--admp-shadow);
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+.admp-tile:hover {
+    border-color: var(--admp-muted-foreground);
+    box-shadow: var(--admp-shadow-md);
+    transform: translateY(-1px);
+}
+
+.admp-tile:focus-visible {
+    outline: none;
+    box-shadow: var(--admp-ring);
+}
+
+.admp-tile__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 0.5rem;
+    border-radius: var(--admp-radius);
+    background: var(--admp-muted);
+    color: var(--admp-accent);
+}
+
+.admp-tile__title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--admp-foreground);
+}
+
+.admp-tile__description {
+    color: var(--admp-muted-foreground);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+}
+
+/* ------------------------------------------------------------------- auth */
+
+.admp-auth {
+    display: flex;
+    justify-content: center;
+    padding: 4rem 1.5rem;
+}
+
+.admp-auth .admp-card {
+    width: 100%;
+    max-width: 24rem;
+}
+
+/* ----------------------------------------------------------------- toasts */
+
+.admp-toasts {
+    position: fixed;
+    z-index: 50;
+    right: 1.25rem;
+    bottom: 1.25rem;
+    width: min(22rem, calc(100vw - 2.5rem));
+}
+
+/* ------------------------------------------------------------------- card */
+
+.admp-card {
+    max-width: 40rem;
+    border: 1px solid var(--admp-border);
+    border-radius: calc(var(--admp-radius) + 0.25rem);
+    background: var(--admp-background);
+    box-shadow: var(--admp-shadow);
+}
+
+.admp-card__header {
+    padding: 1.25rem 1.5rem 0;
+}
+
+.admp-card__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+.admp-card__description {
+    margin: 0.25rem 0 0;
+    color: var(--admp-muted-foreground);
+    font-size: 0.8125rem;
+}
+
+.admp-card__body {
+    padding: 1.25rem 1.5rem;
+}
+
+.admp-card__footer {
+    padding: 0 1.5rem 1.25rem;
+}
+
+/* ------------------------------------------------------------------ forms */
+
+.admp-action {
+    display: flex;
+    flex-flow: column;
+    gap: 1.25rem;
+}
+
+.admp-form {
+    display: flex;
+    flex-flow: column;
+    gap: 1rem;
+}
+
+.admp-field {
+    display: flex;
+    flex-flow: column;
+    gap: 0.375rem;
+}
+
+.admp-inline {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+}
+
+.admp-inline .admp-input {
+    flex: 1;
+    min-width: 0;
+}
+
+.admp-form > .admp-btn {
+    align-self: flex-start;
+    margin-top: 0.25rem;
+}
+
+.admp-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.admp-hint {
+    margin: 0;
+    color: var(--admp-muted-foreground);
+    font-size: 0.75rem;
+}
+
+.admp-input,
+.admp-textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--admp-border);
+    border-radius: var(--admp-radius);
+    background: var(--admp-background);
+    color: var(--admp-foreground);
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    box-shadow: var(--admp-shadow);
+    box-sizing: border-box;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.admp-input::placeholder,
+.admp-textarea::placeholder {
+    color: var(--admp-muted-foreground);
+}
+
+.admp-input:focus,
+.admp-textarea:focus {
+    outline: none;
+    border-color: var(--admp-muted-foreground);
+    box-shadow: var(--admp-ring);
+}
+
+.admp-textarea {
+    min-height: 180px;
+    resize: vertical;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.8125rem;
+}
+
+/* ---------------------------------------------------------------- buttons */
+
+.admp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid transparent;
+    border-radius: var(--admp-radius);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: opacity .15s ease, background-color .15s ease;
+}
+
+.admp-btn--block {
     width: 100%;
 }
 
-.container .btn.action-btn.btn-primary {
-    background: #2e3191;
-    border-color: #2e3191;
+.admp-btn--primary {
+    background: var(--admp-primary);
+    border-color: var(--admp-primary);
+    color: var(--admp-primary-foreground);
 }
 
-.container .btn.action-btn:hover {
+.admp-btn--secondary {
+    background: var(--admp-background);
+    border-color: var(--admp-border);
+    color: var(--admp-foreground);
+    box-shadow: var(--admp-shadow);
+}
+
+.admp-btn--secondary:hover {
+    background: var(--admp-muted);
+}
+
+.admp-btn--destructive {
+    background: #dc2626;
+    border-color: #dc2626;
+    color: #fff;
+}
+
+.admp-btn--ghost {
+    background: transparent;
+    color: var(--admp-muted-foreground);
+}
+
+.admp-btn--ghost:hover {
+    background: var(--admp-muted);
+    color: var(--admp-foreground);
+}
+
+.admp-btn:hover {
     opacity: 0.9;
 }
 
-.action-dropdown::after {
-    border: none !important;
-    content: "expand_more";
-    font-family: "Material Symbols Outlined";
-    font-size: 35px;
-    position: absolute;
-    right: 7px;
-    top: 0;
+.admp-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-.btn:hover {
-    border-color: #ccc !important;
+.admp-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--admp-ring);
 }
 
-ul.dropdown-menu.show {
+/* ----------------------------------------------------------------- select */
+
+.admp-select {
+    position: relative;
+}
+
+.admp-select__trigger {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
     width: 100%;
-    padding: 10px;
-    gap: 10px;
-    flex-flow: column;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--admp-border);
+    border-radius: var(--admp-radius);
+    background: var(--admp-background);
+    color: var(--admp-foreground);
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: var(--admp-shadow);
 }
 
-ul.dropdown-menu.show li {
-    background: whitesmoke;
-    border-radius: 5px;
+.admp-select__trigger:hover {
+    background: var(--admp-muted);
+}
+
+.admp-select__trigger:focus-visible {
+    outline: none;
+    box-shadow: var(--admp-ring);
+}
+
+.admp-select__chevron {
+    font-family: "Material Symbols Outlined";
+    font-size: 20px;
+    line-height: 1;
+    color: var(--admp-muted-foreground);
+}
+
+.admp-select__menu {
+    position: absolute;
+    z-index: 20;
+    top: calc(100% + 0.25rem);
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 0.25rem;
+    list-style: none;
+    border: 1px solid var(--admp-border);
+    border-radius: var(--admp-radius);
+    background: var(--admp-background);
+    box-shadow: var(--admp-shadow-md);
+}
+
+.admp-select__option {
+    display: block;
+    width: 100%;
+    padding: 0.4375rem 0.625rem;
+    border: none;
+    border-radius: calc(var(--admp-radius) - 0.125rem);
+    background: transparent;
+    color: var(--admp-foreground);
+    font-family: inherit;
+    font-size: 0.875rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.admp-select__option:hover,
+.admp-select__option.is-selected {
+    background: var(--admp-muted);
+}
+
+/* ----------------------------------------------------------------- alerts */
+
+.admp-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--admp-border);
+    border-radius: var(--admp-radius);
+    background: var(--admp-muted);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+}
+
+.admp-toasts .admp-alert {
+    box-shadow: var(--admp-shadow-md);
+}
+
+.admp-alert__body {
     flex: 1;
 }
 
-a.dropdown-item {
-    border-radius: 5px;
-    text-align: center;
-}
-
-.action-wrapper {
-    border-radius: 10px;
-    border-bottom: 2px solid #ececec;
-}
-
-.signed-ip {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
-    font-size: 14px;
+.admp-alert__close {
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
     opacity: 0.6;
 }
 
-.results-container {
-    margin-top: 10px;
-    background: #f6f6f6;
-    border-radius: 5px;
+.admp-alert__close:hover {
+    opacity: 1;
+}
+
+.admp-alert--success {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+    color: #166534;
+}
+
+.admp-alert--warning {
+    border-color: #fde68a;
+    background: #fffbeb;
+    color: #92400e;
+}
+
+.admp-alert--danger {
+    border-color: #fecaca;
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+/* ---------------------------------------------------------------- results */
+
+.admp-results {
+    margin-top: 1rem;
+    border: 1px solid var(--admp-border);
+    border-radius: var(--admp-radius);
+    background: var(--admp-background);
     overflow-y: auto;
-    max-height: 300px;
-    padding: 10px;
-    position: relative;
+    max-height: 340px;
 }
 
-.results-container .results-item {
-    padding: 10px 15px;
-    border-bottom: 1px #ccc dashed;
+.admp-results__item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--admp-border);
 }
 
-.results-container .results-item:last-child {
+.admp-results__item:last-child {
     border-bottom: none;
 }
 
-.results-container .results-item ul {
-    list-style: none;
+.admp-results__item dl {
     margin: 0;
-    padding: 0;
-}
-
-.results-container .results-item ul li {
     display: flex;
-    flex-flow: row;
-    gap: 10px;
+    flex-flow: column;
+    gap: 0.25rem;
 }
 
-.results-container .results-item ul li span.title {
+.admp-results__row {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.8125rem;
+}
+
+.admp-results__row dt {
+    width: 30%;
+    color: var(--admp-muted-foreground);
     font-weight: 500;
-    display: inline-block;
-    text-transform: capitalize;
-    width: 24%;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
 
-.results-container .results-item ul li span.text {
-    display: inline-block;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+.admp-results__row dd {
     flex: 1;
+    margin: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
-.action-wrapper pre {
-    background: #e5e5e5;
-    padding: 15px;
-    border-radius: 5px;
+.admp-empty {
+    margin: 1rem 0 0;
+    color: var(--admp-muted-foreground);
+    font-size: 0.8125rem;
+    text-align: center;
+}
+
+.admp-pre {
+    margin-top: 1rem;
+    padding: 0.875rem;
+    border: 1px solid var(--admp-border);
+    border-radius: var(--admp-radius);
+    background: var(--admp-muted);
+    font-size: 0.8125rem;
     white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
     word-wrap: break-word;
+    max-height: 16rem;
+    overflow: auto;
 }
 
-.input-group {
-    border-radius: 10px;
-    overflow: hidden;
-    box-sizing: border-box;
-    position: relative;
+.admp-form .admp-pre {
+    margin-top: 0;
 }
 
-.input-group input {
-    border: none !important;
-    outline: none !important;
-    flex: 1;
-    padding: 10px 15px;
-    font-size: 20px;
+@media (max-width: 767.98px) {
+    .admp-layout {
+        flex-flow: column;
+    }
+
+    .admp-sidebar {
+        position: static;
+        flex: none;
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--admp-border);
+    }
+
+    .admp-nav {
+        flex-flow: row wrap;
+        gap: 0.375rem;
+    }
+
+    .admp-nav__group {
+        flex-flow: row wrap;
+        gap: 0.375rem;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .admp-nav__label {
+        width: 100%;
+        padding: 0.25rem 0 0;
+    }
+
+    .admp-nav__item {
+        width: auto;
+    }
+
+    .admp-main {
+        max-width: none;
+        padding: 1.5rem 1rem 3rem;
+    }
 }
 
-.input-group .btn {
-    background: #2e3191;
-    color: white;
-    position: absolute;
-    right: 7px;
-    top: 50%;
-    transform: translateY(-50%);
-    border-radius: 5px !important;
-}
-
-.action-wrapper textarea {
-    width: 100%;
-    padding: 18px;
-    height: 240px;
+@media (max-width: 575.98px) {
+    .admp-card__header { padding: 1rem 1rem 0; }
+    .admp-card__body { padding: 1rem; }
+    .admp-card__footer { padding: 0 1rem 1rem; }
 }

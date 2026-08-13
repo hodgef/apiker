@@ -1,6 +1,7 @@
 import React from "react";
 import { UnbanUserPageProps } from "../interfaces";
 import { getAppHelper } from "../Utils";
+import { Button, Field, Form, Input } from "../ui";
 
 export const UnbanUser: React.FC<UnbanUserPageProps> = (props) => {
     const { pageName = "", csrfToken = "" } = props;
@@ -40,11 +41,13 @@ export const UnbanUser: React.FC<UnbanUserPageProps> = (props) => {
     };
 
     return (
-        <div className="action-wrapper">
-            <form className="login-form" onSubmit={onSubmit}>
-                <input className="form-control form-control-lg mt-2" id="userId" type="text" placeholder="User ID" />
-                <button className="btn btn-primary mt-2 action-btn" type="submit">Submit</button>
-            </form>
+        <div className="admp-action">
+            <Form onSubmit={onSubmit}>
+                <Field label="User ID" htmlFor="userId">
+                    <Input id="userId" type="text" placeholder="User ID" />
+                </Field>
+                <Button type="submit">Unban user</Button>
+            </Form>
         </div>
     );
 }

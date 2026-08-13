@@ -17,6 +17,12 @@ export interface PortalSection {
 export interface Action {
     id: string;
     displayName: string;
+    /** Shown on the overview tile and under the page title. */
+    description?: string;
+    /** Material Symbols glyph name. */
+    icon?: string;
+    /** Sidebar section this action is listed under. */
+    group?: string;
 }
 
 export type Actions = Action[];
@@ -35,6 +41,7 @@ export interface AdminPanelPageProps {
     dialog?: Dialog;
     isAdminLoggedIn?: boolean;
     userSignedIp?: string;
+    appName?: string;
 }
 
 export interface LogResults {
@@ -47,6 +54,7 @@ export interface LogResults {
 }
 
 export interface LoginPageProps extends AdminPanelPageProps {}
+export interface AddAdminPageProps extends AdminPanelPageProps {}
 export interface BanUserPageProps extends AdminPanelPageProps {}
 export interface UnbanUserPageProps extends AdminPanelPageProps {}
 export interface SearchBansPageProps extends AdminPanelPageProps {}

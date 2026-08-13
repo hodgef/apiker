@@ -1,6 +1,7 @@
 import React from "react";
 import { DeleteUserPageProps } from "../interfaces";
 import { getAppHelper } from "../Utils";
+import { Button, Field, Form, Input } from "../ui";
 
 export const DeleteUser: React.FC<DeleteUserPageProps> = (props) => {
     const [shouldAskConfirm, setShouldAskConfirm] = React.useState(false);
@@ -56,16 +57,20 @@ export const DeleteUser: React.FC<DeleteUserPageProps> = (props) => {
     };
 
     return (
-        <div className="action-wrapper">
-            <form className="login-form" onSubmit={onSubmit}>
-                <input className="form-control form-control-lg mt-2" id="userEmail" type="text" placeholder="User Email" />
+        <div className="admp-action">
+            <Form onSubmit={onSubmit}>
+                <Field label="User email" htmlFor="userEmail" hint="The account and its data are removed permanently.">
+                    <Input id="userEmail" type="email" placeholder="user@example.com" />
+                </Field>
 
                 {(isConfirmed || !shouldAskConfirm) ? (
-                    <button className="btn btn-primary mt-2 action-btn" type="submit">Submit</button>
-                ): (
-                    <button className="btn btn-danger mt-2 action-btn" type="button" onClick={() => { setIsConfirmed(true)} }>Are you sure? This cannot be undone</button>
+                    <Button type="submit" variant="destructive">Delete user</Button>
+                ) : (
+                    <Button type="button" variant="destructive" onClick={() => setIsConfirmed(true)}>
+                        Are you sure? This cannot be undone
+                    </Button>
                 )}
-            </form>
+            </Form>
         </div>
     );
 }

@@ -28,6 +28,21 @@ Cloudflare skills under [.agents/skills/](.agents/skills/).
 | Test with coverage | `npm run coverage` |
 | Build library | `npm run build` |
 | Generate API docs | `npm run docs` |
+| Admin panel sandbox | `npm run dev:panel` |
+
+### Admin panel sandbox
+
+`npm run dev:panel` serves the panel from local source on `http://localhost:5010` and proxies
+every `/admp` request to a real deployment, so actions run against real data with a real session
+and CSRF token. The library itself is not a Worker, so the backend comes from a consumer project:
+
+1. In a consumer (for example the demo project created by `apiker create`), enable
+   `adminPanel: true` and run `npx wrangler dev --local --port 8787`.
+2. Run `npm run dev:panel` here. Point it elsewhere with
+   `$env:ADMP_TARGET="https://your-deployment.example.com"`.
+
+Editing `src/components/Admin/**` rebuilds the bundle and reloads the page. `dev/` is dev-only:
+it is outside `src`, ignored by npm, and never part of a build output.
 
 ## Hard rules (summary — full list in [.agents/AGENTS.md](.agents/AGENTS.md))
 

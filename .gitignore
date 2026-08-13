@@ -6,6 +6,9 @@
 /.pnp
 .pnp.js
 
+# admin panel sandbox output
+/dev/.build
+
 # testing
 /coverage
 

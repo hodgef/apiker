@@ -62,7 +62,7 @@ module.exports = class PostBuild {
              "# Auto-generated file. Do not commit this file! Edit .env and app.toml files instead.\n"+
              "# ----------------------------------------------------------------------------------\n\n";
             const tomlOutputString = this.createTomlContents(newWranglerTomlParams, prependedContents);
-            fs.writeFileSync(path.join(this.curDir, "wrangler.toml"), tomlOutputString);
+            this.writeIfChanged(path.join(this.curDir, "wrangler.toml"), tomlOutputString);
 
             /**
              * Build app.toml
@@ -73,14 +73,14 @@ module.exports = class PostBuild {
              "# NOTE: Can be committed. Do not add secrets to this file. Use .env for this purpose.\n"+
              "# ----------------------------------------------------------------------------------\n\n";
              const tomlAppOutputString = this.createTomlContents(newAppTomlParams, prependedAppContents);
-             fs.writeFileSync(path.join(this.curDir, "app.toml"), tomlAppOutputString);
+             this.writeIfChanged(path.join(this.curDir, "app.toml"), tomlAppOutputString);
             
             /**
              * Build shim.mjs
              */
             const shimOutputString = this.createShimContents(objects);
-            fs.writeFileSync(path.join(this.curDir, "scripts/shim.mjs"), shimOutputString);
-            fs.writeFileSync(path.join(this.curDir, "dist/shim.mjs"), shimOutputString);
+            this.writeIfChanged(path.join(this.curDir, "scripts/shim.mjs"), shimOutputString);
+            this.writeIfChanged(path.join(this.curDir, "dist/shim.mjs"), shimOutputString);
 
         } catch (err) {
             console.error(err);
@@ -147,6 +147,16 @@ module.exports = class PostBuild {
     createTomlContents(newTomlParams, prependedContents) {
         const newTomlContents = this.TOML.stringify(newTomlParams);
         return prependedContents + newTomlContents;
+    }
+
+    /** Rewriting identical contents restarts watchers such as `wrangler dev`. */
+    writeIfChanged(filePath, contents) {
+        if(fs.existsSync(filePath) && fs.readFileSync(filePath, "utf8") === contents){
+            return false;
+        }
+
+        fs.writeFileSync(filePath, contents);
+        return true;
     }
 
     createEnv() {

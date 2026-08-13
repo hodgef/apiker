@@ -1,27 +1,7 @@
 import React from "react";
 import { UpdateUserPageProps } from "../interfaces";
 import { getAppHelper } from "../Utils";
-
-const InputGroup = ({ onButtonClick, onChange, buttonLabel, value }) => {
-    React.useEffect(() => {
-        const handleInputWidth = () => {
-            const inputElem = document.querySelector("#input-group-1 input") as HTMLElement;
-            const buttonElem = document.querySelector("#input-group-1 button") as HTMLElement;
-            const offsetWidth = parseFloat(buttonElem.offsetWidth as unknown as string);
-            inputElem.style.maxWidth = `calc(100% - ${offsetWidth}px - 15px)`;
-        }
-
-        (window as any).addEventListener("resize", handleInputWidth);
-        handleInputWidth();
-    }, []);
-
-    return (
-        <div className="input-group mt-2" id="input-group-1">
-            <input className="form-control form-control-lg" id="userEmail" type="email" placeholder="User Email" onChange={onChange} value={value}/>
-            <button className="btn btn-outline-secondary" type="button" onClick={onButtonClick}>{buttonLabel}</button>
-        </div>
-    );
-}
+import { Button, Field, Form, InlineRow, Input, Textarea } from "../ui";
 
 export const UpdateUser: React.FC<UpdateUserPageProps> = (props) => {
     const initialValue = React.useRef("");
@@ -31,8 +11,6 @@ export const UpdateUser: React.FC<UpdateUserPageProps> = (props) => {
     const { setProps } = getAppHelper(pageName);
 
     const onUserSeek = () => {
-        console.log("onUserEmailChange", userEmail);
-
         fetch('/admp/user?' + new URLSearchParams({ userEmail }), {
             method: 'get',
             headers: { "X-Apiker-Csrf": csrfToken }
@@ -65,11 +43,12 @@ export const UpdateUser: React.FC<UpdateUserPageProps> = (props) => {
                         });
                     }
                 }
-
-                console.log(data);
             })
             .catch(error => {
-                console.log(error);
+                setProps({
+                    ...props,
+                    dialog: { className: "alert-danger", message: error?.message }
+                });
             })
     }
 
@@ -140,17 +119,33 @@ export const UpdateUser: React.FC<UpdateUserPageProps> = (props) => {
         }
     }
 
-    console.log("partialUser", partialUser);
-
     return (
-        <div className="action-wrapper">
-            <form className="login-form" onSubmit={onSubmit}>
-                <InputGroup value={userEmail} onButtonClick={onUserSeek} onChange={e => setUserEmail(e.target.value)} buttonLabel={"Find"} />
+        <div className="admp-action">
+            <Form onSubmit={onSubmit}>
+                <Field label="User email" htmlFor="userEmail" hint="Find the account first, then edit the record below.">
+                    <InlineRow>
+                        <Input
+                            id="userEmail"
+                            type="email"
+                            placeholder="user@example.com"
+                            value={userEmail}
+                            onChange={e => setUserEmail(e.target.value)}
+                        />
+                        <Button variant="secondary" onClick={onUserSeek}>Find</Button>
+                    </InlineRow>
+                </Field>
                 {partialUser ? (
-                    <textarea className="m-0 mt-2" onChange={e => trySetPartialUser(e.target.value)} value={JSON.stringify(JSON.parse(partialUser), null, 2)} />
-                ): null}
-                <button className="btn btn-primary mt-2 action-btn" type="submit">Submit</button>
-            </form>
+                    <Field label="User record" htmlFor="partialUser">
+                        <Textarea
+                            id="partialUser"
+                            spellCheck={false}
+                            onChange={e => trySetPartialUser(e.target.value)}
+                            value={JSON.stringify(JSON.parse(partialUser), null, 2)}
+                        />
+                    </Field>
+                ) : null}
+                <Button type="submit" disabled={!partialUser}>Save changes</Button>
+            </Form>
         </div>
     );
 }

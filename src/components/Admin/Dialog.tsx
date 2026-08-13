@@ -1,6 +1,7 @@
 import React from "react";
 import { AdminPanelPageProps } from "./interfaces";
 import { getAppHelper } from "./Utils";
+import { Alert } from "./ui";
 
 export const Dialog: React.FC<AdminPanelPageProps> = (props) => {
     const [ showDialog, setShowDialog ] = React.useState(false);
@@ -20,16 +21,16 @@ export const Dialog: React.FC<AdminPanelPageProps> = (props) => {
             setShowDialog(true);
             setTimeout(() => {
                 setShowDialog(false);
-            }, 2000);
+            }, 4000);
         }
     }, [dialog]);
-    
-    return (
-        <div>
-            <div className={`alert ${className} mt-0 mb-0 alert-dismissible fade ${showDialog ? "show": ""}`} role="alert">
-                <strong>Status:</strong> {message}
-                <button type="button" className="btn-close" onClick={onClose}></button>
-            </div>
-        </div>
-    );
+
+    if(!showDialog){
+        return null;
+    }
+
+    // Existing callers pass Bootstrap alert class names.
+    const tone = className?.includes("danger") ? "danger" : "success";
+
+    return <Alert tone={tone} onDismiss={onClose}>{message}</Alert>;
 }

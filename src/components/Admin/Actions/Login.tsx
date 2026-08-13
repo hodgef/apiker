@@ -2,6 +2,7 @@ import React from "react";
 import { LoginPageProps } from "../interfaces";
 import { getAppHelper } from "../Utils";
 import { authActions } from "../constants";
+import { Alert, Button, Field, Form, Input } from "../ui";
 
 export const Login: React.FC<LoginPageProps> = (props) => {
     const { isSetup, pageName = "", csrfToken = "" } = props;
@@ -44,17 +45,28 @@ export const Login: React.FC<LoginPageProps> = (props) => {
     };
 
     return (
-        <div className="action-wrapper">
+        <div className="admp-action">
             {isSetup && (
-                <div className="alert alert-primary mb-0" role="alert">
-                    Welcome to Apiker! Please setup your account in order to manage your app.
-                </div>
+                <Alert>Welcome to Apiker. Set up your account to manage this app.</Alert>
             )}
-            <form className="login-form" onSubmit={onSubmit}>
-                <input className="form-control form-control-lg mt-2" id="email" type="email" placeholder="Email" />
-                <input className="form-control form-control-lg mt-2" id="password" type="password" placeholder="Password" />
-                <button className="btn btn-primary mt-2 action-btn" type="submit">{isSetup ? "Setup User" : "Submit"}</button>
-            </form>
+            <Form onSubmit={onSubmit}>
+                <Field label="Email" htmlFor="email">
+                    <Input id="email" type="email" placeholder="you@example.com" autoComplete="username" />
+                </Field>
+                <Field label="Password" htmlFor="password">
+                    <Input id="password" type="password" autoComplete="current-password" />
+                </Field>
+                {isSetup && (
+                    <Field
+                        label="Setup secret"
+                        htmlFor="setupSecret"
+                        hint="The ADMP_SETUP_SECRET value configured for this deployment."
+                    >
+                        <Input id="setupSecret" type="password" autoComplete="off" />
+                    </Field>
+                )}
+                <Button type="submit" block>{isSetup ? "Create admin account" : "Sign in"}</Button>
+            </Form>
         </div>
     );
 }

@@ -2,6 +2,7 @@ import React from "react";
 import { SendEmailPageProps } from "../interfaces";
 import { getAppHelper } from "../Utils";
 import { forgotPasswordTemplate, verifyAccountTemplate } from "../../EmailTemplates";
+import { Alert, Button, Field, Form, Input, Select } from "../ui";
 
 export const emailTemplates = {
     forgotPassword: forgotPasswordTemplate,
@@ -57,35 +58,31 @@ export const SendEmail: React.FC<SendEmailPageProps> = (props) => {
     };
 
     const selectTemplateDropdown = (
-        <div className="btn-group mt-2">
-            <button className="btn btn-transparent btn-lg dropdown-toggle action-dropdown" type="button" id="main-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                {template ? template : "Email template"}
-            </button>
-            <ul className="dropdown-menu" aria-labelledby="main-dropdown">
-                {Object.keys(emailTemplates).map((templateName) => {
-                    return (
-                        <li key={templateName}><a className="dropdown-item" href="#" onClick={() => onDropdownItemClick(templateName)}>{templateName}</a></li>
-                    )
-                })}
-            </ul>
-        </div>
+        <Select
+            value={template ? { id: template, displayName: template } : undefined}
+            options={Object.keys(emailTemplates).map((templateName) => ({ id: templateName, displayName: templateName }))}
+            placeholder="Select a template"
+            onSelect={(option) => onDropdownItemClick(option.id)}
+        />
     )
 
     return (
-        <div className="action-wrapper">
-            <div className="alert alert-warning mb-0 mt-2" role="alert">
+        <div className="admp-action">
+            <Alert tone="warning">
                 <b>Note:</b> This option requires the "email" and "authRoutes" options to be enabled.
-            </div>
-            <form className="login-form" onSubmit={onSubmit}>
-                <input className="form-control form-control-lg mt-2" id="userEmail" type="email" placeholder="User Email" />
-                {selectTemplateDropdown}
+            </Alert>
+            <Form onSubmit={onSubmit}>
+                <Field label="User email" htmlFor="userEmail">
+                    <Input id="userEmail" type="email" placeholder="user@example.com" />
+                </Field>
+                <Field label="Template">
+                    {selectTemplateDropdown}
+                </Field>
                 {template ? (
-                    <pre className="m-0 mt-2">
-                        <code>{emailTemplates[template]}</code>
-                    </pre>
-                ): null}
-                <button className="btn btn-primary mt-2 action-btn" type="submit">Submit</button>
-            </form>
+                    <pre className="admp-pre"><code>{emailTemplates[template]}</code></pre>
+                ) : null}
+                <Button type="submit" disabled={!template}>Send email</Button>
+            </Form>
         </div>
     );
 }

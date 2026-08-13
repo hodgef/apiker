@@ -1,9 +1,9 @@
 import React from "react";
-import { BanUserPageProps } from "../interfaces";
+import { AddAdminPageProps } from "../interfaces";
 import { getAppHelper } from "../Utils";
-import { Button, Field, Form, Input } from "../ui";
+import { Alert, Button, Field, Form, Input } from "../ui";
 
-export const BanUser: React.FC<BanUserPageProps> = (props) => {
+export const AddAdmin: React.FC<AddAdminPageProps> = (props) => {
     const { pageName = "", csrfToken = "" } = props;
     const { setProps } = getAppHelper(pageName);
 
@@ -15,7 +15,7 @@ export const BanUser: React.FC<BanUserPageProps> = (props) => {
             formData.append(key, input.value);
         });
 
-        fetch('/admp/bans', {
+        fetch('/admp/admins', {
             method: 'post',
             body: formData,
             headers: { "X-Apiker-Csrf": csrfToken }
@@ -42,11 +42,18 @@ export const BanUser: React.FC<BanUserPageProps> = (props) => {
 
     return (
         <div className="admp-action">
+            <Alert>
+                Admins have full access to this panel. Existing accounts are promoted and keep their
+                current password.
+            </Alert>
             <Form onSubmit={onSubmit}>
-                <Field label="User ID" htmlFor="userId">
-                    <Input id="userId" type="text" placeholder="User ID" />
+                <Field label="Email" htmlFor="email">
+                    <Input id="email" type="email" placeholder="admin@example.com" autoComplete="off" />
                 </Field>
-                <Button type="submit" variant="destructive">Ban user</Button>
+                <Field label="Password" htmlFor="password" hint="Only used when the account does not exist yet.">
+                    <Input id="password" type="password" autoComplete="new-password" />
+                </Field>
+                <Button type="submit">Grant admin</Button>
             </Form>
         </div>
     );

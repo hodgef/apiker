@@ -1,6 +1,7 @@
 import React from "react";
 import { LogResults, SearchBansPageProps } from "../interfaces";
 import { getAppHelper } from "../Utils";
+import { Button, DataList, Field, Form, Input } from "../ui";
 
 export const SearchBans: React.FC<SearchBansPageProps> = (props) => {
     const { pageName = "", csrfToken = "" } = props;
@@ -54,25 +55,14 @@ export const SearchBans: React.FC<SearchBansPageProps> = (props) => {
     };
 
     return (
-        <div className="action-wrapper">
-            <form className="login-form" onSubmit={onSubmit}>
-                <input className="form-control form-control-lg mt-2" id="userId" type="text" placeholder="User ID" />
-                <button className="btn btn-primary mt-2 action-btn" type="submit">Submit</button>
-            </form>
-            {(results && results.length) ? results.map(({ time, id, clientId, countryCode, pathname, issuedBy }) => (
-                <div className="results-container">
-                    <div className="results-item">
-                        <ul>
-                            <li><span className="title">time</span> <span className="text" title={new Date(time as string).toLocaleString()}>{new Date(time as string).toLocaleString()}</span></li>
-                            <li><span className="title">id</span> <span className="text" title={id}>{id}</span></li>
-                            <li><span className="title">clientId</span> <span className="text" title={clientId}>{clientId}</span></li>
-                            <li><span className="title">countryCode</span> <span className="text" title={countryCode}>{countryCode}</span></li>
-                            <li><span className="title">pathname</span> <span className="text" title={pathname}>{pathname}</span></li>
-                            <li><span className="title">issuedBy</span> <span className="text" title={issuedBy}>{issuedBy}</span></li>
-                        </ul>
-                    </div>
-                </div>
-            )) : null}
+        <div className="admp-action">
+            <Form onSubmit={onSubmit}>
+                <Field label="User ID" htmlFor="userId">
+                    <Input id="userId" type="text" placeholder="User ID" />
+                </Field>
+                <Button type="submit">Search bans</Button>
+            </Form>
+            {!!results?.length && <DataList rows={results as any} />}
         </div>
     );
 }

@@ -4,6 +4,7 @@ import { OBN } from "../../ObjectBase";
 import { createJWT } from "../../Auth";
 import { adminLoginMiddleware, adminMiddleware, adminWhitelistMiddleware } from "../middleware";
 import { loginEndpoint } from "../Api/loginEndpoint";
+import { createAdminEndpoint } from "../Api/adminsEndpoint";
 
 /**
  * Unit tests for the admin panel's gates.
@@ -119,52 +120,91 @@ describe("Admin gates", () => {
     });
   });
 
-  describe("provisioning an extra admin with the setup secret", () => {
+  describe("the setup secret after bootstrap", () => {
     beforeEach(() => {
       apiker.env.ADMP_SETUP_SECRET = "expected";
       adminIds = ["existing-admin"];
     });
 
-    it("creates a new account as an admin even though admins already exist", async () => {
+    it("cannot create a second admin account", async () => {
       await loginEndpoint(
-        params({ email: "service@volted.co", password: "pw", setupSecret: "expected" })
+        params({ email: "service@example.com", password: "pw", setupSecret: "expected" })
       );
 
-      expect(registered).toEqual([
-        { email: "service@volted.co", password: "pw", extra: { role: "admin" } },
-      ]);
+      expect(registered).toEqual([]);
+      expect(promoted).toEqual([]);
     });
 
-    it("promotes an existing account when its own password is given", async () => {
-      existingAccounts["service@volted.co"] = { id: "svc", password: "right" };
-
-      await loginEndpoint(
-        params({ email: "service@volted.co", password: "right", setupSecret: "expected" })
-      );
-
-      expect(promoted).toEqual(["svc"]);
-    });
-
-    it("cannot take over an existing account without its password", async () => {
-      existingAccounts["service@volted.co"] = { id: "svc", password: "right" };
+    it("cannot promote an existing account", async () => {
+      existingAccounts["service@example.com"] = { id: "svc", password: "right" };
 
       const res: any = await loginEndpoint(
-        params({ email: "service@volted.co", password: "guess", setupSecret: "expected" })
+        params({ email: "service@example.com", password: "right", setupSecret: "expected" })
+      );
+
+      expect(promoted).toEqual([]);
+      expect(res.status).toBe(401);
+    });
+
+    it("still refuses a wrong password", async () => {
+      existingAccounts["service@example.com"] = { id: "svc", password: "right" };
+
+      const res: any = await loginEndpoint(
+        params({ email: "service@example.com", password: "guess", setupSecret: "expected" })
       );
 
       expect(res.status).toBe(401);
-      expect(promoted).toEqual([]);
+    });
+  });
+
+  describe("createAdminEndpoint", () => {
+    const adminParams = (
+      body: any,
+      emailToId: Record<string, string> = {},
+      users: Record<string, any> = {}
+    ): any => ({
+      body,
+      state: (objectName: string) => ({
+        get: async (key: string) => {
+          if (objectName === OBN.EMAILTOUUID) return emailToId[key];
+          if (objectName === OBN.USERS) return users[key];
+          return undefined;
+        },
+      }),
     });
 
-    it("ignores a wrong secret and falls back to a normal login", async () => {
-      existingAccounts["service@volted.co"] = { id: "svc", password: "right" };
+    it("rejects an invalid email", async () => {
+      const res: any = await createAdminEndpoint(adminParams({ email: "not-an-email" }));
 
-      await loginEndpoint(
-        params({ email: "service@volted.co", password: "right", setupSecret: "wrong" })
+      expect(res.status).toBe(400);
+      expect(registered).toEqual([]);
+    });
+
+    it("creates an admin account when the email is unknown", async () => {
+      await createAdminEndpoint(adminParams({ email: "new@example.com", password: "pw" }));
+
+      expect(registered).toEqual([
+        { email: "new@example.com", password: "pw", extra: { role: "admin" } },
+      ]);
+    });
+
+    it("promotes an existing account without needing its password", async () => {
+      const res: any = await createAdminEndpoint(
+        adminParams({ email: "user@example.com" }, { "user@example.com": "u1" }, { u1: { id: "u1" } })
       );
 
-      expect(promoted).toEqual([]);
+      expect(res.status).toBe(200);
+      expect(promoted).toEqual(["u1"]);
       expect(registered).toEqual([]);
+    });
+
+    it("rejects an email that maps to a missing user record", async () => {
+      const res: any = await createAdminEndpoint(
+        adminParams({ email: "ghost@example.com" }, { "ghost@example.com": "gone" })
+      );
+
+      expect(res.status).toBe(400);
+      expect(promoted).toEqual([]);
     });
   });
 

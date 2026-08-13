@@ -95,4 +95,32 @@ describe("PostBuild env generation", () => {
       expect(readEnv()).toBe(afterFirst);
     });
   });
+
+  /**
+   * Rewriting a generated file with identical contents restarts watchers such as
+   * `wrangler dev`, which is what made local development crash.
+   */
+  describe("writeIfChanged", () => {
+    const target = () => path.join(dir, "generated.toml");
+
+    it("creates a file that does not exist yet", () => {
+      expect(plugin.writeIfChanged(target(), "contents")).toBe(true);
+      expect(fs.readFileSync(target(), "utf8")).toBe("contents");
+    });
+
+    it("does not touch the file when the contents match", () => {
+      plugin.writeIfChanged(target(), "contents");
+      const mtime = fs.statSync(target()).mtimeMs;
+
+      expect(plugin.writeIfChanged(target(), "contents")).toBe(false);
+      expect(fs.statSync(target()).mtimeMs).toBe(mtime);
+    });
+
+    it("writes when the contents changed", () => {
+      plugin.writeIfChanged(target(), "contents");
+
+      expect(plugin.writeIfChanged(target(), "updated")).toBe(true);
+      expect(fs.readFileSync(target(), "utf8")).toBe("updated");
+    });
+  });
 });

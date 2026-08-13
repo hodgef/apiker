@@ -41,22 +41,22 @@ export const loginEndpoint: Handler = async (params) => {
     const adminIds = await state(OBN.COMMON).get("adminIds");
     const hasAdmins = !!adminIds?.length;
     const expectedSecret = apiker.env.ADMP_SETUP_SECRET;
-    const provisioning = !!expectedSecret && setupSecret === expectedSecret;
 
-    if(provisioning) {
+    if(hasAdmins) {
       /**
-       * The setup secret exists only in the deployment's environment, so it is
-       * also the way back in if every admin credential is lost.
+       * Once the panel has an administrator, new ones are only granted by an
+       * authenticated admin (`/admp/admins`) — the setup secret bootstraps the
+       * first account and nothing more.
        */
-      user = await provisionAdmin(email, password);
-    } else if(hasAdmins) {
       user = await checkUser(email, password);
-    } else {
+    } else if(!!expectedSecret && setupSecret === expectedSecret) {
       /**
        * Claiming the first admin account is unauthenticated by nature, so it is
        * only possible with the setup secret. Without that, anyone reaching the
        * panel of a fresh deployment could claim it.
        */
+      user = await provisionAdmin(email, password);
+    } else {
       return res_401();
     }
 

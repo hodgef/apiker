@@ -14,6 +14,7 @@
     "coverage": "npm run test -- --coverage",
     "clean": "rimraf dist",
     "build": "npm run clean && rollup -c rollup.config.comp.js && rollup -c rollup.config.main.js",
+    "dev:panel": "node dev/server.js",
     "prepare": "npm run build",
     "trypublish": "npm publish || true",
     "docs": "typedoc --plugin typedoc-material-theme --name Apiker --themeColor \"#204495\" --out docs --exclude \"**/tests/**\" ./src"
