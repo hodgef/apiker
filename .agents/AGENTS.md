@@ -41,7 +41,7 @@ Every domain under `src/components/<Name>/` follows the same shape:
   interfaces.ts   # TypeScript types/interfaces for the domain
   <Name>.ts       # implementation
   constants.ts    # (optional) domain constants
-  tests/          # (optional) Jest tests — files here match **/tests/*.(ts|js)
+  tests/          # (optional) Jest tests — files are named <Name>.spec.(ts|js)
 ```
 
 Domains: `Apiker` (core/init), `Admin`, `Auth` (JWT, bcrypt, GitHub OAuth), `Bans`,
@@ -60,8 +60,21 @@ Domains: `Apiker` (core/init), `Admin`, `Auth` (JWT, bcrypt, GitHub OAuth), `Ban
 | Generate API docs | `npm run docs` (TypeDoc → `docs/`) |
 | Clean build output | `npm run clean` |
 
-Tests are matched by `**/tests/*.(js|jsx|ts|tsx)` and use `ts-jest`. **Always run `npm test`
-after changes.**
+Tests are matched by `**/*.spec.(js|jsx|ts|tsx)` and use `ts-jest`. **Always run `npm test`
+after changes.** Name every test file `<Name>.spec.ts`; the build and TypeDoc exclude
+both `**/tests/**` and `**/*.spec.*`, so a spec may live next to the code it covers
+(see `plugins/PostBuild.spec.js`).
+
+## Generated environment variables
+
+`plugins/PostBuild.js` owns project env vars, listed in `REQUIRED_ENV_KEYS`
+(`APIKER_SECRET_KEY`, `ADMP_SETUP_SECRET`). `createEnv()` writes `.env` for a new
+project and `ensureEnv()` back-fills variables added later — without the latter, an
+existing project would never gain a newly required one. `.env` is merged into the
+generated `wrangler.toml` as `vars`, which is how a deployment receives secrets.
+
+To add a variable: append its name to `REQUIRED_ENV_KEYS`; every project picks it up
+on its next build.
 
 ## Non-negotiable conventions
 
