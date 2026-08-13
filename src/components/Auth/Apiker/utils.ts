@@ -230,7 +230,7 @@ export const isUserAdmin = async (userId = ""): Promise<boolean> => {
   if(!userId) return false;
   const { state } = apiker.requestParams;
   const adminIds = await state(OBN.COMMON).get("adminIds");
-  return adminIds.includes(userId);
+  return Array.isArray(adminIds) && adminIds.includes(userId);
 }
 
 /**

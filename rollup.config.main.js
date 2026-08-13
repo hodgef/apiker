@@ -45,7 +45,7 @@ export default [
         browser: true
       }),
       commonjs(),
-      typescript({ tsconfig: "./tsconfig.json", exclude: ["**/tests/**"] }),
+      typescript({ tsconfig: "./tsconfig.json", exclude: ["**/tests/**", "**/*.spec.*"] }),
       alias({
         entries: {
           '@panelAssets': path.resolve(__dirname, './src/components/Admin/assets')

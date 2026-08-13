@@ -9,7 +9,7 @@ import { res_200, res_401 } from '../../Response';
 
 export const loginEndpoint: Handler = async (params) => {
   const { state, body } = params;
-  const { email, password } = body || {};
+  const { email, password, setupSecret } = body || {};
   let user: User | undefined;
 
   /**
@@ -22,6 +22,17 @@ export const loginEndpoint: Handler = async (params) => {
     if(hasAdmins) {
       user = await checkUser(email, password);
     } else {
+      /**
+       * Claiming the first admin account is unauthenticated by nature, so it is
+       * only possible when ADMP_SETUP_SECRET is configured and presented. Without
+       * that, anyone reaching the panel of a fresh deployment could claim it.
+       */
+      const expectedSecret = apiker.env.ADMP_SETUP_SECRET;
+
+      if(!expectedSecret || setupSecret !== expectedSecret){
+        return res_401();
+      }
+
       user = await registerUserAction(email, password, { role: "admin" });
     }
 

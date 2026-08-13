@@ -6,7 +6,7 @@ module.exports = {
         // Type-checking is still enforced by the editor and the build (rollup + tsc).
         'ts-jest': { isolatedModules: true }
     },
-    testMatch: ["<rootDir>/**/tests/*.(js|jsx|ts|tsx)"],
+    testMatch: ["<rootDir>/**/*.spec.(js|jsx|ts|tsx)"],
     transform: {
         '^.+\\.(ts|tsx)?$': 'ts-jest',
         "^.+\\.(js|jsx)$": "babel-jest",

@@ -1,13 +1,13 @@
 import { apiker } from "../Apiker";
-import { getCurrentUser, parseJWT } from "../Auth";
+import { getCurrentUser, isCurrentUserAdmin, parseJWT } from "../Auth";
 import { getCurrentUserGeodata } from "../Geolocation";
 import { Middleware, forwardToMiddleware } from "../Middleware";
 import { Handler } from "../Request";
 import { res_204, res_401 } from "../Response";
 
 export const adminLoginMiddleware: Middleware = async (params, handlerFn?: Handler) => {
-    const user = await getCurrentUser();
-    if(user?.role !== "admin"){
+    // adminIds is the authoritative list; a role on the user object alone is not.
+    if(!await isCurrentUserAdmin()){
         return res_401();
     }
 
@@ -63,6 +63,24 @@ export const adminWhitelistMiddleware: Middleware = async (params, handlerFn?: H
 };
 
 export const adminMiddleware: Middleware = async (params, handlerFn = () => res_204()) => {
+    return forwardToMiddleware(params, [
+        adminCsrfCheckMiddleware,
+        adminWhitelistMiddleware,
+        adminLoginMiddleware,
+        handlerFn
+    ]);
+};
+
+/** Entry points: reachable before an admin exists, so only the network gate applies. */
+export const adminEntryMiddleware: Middleware = async (params, handlerFn = () => res_204()) => {
+    return forwardToMiddleware(params, [
+        adminWhitelistMiddleware,
+        handlerFn
+    ]);
+};
+
+/** Login additionally proves the request came from a panel page. */
+export const adminLoginRouteMiddleware: Middleware = async (params, handlerFn = () => res_204()) => {
     return forwardToMiddleware(params, [
         adminCsrfCheckMiddleware,
         adminWhitelistMiddleware,

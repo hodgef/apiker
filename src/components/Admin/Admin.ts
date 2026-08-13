@@ -3,18 +3,18 @@ import { resRaw } from "../Response";
 import { apikerPagesStatic } from "../Static";
 import { searchLogsEndpoint, bansEndpoint, loginEndpoint, searchBansEndpoint, sendEmailEndpoint, updateUserEndpoint } from "./Api";
 import { adminPanelPage } from "./Panel";
-import { adminCsrfCheckMiddleware, adminMiddleware } from "./middleware";
+import { adminCsrfCheckMiddleware, adminEntryMiddleware, adminLoginRouteMiddleware, adminMiddleware } from "./middleware";
 
 /**
  * Responses
  */
 export const getAdminRoutes = () => ({
     // Entry endpoints under global ratelimit
-    "/admp": adminPanelPage,
+    "/admp": (params: RequestParams) => adminEntryMiddleware(params, adminPanelPage),
     "/admp/static.js": adminPanelStatic,
 
     // Login endpoint only checks for CSRF
-    "/admp/login": (params: RequestParams) => adminCsrfCheckMiddleware(params, loginEndpoint),
+    "/admp/login": (params: RequestParams) => adminLoginRouteMiddleware(params, loginEndpoint),
 
     // Check for admin logged in and CSRF
     "/admp/logs": (params: RequestParams) => adminMiddleware(params, searchLogsEndpoint),
