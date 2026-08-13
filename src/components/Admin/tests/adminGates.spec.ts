@@ -17,6 +17,8 @@ let adminIds: string[] | undefined;
 let currentUser: any;
 let registered: any[];
 let checkedCredentials: any[];
+let existingAccounts: Record<string, { id: string; password: string }>;
+let promoted: string[];
 
 jest.mock("../../Auth", () => {
   const actual: any = jest.requireActual("../../Auth");
@@ -27,14 +29,22 @@ jest.mock("../../Auth", () => {
       !!currentUser?.id && Array.isArray(adminIds) && adminIds.includes(currentUser.id),
     checkUser: async (email: string, password: string) => {
       checkedCredentials.push({ email, password });
+      const account = existingAccounts[email];
+      if (account) return account.password === password ? { id: account.id } : undefined;
       return { id: "existing-admin" };
     },
     registerUserAction: async (email: string, password: string, extra: any) => {
+      if (existingAccounts[email]) return undefined;
       registered.push({ email, password, extra });
       return { id: "new-admin" };
     },
+    addAdminId: async (id: string) => {
+      promoted.push(id);
+      return true;
+    },
     getTokens: () => ({ token: "t" }),
-    isUserAdmin: async (id: string) => Array.isArray(adminIds) && adminIds.includes(id),
+    isUserAdmin: async (id: string) =>
+      (Array.isArray(adminIds) && adminIds.includes(id)) || promoted.includes(id),
   };
 });
 
@@ -63,6 +73,8 @@ describe("Admin gates", () => {
     currentUser = undefined;
     registered = [];
     checkedCredentials = [];
+    existingAccounts = {};
+    promoted = [];
     setHeaders();
   });
 
@@ -99,11 +111,60 @@ describe("Admin gates", () => {
       adminIds = ["existing-admin"];
       apiker.env.ADMP_SETUP_SECRET = "expected";
 
-      await loginEndpoint(params({ email: "a@b.c", password: "pw", setupSecret: "expected" }));
+      await loginEndpoint(params({ email: "a@b.c", password: "pw" }));
 
       // Credentials are verified rather than a second admin being created.
       expect(registered).toEqual([]);
       expect(checkedCredentials).toEqual([{ email: "a@b.c", password: "pw" }]);
+    });
+  });
+
+  describe("provisioning an extra admin with the setup secret", () => {
+    beforeEach(() => {
+      apiker.env.ADMP_SETUP_SECRET = "expected";
+      adminIds = ["existing-admin"];
+    });
+
+    it("creates a new account as an admin even though admins already exist", async () => {
+      await loginEndpoint(
+        params({ email: "service@volted.co", password: "pw", setupSecret: "expected" })
+      );
+
+      expect(registered).toEqual([
+        { email: "service@volted.co", password: "pw", extra: { role: "admin" } },
+      ]);
+    });
+
+    it("promotes an existing account when its own password is given", async () => {
+      existingAccounts["service@volted.co"] = { id: "svc", password: "right" };
+
+      await loginEndpoint(
+        params({ email: "service@volted.co", password: "right", setupSecret: "expected" })
+      );
+
+      expect(promoted).toEqual(["svc"]);
+    });
+
+    it("cannot take over an existing account without its password", async () => {
+      existingAccounts["service@volted.co"] = { id: "svc", password: "right" };
+
+      const res: any = await loginEndpoint(
+        params({ email: "service@volted.co", password: "guess", setupSecret: "expected" })
+      );
+
+      expect(res.status).toBe(401);
+      expect(promoted).toEqual([]);
+    });
+
+    it("ignores a wrong secret and falls back to a normal login", async () => {
+      existingAccounts["service@volted.co"] = { id: "svc", password: "right" };
+
+      await loginEndpoint(
+        params({ email: "service@volted.co", password: "right", setupSecret: "wrong" })
+      );
+
+      expect(promoted).toEqual([]);
+      expect(registered).toEqual([]);
     });
   });
 

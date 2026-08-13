@@ -234,6 +234,23 @@ export const isUserAdmin = async (userId = ""): Promise<boolean> => {
 }
 
 /**
+ * Grants admin rights to an existing user. Idempotent.
+ */
+export const addAdminId = async (userId = ""): Promise<boolean> => {
+  if(!userId) return false;
+  const { state } = apiker.requestParams;
+  const adminIds = await state(OBN.COMMON).get("adminIds") || [];
+
+  if(adminIds.includes(userId)){
+    return true;
+  }
+
+  adminIds.push(userId);
+  await state(OBN.COMMON).put({ adminIds });
+  return true;
+}
+
+/**
  * Checks whether the current user is an admin
  */
 export const isCurrentUserAdmin = async (): Promise<boolean> => {
