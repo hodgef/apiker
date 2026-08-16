@@ -251,9 +251,19 @@ describe("Admin gates", () => {
       currentUser = { id: "the-admin" };
       adminIds = ["the-admin"];
       setHeaders(csrfHeaders("the-admin"));
+      apiker.env.ADMP_IP_WHITELIST = "1.2.3.4";
 
       const res: any = await adminMiddleware(params(), handler);
       expect(await res.text()).toBe("secret data");
+    });
+
+    it("refuses an admin when no allowlist is configured (fail closed)", async () => {
+      currentUser = { id: "the-admin" };
+      adminIds = ["the-admin"];
+      setHeaders(csrfHeaders("the-admin"));
+
+      const res: any = await adminMiddleware(params(), handler);
+      expect(res.status).toBe(401);
     });
 
     it("refuses a request without a CSRF token", async () => {
@@ -304,6 +314,8 @@ describe("Admin gates", () => {
     const staticRoute = () => getAdminRoutes()["/admp/static.js"];
 
     it("is served to a signed-out visitor on an allowed network", async () => {
+      apiker.env.ADMP_IP_WHITELIST = "1.2.3.4";
+
       const res: any = await staticRoute()(params());
 
       expect(res.status).toBe(200);
@@ -328,8 +340,9 @@ describe("Admin gates", () => {
   });
 
   describe("adminWhitelistMiddleware", () => {
-    it("is inert when nothing is configured", async () => {
-      expect(await adminWhitelistMiddleware(params())).toBeUndefined();
+    it("denies everyone when no allowlist is configured (fail closed)", async () => {
+      const res: any = await adminWhitelistMiddleware(params());
+      expect(res.status).toBe(401);
     });
 
     it("rejects an address outside the allowed one", async () => {

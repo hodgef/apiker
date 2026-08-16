@@ -77,20 +77,30 @@ export const adminSessionCsrfCheckMiddleware: Middleware = async (params, handle
 }
 
 export const adminWhitelistMiddleware: Middleware = async (params, handlerFn?: Handler) => {
-    if(apiker.env.ADMP_IP_WHITELIST || apiker.env.ADMP_ISP_WHITELIST || apiker.env.ADMP_CITY_WHITELIST){
-        const { headers } = apiker.requestParams;
-        const ip = headers.get("CF-Connecting-IP") as string;
+    const { ADMP_IP_WHITELIST, ADMP_ISP_WHITELIST, ADMP_CITY_WHITELIST } = apiker.env;
+
+    // Fail closed: the panel stays unreachable until at least one allowlist is configured, so a
+    // deployment can never accidentally expose it to the public internet.
+    if(!ADMP_IP_WHITELIST && !ADMP_ISP_WHITELIST && !ADMP_CITY_WHITELIST){
+        return res_401();
+    }
+
+    const { headers } = apiker.requestParams;
+    const ip = headers.get("CF-Connecting-IP") as string;
+
+    if(ADMP_IP_WHITELIST && !isWhitelisted(ip, ADMP_IP_WHITELIST)){
+        return res_401();
+    }
+
+    // Geolocation costs an external lookup, so only resolve it when a geo allowlist is set.
+    if(ADMP_ISP_WHITELIST || ADMP_CITY_WHITELIST){
         const userGeoloc = await getCurrentUserGeodata();
 
-        if(apiker.env.ADMP_IP_WHITELIST && !isWhitelisted(ip, apiker.env.ADMP_IP_WHITELIST)){
+        if(ADMP_ISP_WHITELIST && !isWhitelisted(userGeoloc.isp, ADMP_ISP_WHITELIST)){
             return res_401();
         }
 
-        if(apiker.env.ADMP_ISP_WHITELIST && !isWhitelisted(userGeoloc.isp, apiker.env.ADMP_ISP_WHITELIST)){
-            return res_401();
-        }
-    
-        if(apiker.env.ADMP_CITY_WHITELIST && !isWhitelisted(userGeoloc.city, apiker.env.ADMP_CITY_WHITELIST)){
+        if(ADMP_CITY_WHITELIST && !isWhitelisted(userGeoloc.city, ADMP_CITY_WHITELIST)){
             return res_401();
         }
     }
