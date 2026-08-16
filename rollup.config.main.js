@@ -35,6 +35,11 @@ export default [
       }
     ],
     external: Object.keys(globals),
+    // Circular deps are safe here (the apiker singleton is only used at request time, not on load).
+    onwarn(warning, warn) {
+      if (warning.code === "CIRCULAR_DEPENDENCY") return;
+      warn(warning);
+    },
     plugins: [
       replace({
         "process.env.NODE_ENV": JSON.stringify("production"),
@@ -45,7 +50,7 @@ export default [
         browser: true
       }),
       commonjs(),
-      typescript({ tsconfig: "./tsconfig.json", exclude: ["**/tests/**", "**/*.spec.*"] }),
+      typescript({ tsconfig: "./tsconfig.json", sourceMap: false, declarationMap: false, exclude: ["**/tests/**", "**/*.spec.*"] }),
       alias({
         entries: {
           '@panelAssets': path.resolve(__dirname, './src/components/Admin/assets')

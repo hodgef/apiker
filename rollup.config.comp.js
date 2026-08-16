@@ -27,6 +27,11 @@ export default [
       globals
     },
     external: Object.keys(globals),
+    // Circular deps are safe here (the apiker singleton is only used at request time, not on load).
+    onwarn(warning, warn) {
+      if (warning.code === "CIRCULAR_DEPENDENCY") return;
+      warn(warning);
+    },
     plugins: [
       replace({
         "process.env.NODE_ENV": JSON.stringify("production"),
