@@ -13,3 +13,18 @@ Please note we have a code of conduct, please follow it in all your interactions
 4. Document your changes thoroughly.
 5. Ensure that none of the tests fail.
 6. Be reactive to any comments, reviews or change requests entered in your pull request.
+
+## Working on the admin panel
+
+The library is not a worker, so the panel's UI is developed against one. Run a project
+that uses Apiker with `wrangler dev --local`, then start the sandbox here:
+
+```
+npm run dev:panel
+```
+
+It serves the panel from local source on `http://localhost:5010` and proxies every
+`/admp` request to the worker, so the session, CSRF token and data are real while the
+components rebuild on save. Point it elsewhere with `ADMP_TARGET`, and set
+`ADMP_EMAIL` / `ADMP_PASSWORD` to sign in from `/dev/login` without typing credentials
+into the page.

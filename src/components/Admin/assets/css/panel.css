@@ -191,12 +191,50 @@ body {
 .admp-main {
     flex: 1;
     min-width: 0;
-    max-width: 48rem;
+    max-width: 64rem;
     padding: 2rem 2rem 4rem;
 }
 
 .admp-heading {
     margin-bottom: 1.5rem;
+}
+
+.admp-heading__title {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+/* Chromeless, like the app's own back arrow: the icon is the affordance. */
+.admp-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 0.25rem;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    transition: opacity .1s ease-in-out;
+}
+
+.admp-back:hover {
+    opacity: 0.5;
+}
+
+.admp-back:active {
+    opacity: 0.3;
+}
+
+.admp-back:focus-visible {
+    outline: none;
+    border-radius: calc(var(--admp-radius) - 0.25rem);
+    box-shadow: var(--admp-ring);
+}
+
+.admp-back .admp-icon {
+    font-size: 24px;
 }
 
 .admp-heading h1 {
@@ -346,6 +384,15 @@ body {
     display: flex;
     flex-flow: column;
     gap: 0.375rem;
+    /* Controls read better in a column than stretched across the card. */
+    max-width: 26rem;
+}
+
+/** A labelled block of results, which needs the full width a field does not. */
+.admp-group {
+    display: flex;
+    flex-flow: column;
+    gap: 0.375rem;
 }
 
 .admp-inline {
@@ -359,7 +406,8 @@ body {
     min-width: 0;
 }
 
-.admp-form > .admp-btn {
+.admp-form > .admp-btn,
+.admp-action > .admp-btn {
     align-self: flex-start;
     margin-top: 0.25rem;
 }
@@ -684,6 +732,289 @@ body {
     margin-top: 0;
 }
 
+/* -------------------------------------------------------------- dashboard */
+
+.admp-dashboard {
+    display: flex;
+    flex-flow: column;
+    gap: 1.5rem;
+}
+
+.admp-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.75rem;
+}
+
+.admp-stat {
+    display: flex;
+    flex-flow: column;
+    gap: 0.125rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--admp-border);
+    border-radius: calc(var(--admp-radius) + 0.25rem);
+    background: var(--admp-background);
+    box-shadow: var(--admp-shadow);
+}
+
+.admp-stat--action {
+    width: 100%;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+.admp-stat--action:hover {
+    border-color: var(--admp-muted-foreground);
+    box-shadow: var(--admp-shadow-md);
+}
+
+.admp-stat--action:active {
+    transform: translateY(1px);
+}
+
+.admp-stat--action:focus-visible {
+    outline: none;
+    box-shadow: var(--admp-ring);
+}
+
+/* The card is the button, so the tooltip wrapper has to fill the grid cell. */
+.admp-stats > .admp-tooltip {
+    display: flex;
+}
+
+.admp-stat--warning {
+    border-color: #fde68a;
+    background: #fffbeb;
+}
+
+.admp-stat__label {
+    color: var(--admp-muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.admp-stat__value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.admp-stat__hint {
+    color: var(--admp-muted-foreground);
+    font-size: 0.75rem;
+}
+
+.admp-panel {
+    border: 1px solid var(--admp-border);
+    border-radius: calc(var(--admp-radius) + 0.25rem);
+    background: var(--admp-background);
+    box-shadow: var(--admp-shadow);
+    overflow: hidden;
+}
+
+.admp-panel__header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--admp-border);
+}
+
+.admp-panel__header h2 {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.admp-panel__header p {
+    margin: 0.125rem 0 0;
+    color: var(--admp-muted-foreground);
+    font-size: 0.8125rem;
+}
+
+.admp-panel > .admp-tiles,
+.admp-panel > .admp-facts,
+.admp-panel > .admp-posture,
+.admp-panel > .admp-hint,
+.admp-panel > .admp-empty {
+    padding: 1.25rem;
+    margin: 0;
+}
+
+.admp-panel > .admp-hint {
+    padding-top: 0;
+}
+
+/* ------------------------------------------------------------ event table */
+
+/* No scroll container: it would clip a row's tooltip and actions menu. */
+.admp-table {
+    position: relative;
+}
+.admp-table__row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1.25rem;
+    border-bottom: 1px solid var(--admp-border);
+    font-size: 0.8125rem;
+}
+
+.admp-table__row:last-child {
+    border-bottom: none;
+}
+
+.admp-table__row:hover {
+    background: var(--admp-muted);
+}
+
+.admp-tag {
+    flex: none;
+    padding: 0.0625rem 0.4375rem;
+    border-radius: 999px;
+    background: var(--admp-muted);
+    color: var(--admp-muted-foreground);
+    font-size: 0.6875rem;
+    font-weight: 600;
+}
+
+.admp-tag--action {
+    border: 1px solid transparent;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.admp-tag--action:hover {
+    border-color: var(--admp-border);
+    background: var(--admp-background);
+    color: var(--admp-foreground);
+}
+
+.admp-tag--action:focus-visible {
+    outline: none;
+    box-shadow: var(--admp-ring);
+}
+
+.admp-table__time {
+    flex: none;
+    width: 7rem;
+    color: var(--admp-muted-foreground);
+    white-space: nowrap;
+}
+
+.admp-table__main {
+    flex: 1 1 10rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.admp-table__meta {
+    flex: none;
+    width: 2rem;
+    color: var(--admp-muted-foreground);
+}
+
+.admp-table__id {
+    flex: none;
+    max-width: 7rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--admp-muted-foreground);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.75rem;
+}
+
+.admp-table__actions {
+    flex: none;
+    display: flex;
+    gap: 0.25rem;
+    margin-left: auto;
+}
+
+/* A tooltip wraps its cell, so it has to carry the cell's sizing. */
+.admp-table__row > .admp-tooltip {
+    flex: none;
+    min-width: 0;
+}
+
+.admp-table__row > .admp-tooltip:has(.admp-table__main) {
+    flex: 1 1 10rem;
+}
+
+.admp-table__actions .admp-btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+/* --------------------------------------------------------- deployment card */
+
+.admp-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 0.75rem 1.5rem;
+}
+
+.admp-facts > div {
+    display: flex;
+    flex-flow: column;
+    gap: 0.125rem;
+    min-width: 0;
+}
+
+.admp-facts dt {
+    color: var(--admp-muted-foreground);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.admp-facts dd {
+    margin: 0;
+    font-size: 0.8125rem;
+    overflow-wrap: anywhere;
+}
+
+.admp-posture {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    padding-top: 0 !important;
+}
+
+.admp-posture__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3125rem;
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--admp-border);
+    border-radius: 999px;
+    color: var(--admp-muted-foreground);
+    font-size: 0.75rem;
+}
+
+.admp-posture__item .admp-icon {
+    font-size: 16px;
+}
+
+.admp-posture__item.is-on {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+    color: #166534;
+}
+
+@media (max-width: 767.98px) {
+    .admp-table__time,
+    .admp-table__meta,
+    .admp-table__id {
+        display: none;
+    }
+}
+
 @media (max-width: 767.98px) {
     .admp-layout {
         flex-flow: column;
@@ -729,4 +1060,209 @@ body {
     .admp-card__header { padding: 1rem 1rem 0; }
     .admp-card__body { padding: 1rem; }
     .admp-card__footer { padding: 0 1rem 1rem; }
+}
+
+/* ------------------------------------------------------------ beacons */
+
+.admp-chart {
+    display: flex;
+    flex-flow: column;
+    gap: 0.375rem;
+}
+
+.admp-chart svg {
+    width: 100%;
+    height: 6rem;
+    display: block;
+    border: 1px solid var(--admp-border);
+    border-radius: var(--admp-radius);
+    background: var(--admp-background);
+}
+
+.admp-chart__area {
+    fill: var(--admp-muted);
+}
+
+.admp-chart__line {
+    fill: none;
+    stroke: var(--admp-foreground);
+    stroke-width: 2;
+    stroke-linejoin: round;
+}
+
+.admp-chart__axis {
+    display: flex;
+    justify-content: space-between;
+    color: var(--admp-muted-foreground);
+    font-size: 0.75rem;
+}
+
+.admp-beacons {
+    max-height: 22rem;
+    overflow-y: auto;
+    border: 1px solid var(--admp-border);
+    border-radius: var(--admp-radius);
+}
+
+.admp-beacons__row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--admp-border);
+    font-size: 0.8125rem;
+}
+
+.admp-beacons__row:last-child {
+    border-bottom: none;
+}
+
+.admp-beacons__name {
+    flex: 1 1 10rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.admp-beacons__countries {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.25rem;
+    /* Never squeeze the codes into one character per line. */
+    flex: 0 1 auto;
+}
+
+.admp-chip {
+    padding: 0.0625rem 0.375rem;
+    border: 1px solid var(--admp-border);
+    border-radius: 999px;
+    color: var(--admp-muted-foreground);
+    font-size: 0.6875rem;
+    white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ tooltip */
+
+.admp-tooltip {
+    position: relative;
+    display: inline-flex;
+}
+
+.admp-tooltip__content {
+    position: absolute;
+    left: 50%;
+    z-index: 30;
+    transform: translateX(-50%) scale(0.96);
+    padding: 0.25rem 0.5rem;
+    border-radius: calc(var(--admp-radius) - 0.25rem);
+    background: var(--admp-primary);
+    color: var(--admp-primary-foreground);
+    box-shadow: var(--admp-shadow-md);
+    font-size: 0.75rem;
+    line-height: 1.35;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .12s ease, transform .12s ease;
+}
+
+.admp-tooltip--top .admp-tooltip__content {
+    bottom: calc(100% + 0.375rem);
+}
+
+.admp-tooltip--bottom .admp-tooltip__content {
+    top: calc(100% + 0.375rem);
+}
+
+.admp-tooltip:hover .admp-tooltip__content,
+.admp-tooltip:focus-within .admp-tooltip__content {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* ------------------------------------------------------------ menu */
+
+.admp-menu {
+    position: relative;
+    flex: none;
+}
+
+.admp-menu__trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: calc(var(--admp-radius) - 0.125rem);
+    background: transparent;
+    color: var(--admp-muted-foreground);
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.admp-menu__trigger:hover {
+    background: var(--admp-muted);
+    border-color: var(--admp-border);
+    color: var(--admp-foreground);
+}
+
+.admp-menu__trigger:focus-visible {
+    outline: none;
+    box-shadow: var(--admp-ring);
+}
+
+.admp-menu__list {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    right: 0;
+    z-index: 20;
+    min-width: 13rem;
+    margin: 0;
+    padding: 0.25rem;
+    list-style: none;
+    border: 1px solid var(--admp-border);
+    border-radius: var(--admp-radius);
+    background: var(--admp-background);
+    box-shadow: var(--admp-shadow-md);
+}
+
+.admp-menu__item {
+    display: flex;
+    flex-flow: column;
+    gap: 0.125rem;
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    border: none;
+    border-radius: calc(var(--admp-radius) - 0.25rem);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.admp-menu__item:hover {
+    background: var(--admp-muted);
+}
+
+.admp-menu__item--destructive .admp-menu__label {
+    color: #b91c1c;
+}
+
+.admp-menu__label {
+    font-size: 0.8125rem;
+}
+
+.admp-menu__description {
+    color: var(--admp-muted-foreground);
+    font-size: 0.6875rem;
+    line-height: 1.35;
+    white-space: normal;
 }

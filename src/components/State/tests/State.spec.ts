@@ -96,6 +96,7 @@ describe("getStateMethods", () => {
     await state.delete("prop");
     await state.deleteAll();
     await state.list({ prefix: "p" });
+    await state.increment({ increments: { hits: 1 } });
 
     const endpoints = fetchMock.mock.calls.map((c: any[]) => c[0]);
     expect(endpoints.some((u: string) => u.endsWith("/get"))).toBe(true);
@@ -103,6 +104,16 @@ describe("getStateMethods", () => {
     expect(endpoints.some((u: string) => u.endsWith("/delete"))).toBe(true);
     expect(endpoints.some((u: string) => u.endsWith("/deleteall"))).toBe(true);
     expect(endpoints.some((u: string) => u.endsWith("/list"))).toBe(true);
+    expect(endpoints.some((u: string) => u.endsWith("/increment"))).toBe(true);
+  });
+
+  it("sends the increment payload to the object and returns the totals", async () => {
+    const fetchMock = jest.fn(async () => new Response(JSON.stringify({ hits: 7 })));
+    apiker.env = { Common: { idFromName: () => "id", get: () => ({ fetch: fetchMock }) } };
+    const state = getStateMethods("Common")("Common", "myId");
+
+    await expect(state.increment({ increments: { hits: 1 } })).resolves.toEqual({ hits: 7 });
+    expect(JSON.parse((fetchMock.mock.calls[0] as any[])[1].body)).toEqual({ increments: { hits: 1 } });
   });
 
   it("uses an explicitly provided objectId", async () => {

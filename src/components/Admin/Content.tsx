@@ -1,6 +1,6 @@
 import React from "react";
 import { Action, Actions } from "./interfaces";
-import { Icon } from "./ui";
+import { Icon, Tooltip } from "./ui";
 
 interface ActionGroup {
     name: string;
@@ -63,34 +63,33 @@ export const Sidebar: React.FC<SidebarProps> = ({ actions, action, onSelect }) =
     </aside>
 );
 
-interface OverviewProps {
-    actions: Actions;
-    onSelect: (action: Action) => void;
-}
-
-export const Overview: React.FC<OverviewProps> = ({ actions, onSelect }) => (
-    <div className="admp-tiles">
-        {actions.map((item) => (
-            <button type="button" className="admp-tile" key={item.id} onClick={() => onSelect(item)}>
-                <span className="admp-tile__icon"><Icon name={item.icon} /></span>
-                <span className="admp-tile__title">{item.displayName}</span>
-                {item.description && <span className="admp-tile__description">{item.description}</span>}
-            </button>
-        ))}
-    </div>
-);
-
 interface ContentProps {
     title?: string;
     description?: string;
+    onBack?: () => void;
+    backLabel?: string;
     children?: React.ReactNode;
 }
 
-export const Content: React.FC<ContentProps> = ({ title, description, children }) => (
+export const Content: React.FC<ContentProps> = ({ title, description, onBack, backLabel, children }) => (
     <main className="admp-main">
         {(title || description) && (
             <div className="admp-heading">
-                {title && <h1>{title}</h1>}
+                <div className="admp-heading__title">
+                    {onBack && (
+                        <Tooltip label={backLabel || "Back"}>
+                            <button
+                                type="button"
+                                className="admp-back"
+                                aria-label={backLabel || "Back"}
+                                onClick={onBack}
+                            >
+                                <Icon name="arrow_back" />
+                            </button>
+                        </Tooltip>
+                    )}
+                    {title && <h1>{title}</h1>}
+                </div>
                 {description && <p>{description}</p>}
             </div>
         )}

@@ -51,7 +51,7 @@ module.exports = class PostBuild {
 
             // Get list of objects to register
             const newAppTomlParams = this.registerMissingObjects(missingObjects, deletedObjects, {...tomlParsed });
-            const newWranglerTomlParams = { ...newAppTomlParams, vars: env };
+            const newWranglerTomlParams = { ...newAppTomlParams, vars: this.wranglerVars(env, newAppTomlParams.name) };
 
             /**
              * Build wrangler toml
@@ -147,6 +147,15 @@ module.exports = class PostBuild {
     createTomlContents(newTomlParams, prependedContents) {
         const newTomlContents = this.TOML.stringify(newTomlParams);
         return prependedContents + newTomlContents;
+    }
+
+    /**
+     * Cloudflare indexes Durable Object namespaces by worker script name, which is
+     * app.toml's `name` rather than whatever a project passes to `apiker.init`. An
+     * explicit .env value still wins.
+     */
+    wranglerVars(env = {}, appName) {
+        return appName ? { CLOUDFLARE_SCRIPT_NAME: appName, ...env } : { ...env };
     }
 
     /** Rewriting identical contents restarts watchers such as `wrangler dev`. */

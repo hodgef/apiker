@@ -1,5 +1,5 @@
 import { apiker } from '../../Apiker';
-import { User } from '../../Auth';
+import { indexUser, unindexUser, User } from '../../Auth';
 import { unbanEntity } from '../../Bans';
 import { OBN } from '../../ObjectBase';
 import { Handler } from '../../Request';
@@ -86,6 +86,10 @@ export const updateUserEndpoint: Handler = async ({ state, body, request }) => {
       /** Displayed field */
       const newUserPut = await state(OBN.USERS, user!.id).put({ [user!.id]: newUser });
 
+      /** The old email is a directory key, so it goes before the new one is written. */
+      await unindexUser(user!);
+      await indexUser(newUser as User);
+
       if(apiker.debug){
         console.log("newUserPut", newUserPut);
       }
@@ -117,6 +121,7 @@ export const updateUserEndpoint: Handler = async ({ state, body, request }) => {
     const formEmailDelete = await state(OBN.EMAILTOUUID, userEmail).deleteAll();
     const userEmailDelete = await state(OBN.EMAILTOUUID, user!.email).deleteAll();
     const userDelete = await state(OBN.USERS, user!.id).deleteAll();
+    await unindexUser(user!);
     const formEmailUnban = await unbanEntity(userEmail);
     const userEmailUnban = await unbanEntity(user!.email);
     const userIdUnban = await unbanEntity(user!.id);

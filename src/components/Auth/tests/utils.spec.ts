@@ -7,6 +7,7 @@ import {
   encodeString,
   extractToken,
   getClientId,
+  getCurrentUserId,
   getRawIp,
   getSignedIp,
   getTokens,
@@ -144,6 +145,30 @@ describe("Auth utils", () => {
       expect(userId).toBe("user-123");
       expect(parseJWT(token)?.sub).toBe("user-123");
       expect(parseJWT(refreshToken)?.isRefreshToken).toBe(true);
+    });
+  });
+
+  describe("getCurrentUserId", () => {
+    it("reads the user id from the request token without touching storage", () => {
+      const { token } = getTokens("user-123");
+      setRequest("https://api.test/path", { Authorization: `Bearer ${token}` });
+      expect(getCurrentUserId()).toBe("user-123");
+    });
+
+    it("returns nothing for an anonymous request", () => {
+      setRequest();
+      expect(getCurrentUserId()).toBeUndefined();
+    });
+
+    it("returns nothing for a token that does not verify", () => {
+      setRequest("https://api.test/path", { Authorization: "Bearer not-a-real-token" });
+      expect(getCurrentUserId()).toBeUndefined();
+    });
+
+    it("stays quiet when the token cannot be checked at all", () => {
+      setRequest("https://api.test/path", { Authorization: "Bearer a.b.c" });
+      apiker.env = {};
+      expect(getCurrentUserId()).toBeUndefined();
     });
   });
 });

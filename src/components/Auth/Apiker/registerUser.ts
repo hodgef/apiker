@@ -4,6 +4,7 @@ import { Handler } from "../../Request";
 import { res, res_400 } from "../../Response";
 import { isEmail, isRequiredLength } from "../../Validation";
 import { AUTH_ERRORS } from "./constants";
+import { indexUser } from "./directory";
 import { User } from "./interfaces";
 import { getTokens, hash_bcrypt, randomHash_SHA1 } from "./utils";
 
@@ -69,6 +70,9 @@ export const registerUserAction = async (email: string, password: string, extraP
    * Create EmailToUUID entry
    */
   await state(OBN.EMAILTOUUID, email).put({ [email]: id });
+
+  /** Keeps the account listable; users are otherwise one object instance each. */
+  await indexUser(user);
 
   /**
    * If it's an admin, create an entry in admin table

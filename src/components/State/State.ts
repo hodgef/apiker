@@ -38,6 +38,7 @@ export const getStateMethods = (defaultObjectName: string, matches?: MatchResult
     return {
       get: (obj ? getObjectState(obj, () => callback("get")) : () => {}),
       put: (obj ? putObjectState(obj, () => callback("put")) : () => {}),
+      increment: (obj ? incrementObjectState(obj, () => callback("increment")) : () => {}),
       delete: (obj ? deleteObjectState(obj, () => callback("delete")): () => {}),
       deleteAll: (obj ? deleteAllObjectState(obj, () => callback("deleteAll")) : () => {}),
       list: (obj ? listObjectState(obj, () => callback("list")) : () => {}),
@@ -206,6 +207,31 @@ export const putObjectState = (obj: any, callback: any) =>
     }
 
     return JSON.parse(body || null);
+  };
+
+/** Returns an async function that atomically bumps counters inside the object. */
+export const incrementObjectState = (obj: any, callback: any) =>
+  async (payload: any) => {
+    const result = await obj.fetch(OB_ENDPOINT + "/increment", {
+      method: "POST",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json"
+      },
+    });
+
+    const body = await result.text();
+    const parsedBody = JSON.parse(body || null);
+
+    if(callback){
+      callback();
+    }
+
+    if(apiker.debug){
+      console.log('incrementObjectState', payload, parsedBody);
+    }
+
+    return parsedBody;
   };
 
 /**

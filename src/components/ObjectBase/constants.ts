@@ -5,7 +5,8 @@ export const OBN = {
   EMAILTOUUID: "EmailToUUID",
   RATELIMIT: "RateLimit",
   LOGS: "Logs",
-  BANS: "Bans"
+  BANS: "Bans",
+  BEACONS: "Beacons"
 };
 
 /**

@@ -4,3 +4,6 @@ export * from "./loginEndpoint";
 export * from "./sendEmailEndpoint";
 export * from "./updateUserEndpoint";
 export * from "./adminsEndpoint";
+export * from "./overviewEndpoint";
+export * from "./usersEndpoint";
+export * from "./beaconsEndpoint";

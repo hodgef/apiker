@@ -4,7 +4,7 @@ import { getAppHelper } from "../Utils";
 import { Button, DataList, Field, Form, Input } from "../ui";
 
 export const SearchBans: React.FC<SearchBansPageProps> = (props) => {
-    const { pageName = "", csrfToken = "" } = props;
+    const { pageName = "", csrfToken = "", presetValue } = props;
     const { setProps } = getAppHelper(pageName);
     const [results, setResults] = React.useState<LogResults[]>([]);
 
@@ -58,7 +58,7 @@ export const SearchBans: React.FC<SearchBansPageProps> = (props) => {
         <div className="admp-action">
             <Form onSubmit={onSubmit}>
                 <Field label="User ID" htmlFor="userId">
-                    <Input id="userId" type="text" placeholder="User ID" />
+                    <Input id="userId" type="text" placeholder="User ID" defaultValue={presetValue} />
                 </Field>
                 <Button type="submit">Search bans</Button>
             </Form>

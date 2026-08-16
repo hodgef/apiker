@@ -6,8 +6,8 @@ import { res, res_404 } from "../Response";
  * per entry in `apiker.init({ objects })`.
  *
  * Its `fetch` handler exposes the object's persistent storage over HTTP-style
- * routes (`/get`, `/put`, `/delete`, `/deleteall`, `/list`) that the client-side
- * `state` proxy calls into.
+ * routes (`/get`, `/put`, `/increment`, `/delete`, `/deleteall`, `/list`) that the
+ * client-side `state` proxy calls into.
  */
 export default class {
     /** The Durable Object state provided by the Workers runtime (holds `storage`). */
@@ -39,6 +39,35 @@ export default class {
         );
 
         return res("Success");
+
+      } else if(pathname.startsWith("/increment")){
+        /**
+         * Counting happens inside the object so that concurrent requests cannot
+         * read the same value and overwrite each other's increment.
+         */
+        const { increments = {}, ring = null } = requestBody || {};
+        const propertyNames = Object.keys(increments);
+        const current = await this.state.storage.get(propertyNames);
+        const totals = {};
+
+        await Promise.all(propertyNames.map(propertyName => {
+          const previous = Number(current?.get ? current.get(propertyName) : current?.[propertyName]) || 0;
+          const total = previous + (Number(increments[propertyName]) || 0);
+          totals[propertyName] = total;
+          return this.state.storage.put(propertyName, total);
+        }));
+
+        /**
+         * Optional fixed-size sample buffer: the slot is derived from a counter
+         * that was just bumped, so samples rotate without ever growing.
+         */
+        if(ring && ring.prefix && ring.size > 0){
+          const position = Math.trunc(Number(totals[ring.from]) || 0);
+          const slot = ((position % ring.size) + ring.size) % ring.size;
+          await this.state.storage.put(`${ring.prefix}${slot}`, ring.value);
+        }
+
+        return new Response(JSON.stringify(totals));
 
       } else if(pathname.startsWith("/deleteall")){
         await this.state.storage.deleteAll();

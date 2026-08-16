@@ -12,6 +12,13 @@ export const defaultActions: Actions = [
 
 export const authActions: Actions = [
     {
+        id: "listUsers",
+        displayName: "List Users",
+        description: "See every account this deployment holds.",
+        icon: "group",
+        group: "Users"
+    },
+    {
         id: "addAdmin",
         displayName: "Add Admin",
         description: "Grant admin rights to a new or existing account.",
@@ -61,9 +68,16 @@ export const authActions: Actions = [
         group: "Moderation"
     },
     {
+        id: "beacons",
+        displayName: "Beacons",
+        description: "Traffic and events this deployment recorded for itself.",
+        icon: "monitoring",
+        group: "Diagnostics"
+    },
+    {
         id: "listLogs",
         displayName: "List Logs",
-        description: "Inspect request logs by log id.",
+        description: "Browse every log this deployment records.",
         icon: "receipt_long",
         group: "Diagnostics"
     },

@@ -37,14 +37,39 @@ export const getObjectNamespaces = async (requestOptions = {}) => {
   return data;
 };
 
+/** Cloudflare pages this listing, and a deployment can hold far more than one page. */
+const INSTANCE_PAGE_SIZE = 1000;
+const INSTANCE_MAX_PAGES = 20;
+
 /**
- * Fetches the list of instances for a specific object namespace
+ * Fetches the list of instances for a specific object namespace, following the
+ * cursor so the result is the whole namespace and not just its first page.
+ *
  * @param namespaceId The ID of the object namespace
  */
 export const getObjectInstancesByNamespaceId = async (namespaceId: string, requestOptions = {}) => {
-  const result = await fetchFromCloudflareAPI(`/accounts/${apiker.env.CLOUDFLARE_ACCOUNT_ID}/workers/durable_objects/namespaces/${namespaceId}/objects`, requestOptions);
-  const data = await result.json();
-  return data;
+  const endpoint = `/accounts/${apiker.env.CLOUDFLARE_ACCOUNT_ID}/workers/durable_objects/namespaces/${namespaceId}/objects`;
+  const instances: any[] = [];
+  let cursor = "";
+
+  for(let page = 0; page < INSTANCE_MAX_PAGES; page++){
+    const query = `?limit=${INSTANCE_PAGE_SIZE}${cursor ? `&cursor=${encodeURIComponent(cursor)}` : ""}`;
+    const result = await fetchFromCloudflareAPI(`${endpoint}${query}`, requestOptions);
+    const data = await result.json() as any;
+
+    if(!data?.result){
+      return page ? { success: true, result: instances } : data;
+    }
+
+    instances.push(...data.result);
+    cursor = data.result_info?.cursor || "";
+
+    if(!cursor){
+      break;
+    }
+  }
+
+  return { success: true, result: instances };
 }
 
 /**
@@ -55,11 +80,24 @@ export const getObjectInstancesByNamespaceId = async (namespaceId: string, reque
  */
 export const getInstanceList = async (appName: string, objectName: string, requestOptions = {}) => {
   const namespacesResponse = await getObjectNamespaces() as { result: any[] } | undefined;
-  const namespace = namespacesResponse?.result?.find((ns: any) => ns.script === appName && ns.class === objectName);
+  const candidates = namespacesResponse?.result?.filter((ns: any) => ns.class === objectName) || [];
+
+  /**
+   * `apiker.init({ name })` is a display name and often differs from the worker
+   * script, so a single candidate is taken as the match rather than failing.
+   */
+  const namespace = candidates.find((ns: any) => ns.script === appName)
+    || (candidates.length === 1 ? candidates[0] : undefined);
   const namespaceId = namespace?.id;
 
   if(!namespaceId){
-    throw new Error(`Namespace for object ${objectName} not found`);
+    const scripts = candidates.map((ns: any) => ns.script).join(", ");
+
+    throw new Error(
+      scripts
+        ? `Object ${objectName} exists on more than one script (${scripts}). Set CLOUDFLARE_SCRIPT_NAME to the right one.`
+        : `Namespace for object ${objectName} not found`
+    );
   }
 
   const instanceListResponse = await getObjectInstancesByNamespaceId(namespaceId, requestOptions);

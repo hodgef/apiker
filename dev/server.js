@@ -8,7 +8,8 @@
  *   npm run dev:panel
  *   $env:ADMP_TARGET="https://your-deployment.example.com"; npm run dev:panel
  *
- * Default target is `wrangler dev` on 127.0.0.1:8787.
+ * Default target is `wrangler dev` on 127.0.0.1:8787. Set ADMP_EMAIL/ADMP_PASSWORD to
+ * sign in to the target from `/dev/login` without typing credentials into the page.
  */
 const http = require("http");
 const fs = require("fs");
@@ -30,8 +31,12 @@ const readBody = (req) =>
     req.on("end", () => resolve(Buffer.concat(chunks)));
   });
 
-/** Cookies issued for an https target would be dropped on a plain http sandbox. */
-const relaxCookie = (value) => value.replace(/;\s*Secure/gi, "");
+/**
+ * Cookies issued for an https target would be dropped on a plain http sandbox, and
+ * one set from `/dev/login` would otherwise default to a `/dev` path.
+ */
+const relaxCookie = (value) =>
+  `${value.replace(/;\s*Secure/gi, "").replace(/;\s*Path=[^;]*/gi, "")}; Path=/`;
 
 const forward = (req, url, body) => {
   const headers = {};
@@ -57,6 +62,15 @@ const passCookies = (upstream, headers) => {
 
   return headers;
 };
+
+/**
+ * A session left over from a previous target is scoped to `/admp` and would be sent
+ * ahead of the new one, so it is expired before signing in again.
+ */
+const expireStaleCookies = (setCookie = []) =>
+  setCookie
+    .map((value) => value.split("=")[0])
+    .flatMap((name) => [`${name}=; Max-Age=0; Path=/admp`, `${name}=; Max-Age=0; Path=/dev`]);
 
 const shell = (props) => `<!DOCTYPE html>
 <html lang="en">
@@ -114,17 +128,61 @@ const server = http.createServer(async (req, res) => {
 
   if (pathname === "/dev/bundle.js") {
     if (!fs.existsSync(BUNDLE)) {
-      res.writeHead(503, { "Content-Type": "text/javascript" });
+      res.writeHead(503, { "Content-Type": "text/javascript; charset=utf-8" });
       return res.end("console.error('Bundle still building, reloading shortly.');");
     }
-    res.writeHead(200, { "Content-Type": "text/javascript" });
+    res.writeHead(200, { "Content-Type": "text/javascript; charset=utf-8" });
     return res.end(fs.readFileSync(BUNDLE));
   }
 
   if (pathname === "/dev/rev") {
     const stamp = fs.existsSync(BUNDLE) ? String(fs.statSync(BUNDLE).mtimeMs) : "0";
-    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
     return res.end(stamp);
+  }
+
+  /**
+   * Signs in to the target using credentials held by this process, so they never
+   * reach the page, the bundle or a shell history.
+   */
+  if (pathname === "/dev/login") {
+    const email = process.env.ADMP_EMAIL;
+    const password = process.env.ADMP_PASSWORD;
+
+    if (!email || !password) {
+      res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+      return res.end("Set ADMP_EMAIL and ADMP_PASSWORD before starting the sandbox.");
+    }
+
+    const page = await fetch(TARGET + "/admp");
+    const match = (await page.text()).match(HYDRATE_PROPS);
+
+    if (!match) {
+      res.writeHead(502, { "Content-Type": "text/plain; charset=utf-8" });
+      return res.end(`${TARGET}/admp did not return a panel page.`);
+    }
+
+    const upstream = await fetch(TARGET + "/admp/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Apiker-Csrf": JSON.parse(match[1]).csrfToken
+      },
+      body: new URLSearchParams({ email, password })
+    });
+
+    if (upstream.status !== 200) {
+      res.writeHead(upstream.status, { "Content-Type": "text/plain; charset=utf-8" });
+      return res.end(`Sign in was refused by ${TARGET} (${upstream.status}).`);
+    }
+
+    const cookies = upstream.headers.getSetCookie?.() || [];
+
+    res.writeHead(302, {
+      Location: "/",
+      "Set-Cookie": [...expireStaleCookies(cookies), ...cookies.map(relaxCookie)]
+    });
+    return res.end();
   }
 
   const body = await readBody(req);
@@ -139,7 +197,7 @@ const server = http.createServer(async (req, res) => {
     try {
       upstream = await forward(req, "/admp", null);
     } catch (error) {
-      res.writeHead(502, { "Content-Type": "text/plain" });
+      res.writeHead(502, { "Content-Type": "text/plain; charset=utf-8" });
       return res.end(`Could not reach ${TARGET}: ${error.message}`);
     }
 
@@ -147,14 +205,14 @@ const server = http.createServer(async (req, res) => {
     const match = html.match(HYDRATE_PROPS);
 
     if (!match) {
-      res.writeHead(502, { "Content-Type": "text/plain" });
+      res.writeHead(502, { "Content-Type": "text/plain; charset=utf-8" });
       return res.end(
         `${TARGET}/admp did not return a panel page (status ${upstream.status}). ` +
           "Check that adminPanel is enabled and that any admin whitelist allows this machine."
       );
     }
 
-    res.writeHead(200, passCookies(upstream, { "Content-Type": "text/html" }));
+    res.writeHead(200, passCookies(upstream, { "Content-Type": "text/html; charset=utf-8" }));
     return res.end(shell(JSON.parse(match[1])));
   }
 

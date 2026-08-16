@@ -123,4 +123,27 @@ describe("PostBuild env generation", () => {
       expect(fs.readFileSync(target(), "utf8")).toBe("updated");
     });
   });
+
+  /**
+   * Namespaces are indexed by worker script name, which projects should not have to
+   * repeat by hand.
+   */
+  describe("wranglerVars", () => {
+    it("derives the script name from the app name", () => {
+      expect(plugin.wranglerVars({ A: "1" }, "my-worker")).toEqual({
+        CLOUDFLARE_SCRIPT_NAME: "my-worker",
+        A: "1",
+      });
+    });
+
+    it("lets an explicit value win", () => {
+      const vars = plugin.wranglerVars({ CLOUDFLARE_SCRIPT_NAME: "chosen" }, "my-worker");
+
+      expect(vars.CLOUDFLARE_SCRIPT_NAME).toBe("chosen");
+    });
+
+    it("leaves the variables alone when there is no app name", () => {
+      expect(plugin.wranglerVars({ A: "1" }, undefined)).toEqual({ A: "1" });
+    });
+  });
 });

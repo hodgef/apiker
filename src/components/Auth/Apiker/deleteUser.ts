@@ -2,6 +2,7 @@ import { apiker } from "../../Apiker";
 import { OBN } from "../../ObjectBase";
 import { Handler } from "../../Request";
 import { res_200, res_400 } from "../../Response";
+import { unindexUser } from "./directory";
 import { User } from "./interfaces";
 import { getCurrentUser } from "./utils";
 
@@ -25,5 +26,6 @@ export const deleteUserAction = async (user: User) => {
   const { state } = apiker.requestParams;
   await state(OBN.EMAILTOUUID, user.email).delete(user.email);
   await state(OBN.USERS, user.id).delete(user.id);
+  await unindexUser(user);
   return true;
 }

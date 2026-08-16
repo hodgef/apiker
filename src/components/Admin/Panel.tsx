@@ -3,7 +3,8 @@ import css from "@panelAssets/css/panel.css";
 
 import React from "react";
 import { Header } from "./Header";
-import { Content, Overview, Sidebar } from "./Content";
+import { Content, Sidebar } from "./Content";
+import { Dashboard } from "./Dashboard";
 import { wrapAdminReactPage } from "../Page";
 import { Handler } from "../Request";
 import { getAppHelper } from "./Utils";
@@ -20,7 +21,9 @@ import { SendEmail } from "./Actions/SendEmail";
 import { UpdateUser } from "./Actions/UpdateUser";
 import { DeleteUser } from "./Actions/DeleteUser";
 import { ListLogs } from "./Actions/ListLogs";
+import { Beacons } from "./Actions/Beacons";
 import { AddAdmin } from "./Actions/AddAdmin";
+import { ListUsers } from "./Actions/ListUsers";
 import { Card } from "./ui";
 import { apiker } from "../Apiker";
 
@@ -41,25 +44,52 @@ export const adminPanelPage: Handler = async ({ state }) => {
 
 const actionsComponent = {
     login: Login,
+    listUsers: ListUsers,
     addAdmin: AddAdmin,
     banUser: BanUser,
     unbanUser: UnbanUser,
     searchBans: SearchBans,
     listLogs: ListLogs,
+    beacons: Beacons,
     sendEmail: SendEmail,
     updateUser: UpdateUser,
     deleteUser: DeleteUser
 };
 
 export const AdminPanelPage: React.FC<AdminPanelPageProps> = (props) => {
-    let { userSignedIp, isAdminLoggedIn, isSetup, action, dialog, pageName = "", appName } = props;
+    let { userSignedIp, isAdminLoggedIn, isSetup, action, dialog, pageName = "", appName, presetValue, presetFilter, history = [] } = props;
     const { setProps } = getAppHelper(pageName);
     const actions = isAdminLoggedIn ? authActions : defaultActions;
     const ActionComponent = action ? actionsComponent[action.id] : null;
 
-    const onSelectAction = (selected?: Action) => {
-        setProps({ ...props, action: selected, dialog: undefined });
-    }
+    const onSelectAction = (selected?: Action, nextPresetValue?: string, nextPresetFilter?: string) => {
+        setProps({
+            ...props,
+            action: selected,
+            presetValue: nextPresetValue,
+            presetFilter: nextPresetFilter,
+            history: [...history, { actionId: action?.id, presetValue, presetFilter }],
+            dialog: undefined
+        });
+    };
+
+    /** Rewinds one screen, keeping the filters it was opened with. */
+    const onBack = () => {
+        const previous = history[history.length - 1];
+
+        setProps({
+            ...props,
+            action: actions.find(({ id }) => id === previous?.actionId),
+            presetValue: previous?.presetValue,
+            presetFilter: previous?.presetFilter,
+            history: history.slice(0, -1),
+            dialog: undefined
+        });
+    };
+
+    const previousAction = history.length
+        ? actions.find(({ id }) => id === history[history.length - 1]?.actionId)
+        : undefined;
 
     const toasts = <div className="admp-toasts">{dialog && <Dialog {...props} />}</div>;
 
@@ -96,13 +126,15 @@ export const AdminPanelPage: React.FC<AdminPanelPageProps> = (props) => {
                             ? action.description
                             : `Run maintenance and moderation actions against ${appName || "this deployment"}.`
                     }
+                    onBack={history.length ? onBack : undefined}
+                    backLabel={`Back to ${previousAction ? previousAction.displayName : "Overview"}`}
                 >
                     {ActionComponent ? (
                         <Card>
                             <ActionComponent {...props} />
                         </Card>
                     ) : (
-                        <Overview actions={actions} onSelect={onSelectAction} />
+                        <Dashboard {...props} actions={actions} onSelect={onSelectAction} />
                     )}
                 </Content>
             </div>

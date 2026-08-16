@@ -1,4 +1,5 @@
 import React from "react";
+import { Tooltip } from "./ui";
 
 //@ts-ignore
 import logo from "@panelAssets/images/logo.svg";
@@ -17,10 +18,15 @@ export const Header: React.FC<HeaderProps> = ({ appName = "Apiker", identity }) 
             </a>
             <span className="admp-badge">Admin</span>
             {identity && (
-                <span className="admp-topbar__identity" title={identity}>
-                    <span className="material-symbols-outlined" aria-hidden="true">badge</span>
-                    <span className="admp-topbar__identity-value">{identity}</span>
-                </span>
+                <Tooltip
+                    side="bottom"
+                    label="Your request identity (signed IP) — used for bans and rate limits, not an account"
+                >
+                    <span className="admp-topbar__identity">
+                        <span className="material-symbols-outlined" aria-hidden="true">badge</span>
+                        <span className="admp-topbar__identity-value">{identity}</span>
+                    </span>
+                </Tooltip>
             )}
         </nav>
       )

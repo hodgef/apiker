@@ -4,7 +4,7 @@ import { getAppHelper } from "../Utils";
 import { Button, Field, Form, Input } from "../ui";
 
 export const BanUser: React.FC<BanUserPageProps> = (props) => {
-    const { pageName = "", csrfToken = "" } = props;
+    const { pageName = "", csrfToken = "", presetValue } = props;
     const { setProps } = getAppHelper(pageName);
 
     const onSubmit = () => {
@@ -44,7 +44,7 @@ export const BanUser: React.FC<BanUserPageProps> = (props) => {
         <div className="admp-action">
             <Form onSubmit={onSubmit}>
                 <Field label="User ID" htmlFor="userId">
-                    <Input id="userId" type="text" placeholder="User ID" />
+                    <Input id="userId" type="text" placeholder="User ID" defaultValue={presetValue} />
                 </Field>
                 <Button type="submit" variant="destructive">Ban user</Button>
             </Form>

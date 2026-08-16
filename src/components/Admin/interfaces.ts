@@ -32,6 +32,13 @@ export interface Dialog {
     message: string;
 }
 
+/** A screen the panel can return to. */
+export interface HistoryEntry {
+    actionId?: string;
+    presetValue?: string;
+    presetFilter?: string;
+}
+
 export interface AdminPanelPageProps {
     pageName?: string;
     action?: Action;
@@ -42,11 +49,18 @@ export interface AdminPanelPageProps {
     isAdminLoggedIn?: boolean;
     userSignedIp?: string;
     appName?: string;
+    /** Value the dashboard hands to the action it opens. */
+    presetValue?: string;
+    /** What that value means to the action, when it accepts more than one filter. */
+    presetFilter?: string;
+    /** Screens opened before this one, most recent last. */
+    history?: HistoryEntry[];
 }
 
 export interface LogResults {
     time?: string;
     id?: string;
+    userId?: string;
     clientId?: string;
     countryCode?: string;
     pathname?: string;
@@ -55,10 +69,12 @@ export interface LogResults {
 
 export interface LoginPageProps extends AdminPanelPageProps {}
 export interface AddAdminPageProps extends AdminPanelPageProps {}
+export interface ListUsersPageProps extends AdminPanelPageProps {}
 export interface BanUserPageProps extends AdminPanelPageProps {}
 export interface UnbanUserPageProps extends AdminPanelPageProps {}
 export interface SearchBansPageProps extends AdminPanelPageProps {}
 export interface ListLogsPageProps extends AdminPanelPageProps {}
+export interface BeaconsPageProps extends AdminPanelPageProps {}
 export interface SendEmailPageProps extends AdminPanelPageProps {}
 export interface UpdateUserPageProps extends AdminPanelPageProps {}
 export interface DeleteUserPageProps extends AdminPanelPageProps {}

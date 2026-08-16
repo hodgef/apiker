@@ -3,6 +3,7 @@ import { apiker } from "../../Apiker";
 import { OBN } from "../../ObjectBase";
 import { createJWT } from "../../Auth";
 import { adminLoginMiddleware, adminMiddleware, adminWhitelistMiddleware } from "../middleware";
+import { getAdminRoutes } from "../Admin";
 import { loginEndpoint } from "../Api/loginEndpoint";
 import { createAdminEndpoint } from "../Api/adminsEndpoint";
 
@@ -262,6 +263,68 @@ describe("Admin gates", () => {
       const res: any = await adminMiddleware(params(), handler);
       expect(res.status).toBe(401);
     });
+
+    /**
+     * The signed-out panel page hands a subject-less token to anyone who loads it,
+     * so a privileged route must not settle for one.
+     */
+    it("refuses a token minted by the signed-out page, even from an admin", async () => {
+      currentUser = { id: "the-admin" };
+      adminIds = ["the-admin"];
+      setHeaders(csrfHeaders());
+
+      const res: any = await adminMiddleware(params(), handler);
+      expect(res.status).toBe(401);
+    });
+
+    it("refuses a token issued for somebody else", async () => {
+      currentUser = { id: "the-admin" };
+      adminIds = ["the-admin", "other-admin"];
+      setHeaders(csrfHeaders("other-admin"));
+
+      const res: any = await adminMiddleware(params(), handler);
+      expect(res.status).toBe(401);
+    });
+
+    it("refuses a token that was not signed by this deployment", async () => {
+      currentUser = { id: "the-admin" };
+      adminIds = ["the-admin"];
+      setHeaders({ "X-Apiker-Csrf": `${createJWT({ sub: "the-admin" })}tampered` });
+
+      const res: any = await adminMiddleware(params(), handler);
+      expect(res.status).toBe(401);
+    });
+  });
+
+  /**
+   * The bundle renders the login form, so it has to answer to signed-out visitors
+   * — but only the ones allowed to reach the panel at all.
+   */
+  describe("the panel bundle", () => {
+    const staticRoute = () => getAdminRoutes()["/admp/static.js"];
+
+    it("is served to a signed-out visitor on an allowed network", async () => {
+      const res: any = await staticRoute()(params());
+
+      expect(res.status).toBe(200);
+      expect(res.headers.get("content-type")).toContain("text/javascript");
+    });
+
+    it("is withheld from a network the panel itself refuses", async () => {
+      apiker.env.ADMP_IP_WHITELIST = "9.9.9.9";
+
+      const res: any = await staticRoute()(params());
+
+      expect(res.status).toBe(401);
+    });
+
+    it("is served when the whitelist allows the caller", async () => {
+      apiker.env.ADMP_IP_WHITELIST = "1.2.3.4";
+
+      const res: any = await staticRoute()(params());
+
+      expect(res.status).toBe(200);
+    });
   });
 
   describe("adminWhitelistMiddleware", () => {
@@ -280,6 +343,27 @@ describe("Admin gates", () => {
       apiker.env.ADMP_IP_WHITELIST = "1.2.3.4";
 
       expect(await adminWhitelistMiddleware(params())).toBeUndefined();
+    });
+
+    // An admin moves between networks; one variable has to cover all of them.
+    it("accepts any address in a comma-separated list", async () => {
+      apiker.env.ADMP_IP_WHITELIST = "9.9.9.9, 1.2.3.4 ,8.8.8.8";
+
+      expect(await adminWhitelistMiddleware(params())).toBeUndefined();
+    });
+
+    it("still rejects an address missing from the list", async () => {
+      apiker.env.ADMP_IP_WHITELIST = "9.9.9.9,8.8.8.8";
+
+      const res: any = await adminWhitelistMiddleware(params());
+      expect(res.status).toBe(401);
+    });
+
+    it("does not treat a partial match as a member of the list", async () => {
+      apiker.env.ADMP_IP_WHITELIST = "1.2.3.44";
+
+      const res: any = await adminWhitelistMiddleware(params());
+      expect(res.status).toBe(401);
     });
 
     it("rejects an unexpected city", async () => {

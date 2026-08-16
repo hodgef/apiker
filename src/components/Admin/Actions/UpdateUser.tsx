@@ -11,6 +11,17 @@ export const UpdateUser: React.FC<UpdateUserPageProps> = (props) => {
     const { setProps } = getAppHelper(pageName);
 
     const onUserSeek = () => {
+        if(!userEmail.includes("@")){
+            setProps({
+                ...props,
+                dialog: {
+                    className: "alert-danger",
+                    message: "Accounts are found by email address, not by the request ids shown elsewhere in the panel."
+                }
+            });
+            return;
+        }
+
         fetch('/admp/user?' + new URLSearchParams({ userEmail }), {
             method: 'get',
             headers: { "X-Apiker-Csrf": csrfToken }
@@ -122,7 +133,7 @@ export const UpdateUser: React.FC<UpdateUserPageProps> = (props) => {
     return (
         <div className="admp-action">
             <Form onSubmit={onSubmit}>
-                <Field label="User email" htmlFor="userEmail" hint="Find the account first, then edit the record below.">
+                <Field label="User email" htmlFor="userEmail" hint="Accounts are found by email address. Find one first, then edit the record below.">
                     <InlineRow>
                         <Input
                             id="userEmail"

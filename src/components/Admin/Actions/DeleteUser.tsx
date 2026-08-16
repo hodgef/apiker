@@ -11,10 +11,13 @@ export const DeleteUser: React.FC<DeleteUserPageProps> = (props) => {
 
     const onSubmit = () => {
         const userEmail = (document.getElementById("userEmail") as HTMLInputElement)?.value;
-        if(!userEmail.trim()){
+        if(!userEmail.includes("@")){
             setProps({
                 ...props,
-                dialog: { className: "alert-danger", message: "You must provide the user email" }
+                dialog: {
+                    className: "alert-danger",
+                    message: "Accounts are found by email address, not by the request ids shown elsewhere in the panel."
+                }
             });
             return;
         }

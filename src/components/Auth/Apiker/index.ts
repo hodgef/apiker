@@ -1,5 +1,6 @@
 export * from "./utils";
 export * from "./deleteUser";
+export * from "./directory";
 export * from "./interfaces";
 export * from "./loginUser";
 export * from "./refreshUser";

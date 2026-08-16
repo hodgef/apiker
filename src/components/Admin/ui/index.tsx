@@ -202,6 +202,99 @@ export interface DataRow {
   [key: string]: string | number | undefined;
 }
 
+interface TooltipProps {
+  label: React.ReactNode;
+  side?: "top" | "bottom";
+  children: React.ReactNode;
+}
+
+/**
+ * A described hover/focus hint.
+ *
+ * Kept to CSS so it works for keyboard users and needs no positioning library:
+ * the panel ships no runtime dependencies.
+ */
+export const Tooltip: React.FC<TooltipProps> = ({ label, side = "top", children }) => (
+  <span className={`admp-tooltip admp-tooltip--${side}`}>
+    {children}
+    <span className="admp-tooltip__content" role="tooltip">{label}</span>
+  </span>
+);
+
+export interface MenuItem {
+  id: string;
+  label: string;
+  description?: string;
+  destructive?: boolean;
+  onSelect: () => void;
+}
+
+interface MenuProps {
+  items: MenuItem[];
+  label?: string;
+}
+
+/** Row actions, collapsed so a table reads as data rather than as buttons. */
+export const Menu: React.FC<MenuProps> = ({ items, label = "Actions" }) => {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    if (!open) return;
+
+    const onDocumentClick = (event: MouseEvent) => {
+      if (!ref.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("mousedown", onDocumentClick);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onDocumentClick);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div className="admp-menu" ref={ref}>
+      <Tooltip label={label}>
+        <button
+          type="button"
+          className="admp-menu__trigger"
+          aria-haspopup="menu"
+          aria-expanded={open}
+          aria-label={label}
+          onClick={() => setOpen(!open)}
+        >
+          &#8943;
+        </button>
+      </Tooltip>
+      {open && (
+        <ul className="admp-menu__list" role="menu">
+          {items.map((item) => (
+            <li key={item.id} role="none">
+              <button
+                type="button"
+                role="menuitem"
+                className={`admp-menu__item${item.destructive ? " admp-menu__item--destructive" : ""}`}
+                onClick={() => {
+                  setOpen(false);
+                  item.onSelect();
+                }}
+              >
+                <span className="admp-menu__label">{item.label}</span>
+                {item.description && <span className="admp-menu__description">{item.description}</span>}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
 interface DataListProps {
   rows: DataRow[];
   emptyLabel?: string;

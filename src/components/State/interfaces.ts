@@ -7,12 +7,35 @@ export interface PutRequestObject {
 export interface ListRequestObject {
     /** Only return keys starting with this prefix. */
     prefix?: string;
+    /** Start listing at this key (inclusive). */
+    start?: string;
+    /** Start listing after this key (exclusive). */
+    startAfter?: string;
+    /** Stop listing before this key (exclusive). */
+    end?: string;
     /** Return entries in descending key order. */
     reverse?: boolean;
     /** Maximum number of entries to return. */
     limit?: number | null;
     /** Bypass any read cache for this listing. */
     noCache?: boolean;
+}
+
+/** Payload for an `increment` operation. */
+export interface IncrementRequestObject {
+    /** Property names to bump, mapped to the amount to add. */
+    increments: { [propertyName: string]: number };
+    /** Optional fixed-size sample buffer written in the same, atomic pass. */
+    ring?: {
+        /** Key prefix the slot number is appended to. */
+        prefix: string;
+        /** Number of slots; the buffer never grows past it. */
+        size: number;
+        /** Counter whose new total picks the slot. */
+        from: string;
+        /** Value to store in the chosen slot. */
+        value: any;
+    };
 }
 
 /**
@@ -30,6 +53,8 @@ export interface StateMethods {
     get: (propertyName: string) => Promise<any>;
     /** Persists one or more properties. */
     put: (putRequestObject: PutRequestObject) => Promise<any>;
+    /** Atomically adds to one or more counters, returning their new totals. */
+    increment: (incrementRequestObject: IncrementRequestObject) => Promise<any>;
     /** Deletes one or more properties. */
     delete: (propertyName: string | string[]) => Promise<any>;
     /** Deletes every property. */

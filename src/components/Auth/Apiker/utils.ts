@@ -224,6 +224,26 @@ export const getCurrentUser = async (disableClientIdCheck?: boolean): Promise<Us
 }
 
 /**
+ * Reads the current user's id straight from the auth token.
+ *
+ * Unlike getCurrentUser this never touches storage, so it is safe to call on
+ * hot paths such as logging. Returns undefined for anonymous or invalid tokens.
+ */
+export const getCurrentUserId = (): string | undefined => {
+  try {
+    const token = extractToken();
+
+    if(!token){
+      return;
+    }
+
+    return parseJWT(token)?.sub;
+  } catch (e) {
+    return;
+  }
+}
+
+/**
  * Checks whether a given user is an admin
  */
 export const isUserAdmin = async (userId = ""): Promise<boolean> => {

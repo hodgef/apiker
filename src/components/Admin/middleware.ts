@@ -38,21 +38,59 @@ export const adminCsrfCheckMiddleware: Middleware = async (params, handlerFn?: H
     }
 }
 
+/**
+ * A whitelist variable holds one value or a comma-separated list of them, so an
+ * admin can reach the panel from more than one network without editing the
+ * deployment each time they move.
+ */
+export const isWhitelisted = (value: string | undefined, whitelist: string | undefined) =>
+    String(whitelist || "")
+        .split(",")
+        .map(entry => entry.trim())
+        .filter(Boolean)
+        .some(entry => entry === String(value || "").trim());
+
+/**
+ * Privileged routes: the token has to belong to the admin making the call.
+ *
+ * The signed-out panel page hands out a token with no subject, so accepting one
+ * here would let any visitor mint a token that satisfies the CSRF check.
+ */
+export const adminSessionCsrfCheckMiddleware: Middleware = async (params, handlerFn?: Handler) => {
+    const { headers } = apiker.requestParams;
+    const csrfToken = headers.get("X-Apiker-Csrf") as string;
+    const parsedCsrfToken = parseJWT(csrfToken);
+
+    if(!csrfToken || !parsedCsrfToken?.sub){
+        return res_401();
+    }
+
+    const user = await getCurrentUser();
+
+    if(!user?.id || user.id !== parsedCsrfToken.sub){
+        return res_401();
+    }
+
+    if(handlerFn){
+        return handlerFn(params);
+    }
+}
+
 export const adminWhitelistMiddleware: Middleware = async (params, handlerFn?: Handler) => {
     if(apiker.env.ADMP_IP_WHITELIST || apiker.env.ADMP_ISP_WHITELIST || apiker.env.ADMP_CITY_WHITELIST){
         const { headers } = apiker.requestParams;
         const ip = headers.get("CF-Connecting-IP") as string;
         const userGeoloc = await getCurrentUserGeodata();
 
-        if(apiker.env.ADMP_IP_WHITELIST && ip !== apiker.env.ADMP_IP_WHITELIST){
+        if(apiker.env.ADMP_IP_WHITELIST && !isWhitelisted(ip, apiker.env.ADMP_IP_WHITELIST)){
             return res_401();
         }
 
-        if(apiker.env.ADMP_ISP_WHITELIST && userGeoloc.isp !== apiker.env.ADMP_ISP_WHITELIST){
+        if(apiker.env.ADMP_ISP_WHITELIST && !isWhitelisted(userGeoloc.isp, apiker.env.ADMP_ISP_WHITELIST)){
             return res_401();
         }
     
-        if(apiker.env.ADMP_CITY_WHITELIST && userGeoloc.city !== apiker.env.ADMP_CITY_WHITELIST){
+        if(apiker.env.ADMP_CITY_WHITELIST && !isWhitelisted(userGeoloc.city, apiker.env.ADMP_CITY_WHITELIST)){
             return res_401();
         }
     }
@@ -64,7 +102,7 @@ export const adminWhitelistMiddleware: Middleware = async (params, handlerFn?: H
 
 export const adminMiddleware: Middleware = async (params, handlerFn = () => res_204()) => {
     return forwardToMiddleware(params, [
-        adminCsrfCheckMiddleware,
+        adminSessionCsrfCheckMiddleware,
         adminWhitelistMiddleware,
         adminLoginMiddleware,
         handlerFn

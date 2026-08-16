@@ -5,5 +5,7 @@ export interface LogObject {
     clientId: string;
     countryCode: string;
     pathname: string;
+    /** Id of the signed-in user the request was made by, if any. */
+    userId?: string;
     issuedBy?: string;
 }
