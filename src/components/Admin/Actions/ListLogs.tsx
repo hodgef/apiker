@@ -110,7 +110,7 @@ export const ListLogs: React.FC<ListLogsPageProps> = (props) => {
                             className: "alert-danger",
                             message: body.missing?.length
                                 ? `Sweeping needs ${body.missing.join(", ")} set for this deployment.`
-                                : body.error
+                                : body.error || "Sweeping failed."
                         }
                     });
                     return;
