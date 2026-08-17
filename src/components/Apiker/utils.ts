@@ -1,6 +1,5 @@
 /**
- * Per-request accumulator for validation/handler error messages, exposed on
- * `apiker.responseParams`.
+ * Per-request accumulator for validation/handler error messages, exposed on `apiker.responseParams`
  */
 export class ResponseParams {
   errors: string[] = [];
