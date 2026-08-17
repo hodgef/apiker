@@ -94,4 +94,5 @@ For the full breakdown read `references/architecture.md`.
   a response helper, a state-backed feature, a new component domain.
 - `references/testing.md` — Jest setup, the global `exports` mock, how to test handlers and
   state, running/focusing tests.
-- `references/documentation.md` — TSDoc/JSDoc standard for this codebase and TypeDoc.
+- `references/documentation.md` — doc-comment style for developer IntelliSense (user docs live
+  at hodgef.com/apiker, maintained in PRSS).

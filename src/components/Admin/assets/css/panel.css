@@ -808,12 +808,13 @@ body {
     font-size: 0.75rem;
 }
 
+/* No overflow clip: it would cut off a row's actions dropdown. Full-bleed children
+   (table rows) round their own corners instead. */
 .admp-panel {
     border: 1px solid var(--admp-border);
     border-radius: calc(var(--admp-radius) + 0.25rem);
     background: var(--admp-background);
     box-shadow: var(--admp-shadow);
-    overflow: hidden;
 }
 
 .admp-panel__header {
@@ -863,6 +864,8 @@ body {
 
 .admp-table__row:last-child {
     border-bottom: none;
+    border-end-start-radius: calc(var(--admp-radius) + 0.1875rem);
+    border-end-end-radius: calc(var(--admp-radius) + 0.1875rem);
 }
 
 .admp-table__row:hover {
@@ -1181,6 +1184,19 @@ body {
 .admp-tooltip:focus-within .admp-tooltip__content {
     opacity: 1;
     transform: translateX(-50%) scale(1);
+}
+
+/* Right-edge triggers (e.g. a row's actions menu) anchor their tooltip to the
+   right so it never spills past the panel edge. */
+.admp-tooltip--align-end .admp-tooltip__content {
+    left: auto;
+    right: 0;
+    transform: translateX(0) scale(0.96);
+}
+
+.admp-tooltip--align-end:hover .admp-tooltip__content,
+.admp-tooltip--align-end:focus-within .admp-tooltip__content {
+    transform: translateX(0) scale(1);
 }
 
 /* ------------------------------------------------------------ menu */

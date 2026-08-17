@@ -60,10 +60,11 @@ const params = (body: any = {}): any => ({
   state: () => ({ get: async (key: string) => (key === "adminIds" ? adminIds : undefined) }),
 });
 
-const setHeaders = (headers: Record<string, string> = {}) => {
+const setHeaders = (headers: Record<string, string> = {}, opts: { cf?: any; url?: string; noIp?: boolean } = {}) => {
+  const base: Record<string, string> = opts.noIp ? {} : { "CF-Connecting-IP": "1.2.3.4" };
   apiker.requestParams = {
-    headers: new Headers({ "CF-Connecting-IP": "1.2.3.4", ...headers }),
-    request: new Request("https://api.test/admp"),
+    headers: new Headers({ ...base, ...headers }),
+    request: { url: opts.url || "https://api.test/admp", cf: opts.cf },
   } as any;
 };
 
@@ -356,6 +357,23 @@ describe("Admin gates", () => {
       apiker.env.ADMP_IP_WHITELIST = "1.2.3.4";
 
       expect(await adminWhitelistMiddleware(params())).toBeUndefined();
+    });
+
+    // A "*" entry is an allow-all escape hatch, honored only when the panel runs locally
+    // (detected by the absence of the edge-set CF-Connecting-IP header).
+    it("accepts any caller when an allowlist is a wildcard in local dev", async () => {
+      apiker.env.ADMP_IP_WHITELIST = "*";
+      setHeaders({}, { noIp: true });
+
+      expect(await adminWhitelistMiddleware(params())).toBeUndefined();
+    });
+
+    it("ignores a wildcard allowlist on a public edge deployment", async () => {
+      apiker.env.ADMP_IP_WHITELIST = "*";
+      setHeaders({ "CF-Connecting-IP": "203.0.113.9" });
+
+      const res: any = await adminWhitelistMiddleware(params());
+      expect(res.status).toBe(401);
     });
 
     // An admin moves between networks; one variable has to cover all of them.

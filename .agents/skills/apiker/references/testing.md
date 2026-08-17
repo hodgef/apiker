@@ -46,10 +46,9 @@ at that call site.
 Do **not** put TypeScript syntax (`as any`, type annotations) in a `.js` file — the editor's
 JavaScript parser rejects it ("type annotations can only be used in TypeScript files").
 
-Test files are kept out of the published package and docs: `exclude: ["**/tests/**"]` is set on
-the `typescript()` plugin in both `rollup.config.*.js`, and `--exclude "**/tests/**"` on the
-`docs` (typedoc) script. `tsconfig.json` itself stays inclusive so the editor and ts-jest see
-the tests.
+Test files are kept out of the published package: `exclude: ["**/tests/**"]` is set on
+the `typescript()` plugin in both `rollup.config.*.js`. `tsconfig.json` itself stays inclusive
+so the editor and ts-jest see the tests.
 
 > Diagnosing editor-only errors: run the real compiler with
 > `npx tsc -p tsconfig.json --noEmit --emitDeclarationOnly false`. If `tsc` is clean but the

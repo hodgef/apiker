@@ -27,7 +27,6 @@ Apiker API. Treat backward compatibility as a hard requirement (see `CONTRIBUTIN
 | `src/pages.ts`, `src/components/Page`, `Static` | Admin panel / static HTML rendering (React SSR) |
 | `scripts/create.js` | `npx apiker <dir>` scaffolder (clones `apiker-template`) |
 | `bin/index.js` | CLI shim that runs the compiled `create.js` |
-| `docs/` | Generated TypeDoc output — **do not hand-edit** |
 | `rollup.config.*.js`, `tsconfig*.json` | Build config (main lib + component build) |
 | `.agents/` | Agent skills & guidance (this directory) |
 
@@ -57,11 +56,10 @@ Domains: `Apiker` (core/init), `Admin`, `Auth` (JWT, bcrypt, GitHub OAuth), `Ban
 | Run tests | `npm test` (Jest, `--silent`) |
 | Test with coverage | `npm run coverage` |
 | Build library | `npm run build` (clean + two Rollup passes) |
-| Generate API docs | `npm run docs` (TypeDoc → `docs/`) |
 | Clean build output | `npm run clean` |
 
 Tests are matched by `**/*.spec.(js|jsx|ts|tsx)` and use `ts-jest`. **Always run `npm test`
-after changes.** Name every test file `<Name>.spec.ts`; the build and TypeDoc exclude
+after changes.** Name every test file `<Name>.spec.ts`; the build excludes
 both `**/tests/**` and `**/*.spec.*`, so a spec may live next to the code it covers
 (see `plugins/PostBuild.spec.js`).
 
@@ -86,8 +84,9 @@ on its next build.
 4. **Runtime = Workers, not Node.** No `fs`, `path`, `process`, or Node built-ins in
    `src/components/**`. Those are fine only in `scripts/` and `bin/`.
 5. **Every promise is awaited or returned.** Durable Object `state` methods are async.
-6. **Document new public APIs with TSDoc** and run `npm run docs` — see the
-   `apiker` skill's documentation reference.
+6. **Document new public APIs with doc comments** for editor IntelliSense and clarity — see
+   the `apiker` skill's documentation reference. User-facing docs live at hodgef.com/apiker
+   (maintained in PRSS); nothing is generated from source.
 7. **Add or update a test** under the domain's `tests/` folder for behavior changes.
 
 ## Self-improvement loop

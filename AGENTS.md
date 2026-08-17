@@ -27,7 +27,6 @@ Cloudflare skills under [.agents/skills/](.agents/skills/).
 | Run tests | `npm test` |
 | Test with coverage | `npm run coverage` |
 | Build library | `npm run build` |
-| Generate API docs | `npm run docs` |
 | Admin panel sandbox | `npm run dev:panel` |
 
 ### Admin panel sandbox

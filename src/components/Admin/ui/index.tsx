@@ -205,6 +205,7 @@ export interface DataRow {
 interface TooltipProps {
   label: React.ReactNode;
   side?: "top" | "bottom";
+  align?: "center" | "end";
   children: React.ReactNode;
 }
 
@@ -214,8 +215,8 @@ interface TooltipProps {
  * Kept to CSS so it works for keyboard users and needs no positioning library:
  * the panel ships no runtime dependencies.
  */
-export const Tooltip: React.FC<TooltipProps> = ({ label, side = "top", children }) => (
-  <span className={`admp-tooltip admp-tooltip--${side}`}>
+export const Tooltip: React.FC<TooltipProps> = ({ label, side = "top", align = "center", children }) => (
+  <span className={`admp-tooltip admp-tooltip--${side} admp-tooltip--align-${align}`}>
     {children}
     <span className="admp-tooltip__content" role="tooltip">{label}</span>
   </span>
@@ -259,7 +260,7 @@ export const Menu: React.FC<MenuProps> = ({ items, label = "Actions" }) => {
 
   return (
     <div className="admp-menu" ref={ref}>
-      <Tooltip label={label}>
+      <Tooltip label={label} align="end">
         <button
           type="button"
           className="admp-menu__trigger"
