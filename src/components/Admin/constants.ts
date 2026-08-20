@@ -2,6 +2,9 @@ import { Actions } from "./interfaces";
 
 export const ADMIN_LOGIN_PREFIX = "admin-login";
 
+/** Shared with the login endpoint, so the CSRF token it mints targets the right client widget. */
+export const ADMIN_PAGE_NAME = "AdminPanelPage";
+
 export const defaultActions: Actions = [
     {
         id: "login",

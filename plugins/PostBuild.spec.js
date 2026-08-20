@@ -31,7 +31,7 @@ describe("PostBuild env generation", () => {
       const env = plugin.createEnv();
       const contents = readEnv();
 
-      ["APIKER_SECRET_KEY", "ADMP_SETUP_SECRET"].forEach((key) => {
+      ["APIKER_SECRET_KEY", "ADMP_SETUP_SECRET", "ADMP_LOCAL_ADMIN_EMAIL", "ADMP_LOCAL_ADMIN_PASSWORD"].forEach((key) => {
         expect(env[key]).toEqual(expect.any(String));
         expect(valueOf(contents, key)).toBe(env[key]);
       });
@@ -45,6 +45,16 @@ describe("PostBuild env generation", () => {
     it("generates values long enough to be unguessable", () => {
       const env = plugin.createEnv();
       expect(env.ADMP_SETUP_SECRET).toMatch(/^[a-f0-9]{60}$/);
+    });
+
+    it("generates a local admin login usable by registerUserAction", () => {
+      const env = plugin.createEnv();
+
+      // isEmail's shape check.
+      expect(env.ADMP_LOCAL_ADMIN_EMAIL).toMatch(/^[\w.-]+@[\w.-]+\.\w+$/);
+      // isRequiredLength defaults to a 20-char cap, unlike the other secrets here.
+      expect(env.ADMP_LOCAL_ADMIN_PASSWORD.length).toBeGreaterThanOrEqual(5);
+      expect(env.ADMP_LOCAL_ADMIN_PASSWORD.length).toBeLessThanOrEqual(20);
     });
   });
 
@@ -76,10 +86,17 @@ describe("PostBuild env generation", () => {
     });
 
     it("does not rewrite the file when nothing is missing", () => {
-      const original = 'APIKER_SECRET_KEY = "a"\nADMP_SETUP_SECRET = "b"\n';
+      const original =
+        'APIKER_SECRET_KEY = "a"\nADMP_SETUP_SECRET = "b"\n' +
+        'ADMP_LOCAL_ADMIN_EMAIL = "c"\nADMP_LOCAL_ADMIN_PASSWORD = "d"\n';
       fs.writeFileSync(envPath(), original);
 
-      plugin.ensureEnv({ APIKER_SECRET_KEY: "a", ADMP_SETUP_SECRET: "b" });
+      plugin.ensureEnv({
+        APIKER_SECRET_KEY: "a",
+        ADMP_SETUP_SECRET: "b",
+        ADMP_LOCAL_ADMIN_EMAIL: "c",
+        ADMP_LOCAL_ADMIN_PASSWORD: "d",
+      });
 
       expect(readEnv()).toBe(original);
     });

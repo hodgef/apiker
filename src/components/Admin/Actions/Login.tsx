@@ -23,7 +23,7 @@ export const Login: React.FC<LoginPageProps> = (props) => {
         })
             .then(r =>  r.json().then(res => ({status: r.status, body: res})))
             .then(data => {
-                const { status } = data;
+                const { status, body } = data;
                 const isSucessful = status === 200;
 
                 const action = isSucessful ? undefined : props.action;
@@ -33,6 +33,13 @@ export const Login: React.FC<LoginPageProps> = (props) => {
                     ...props,
                     action,
                     actions: authActions,
+                    /**
+                     * A signed-out page's props never update on their own, so without
+                     * these the panel keeps rendering the login screen (and any
+                     * privileged action would 401 on the stale, sub-less token) until
+                     * the next full reload.
+                     */
+                    ...(isSucessful ? { isAdminLoggedIn: true, isSetup: false, csrfToken: body?.csrfToken || csrfToken } : {}),
                     dialog: { className: isSucessful ? "alert-primary" : "alert-danger", message }
                 });
             })

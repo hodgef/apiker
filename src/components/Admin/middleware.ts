@@ -42,20 +42,12 @@ export const adminCsrfCheckMiddleware: Middleware = async (params, handlerFn?: H
  * A whitelist variable holds one value or a comma-separated list of them, so an
  * admin can reach the panel from more than one network without editing the
  * deployment each time they move.
- *
- * A single `*` entry is an allow-all escape hatch for local development; it is
- * only honored when `allowWildcard` is set (see `isLocalRuntime`), so it can
- * never open a public deployment.
  */
-export const isWhitelisted = (value: string | undefined, whitelist: string | undefined, allowWildcard = false) => {
+export const isWhitelisted = (value: string | undefined, whitelist: string | undefined) => {
     const entries = String(whitelist || "")
         .split(",")
         .map(entry => entry.trim())
         .filter(Boolean);
-
-    if(allowWildcard && entries.includes("*")){
-        return true;
-    }
 
     return entries.some(entry => entry === String(value || "").trim());
 };
@@ -91,9 +83,21 @@ export const adminSessionCsrfCheckMiddleware: Middleware = async (params, handle
  * cannot remove it, so its absence means the worker is running locally (wrangler dev).
  * The `*` allowlist escape hatch is honored only here — never on a public deployment.
  */
-const isLocalRuntime = () => !apiker.requestParams.headers.get("CF-Connecting-IP");
+export const isLocalRuntime = () => !apiker.requestParams.headers.get("CF-Connecting-IP");
 
 export const adminWhitelistMiddleware: Middleware = async (params, handlerFn?: Handler) => {
+    /**
+     * Locally there is no public exposure to protect against, and requiring a
+     * whitelist just to test the panel is exactly the guesswork this local
+     * runtime check exists to remove (see `isLocalAdminLogin`).
+     */
+    if(isLocalRuntime()){
+        if(handlerFn){
+            return handlerFn(params);
+        }
+        return;
+    }
+
     const { ADMP_IP_WHITELIST, ADMP_ISP_WHITELIST, ADMP_CITY_WHITELIST } = apiker.env;
 
     // Fail closed: the panel stays unreachable until at least one allowlist is configured, so a
@@ -102,11 +106,10 @@ export const adminWhitelistMiddleware: Middleware = async (params, handlerFn?: H
         return res_401();
     }
 
-    const allowWildcard = isLocalRuntime();
     const { headers } = apiker.requestParams;
     const ip = headers.get("CF-Connecting-IP") as string;
 
-    if(ADMP_IP_WHITELIST && !isWhitelisted(ip, ADMP_IP_WHITELIST, allowWildcard)){
+    if(ADMP_IP_WHITELIST && !isWhitelisted(ip, ADMP_IP_WHITELIST)){
         return res_401();
     }
 
@@ -114,11 +117,11 @@ export const adminWhitelistMiddleware: Middleware = async (params, handlerFn?: H
     if(ADMP_ISP_WHITELIST || ADMP_CITY_WHITELIST){
         const userGeoloc = await getCurrentUserGeodata();
 
-        if(ADMP_ISP_WHITELIST && !isWhitelisted(userGeoloc.isp, ADMP_ISP_WHITELIST, allowWildcard)){
+        if(ADMP_ISP_WHITELIST && !isWhitelisted(userGeoloc.isp, ADMP_ISP_WHITELIST)){
             return res_401();
         }
 
-        if(ADMP_CITY_WHITELIST && !isWhitelisted(userGeoloc.city, ADMP_CITY_WHITELIST, allowWildcard)){
+        if(ADMP_CITY_WHITELIST && !isWhitelisted(userGeoloc.city, ADMP_CITY_WHITELIST)){
             return res_401();
         }
     }

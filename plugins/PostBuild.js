@@ -3,7 +3,7 @@ const path = require("path");
 const crypto = require("crypto");
 
 /** Variables every project needs; each is generated once and kept in .env. */
-const REQUIRED_ENV_KEYS = ["APIKER_SECRET_KEY", "ADMP_SETUP_SECRET"];
+const REQUIRED_ENV_KEYS = ["APIKER_SECRET_KEY", "ADMP_SETUP_SECRET", "ADMP_LOCAL_ADMIN_EMAIL", "ADMP_LOCAL_ADMIN_PASSWORD"];
 
 module.exports = class PostBuild {
     constructor(curDir, TOML, dotenv){
@@ -170,7 +170,7 @@ module.exports = class PostBuild {
 
     createEnv() {
         const env = {};
-        REQUIRED_ENV_KEYS.forEach((key) => { env[key] = this.getSecret(); });
+        REQUIRED_ENV_KEYS.forEach((key) => { env[key] = this.getValueForKey(key); });
 
         const contents =
             "# ----------------------------------------------------------------------\n" +
@@ -190,7 +190,7 @@ module.exports = class PostBuild {
     ensureEnv(env) {
         const generated = REQUIRED_ENV_KEYS
             .filter((key) => !env[key])
-            .map((key) => [key, this.getSecret()]);
+            .map((key) => [key, this.getValueForKey(key)]);
 
         if(!generated.length){
             return env;
@@ -216,5 +216,23 @@ module.exports = class PostBuild {
 
     getRandId(){
         return crypto.randomBytes(3).toString("hex");
+    }
+
+    /**
+     * Most required vars are opaque secrets, but the local admin login needs an
+     * email-shaped value to pass `registerUserAction`'s validation, and its
+     * password must fit that same action's 20-character length cap (unlike the
+     * other secrets here, which are never run through it).
+     */
+    getValueForKey(key){
+        if(key === "ADMP_LOCAL_ADMIN_EMAIL"){
+            return `local-admin-${this.getRandId()}@apiker.local`;
+        }
+
+        if(key === "ADMP_LOCAL_ADMIN_PASSWORD"){
+            return crypto.randomBytes(8).toString("hex");
+        }
+
+        return this.getSecret();
     }
 };

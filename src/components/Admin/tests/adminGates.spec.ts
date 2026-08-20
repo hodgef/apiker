@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 import { apiker } from "../../Apiker";
 import { OBN } from "../../ObjectBase";
-import { createJWT } from "../../Auth";
+import { createJWT, parseJWT } from "../../Auth";
 import { adminLoginMiddleware, adminMiddleware, adminWhitelistMiddleware } from "../middleware";
 import { getAdminRoutes } from "../Admin";
 import { loginEndpoint } from "../Api/loginEndpoint";
@@ -38,6 +38,14 @@ jest.mock("../../Auth", () => {
     registerUserAction: async (email: string, password: string, extra: any) => {
       if (existingAccounts[email]) return undefined;
       registered.push({ email, password, extra });
+
+      // Mirrors the real registerUserAction: a role:"admin" registration is
+      // immediately listed in adminIds, which is what lets the same login
+      // request's isUserAdmin check (below) pass.
+      if (extra?.role === "admin") {
+        adminIds = [...(adminIds || []), "new-admin"];
+      }
+
       return { id: "new-admin" };
     },
     addAdminId: async (id: string) => {
@@ -108,6 +116,18 @@ describe("Admin gates", () => {
 
       expect(registered).toHaveLength(1);
       expect(registered[0].extra).toEqual({ role: "admin" });
+    });
+
+    it("returns a CSRF token bound to the new account, not a signed-out one", async () => {
+      apiker.env.ADMP_SETUP_SECRET = "expected";
+      adminIds = [];
+
+      const res: any = await loginEndpoint(
+        params({ email: "a@b.c", password: "pw", setupSecret: "expected" })
+      );
+      const { csrfToken } = await res.json();
+
+      expect(parseJWT(csrfToken)?.sub).toBe("new-admin");
     });
 
     it("stops offering setup once an admin exists", async () => {
@@ -359,16 +379,15 @@ describe("Admin gates", () => {
       expect(await adminWhitelistMiddleware(params())).toBeUndefined();
     });
 
-    // A "*" entry is an allow-all escape hatch, honored only when the panel runs locally
-    // (detected by the absence of the edge-set CF-Connecting-IP header).
-    it("accepts any caller when an allowlist is a wildcard in local dev", async () => {
-      apiker.env.ADMP_IP_WHITELIST = "*";
+    // Locally there is no public exposure to protect, and requiring a whitelist
+    // just to test the panel is exactly the guesswork this bypass removes.
+    it("bypasses the whitelist entirely in local dev, even unconfigured", async () => {
       setHeaders({}, { noIp: true });
 
       expect(await adminWhitelistMiddleware(params())).toBeUndefined();
     });
 
-    it("ignores a wildcard allowlist on a public edge deployment", async () => {
+    it("does not treat a literal wildcard as a match on a public edge deployment", async () => {
       apiker.env.ADMP_IP_WHITELIST = "*";
       setHeaders({ "CF-Connecting-IP": "203.0.113.9" });
 
@@ -402,6 +421,59 @@ describe("Admin gates", () => {
 
       const res: any = await adminWhitelistMiddleware(params());
       expect(res.status).toBe(401);
+    });
+  });
+
+  describe("the local admin login", () => {
+    it("provisions and signs in with ADMP_LOCAL_ADMIN_EMAIL/_PASSWORD, with no admin and no setup secret", async () => {
+      setHeaders({}, { noIp: true });
+      apiker.env.ADMP_LOCAL_ADMIN_EMAIL = "local-admin@apiker.local";
+      apiker.env.ADMP_LOCAL_ADMIN_PASSWORD = "localpw123";
+
+      const res: any = await loginEndpoint(
+        params({ email: "local-admin@apiker.local", password: "localpw123" })
+      );
+
+      expect(res.status).toBe(200);
+      expect(registered).toHaveLength(1);
+      expect(registered[0].extra).toEqual({ role: "admin" });
+    });
+
+    it("is never honored outside local dev, even with matching credentials", async () => {
+      apiker.env.ADMP_LOCAL_ADMIN_EMAIL = "local-admin@apiker.local";
+      apiker.env.ADMP_LOCAL_ADMIN_PASSWORD = "localpw123";
+      // Default setHeaders() sets a CF-Connecting-IP, i.e. a real deployment.
+
+      const res: any = await loginEndpoint(
+        params({ email: "local-admin@apiker.local", password: "localpw123" })
+      );
+
+      expect(res.status).toBe(401);
+      expect(registered).toEqual([]);
+    });
+
+    it("does not activate when the vars are unset, even locally", async () => {
+      setHeaders({}, { noIp: true });
+
+      const res: any = await loginEndpoint(
+        params({ email: "local-admin@apiker.local", password: "localpw123" })
+      );
+
+      expect(res.status).toBe(401);
+      expect(registered).toEqual([]);
+    });
+
+    it("still requires the exact configured password", async () => {
+      setHeaders({}, { noIp: true });
+      apiker.env.ADMP_LOCAL_ADMIN_EMAIL = "local-admin@apiker.local";
+      apiker.env.ADMP_LOCAL_ADMIN_PASSWORD = "localpw123";
+
+      const res: any = await loginEndpoint(
+        params({ email: "local-admin@apiker.local", password: "wrong" })
+      );
+
+      expect(res.status).toBe(401);
+      expect(registered).toEqual([]);
     });
   });
 });

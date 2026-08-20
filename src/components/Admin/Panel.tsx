@@ -13,7 +13,7 @@ import { Login } from "./Actions/Login";
 import { OBN } from "../ObjectBase";
 import { createJWT, getCurrentUser, getSignedIp } from "../Auth";
 import { Dialog } from "./Dialog";
-import { authActions, defaultActions } from "./constants";
+import { ADMIN_PAGE_NAME, authActions, defaultActions } from "./constants";
 import { BanUser } from "./Actions/BanUser";
 import { UnbanUser } from "./Actions/UnbanUser";
 import { SearchBans } from "./Actions/SearchBans";
@@ -28,7 +28,7 @@ import { Card } from "./ui";
 import { apiker } from "../Apiker";
 
 export const adminPanelPage: Handler = async ({ state }) => {
-    const pageName = "AdminPanelPage";
+    const pageName = ADMIN_PAGE_NAME;
     const adminIds = await state(OBN.COMMON).get("adminIds");
     const hasAdmins = !!adminIds?.length;
     

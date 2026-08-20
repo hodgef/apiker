@@ -43,6 +43,24 @@ and CSRF token. The library itself is not a Worker, so the backend comes from a 
 Editing `src/components/Admin/**` rebuilds the bundle and reloads the page. `dev/` is dev-only:
 it is outside `src`, ignored by npm, and never part of a build output.
 
+### Logging into the admin panel locally
+
+Under `wrangler dev` (no `CF-Connecting-IP` header), the panel always accepts a fixed local
+login — no whitelist, setup secret, or prior bootstrap needed:
+
+1. Build the consumer project once (`npm run build`) so PostBuild auto-generates
+   `ADMP_LOCAL_ADMIN_EMAIL` / `ADMP_LOCAL_ADMIN_PASSWORD` into its `.env`, alongside
+   `APIKER_SECRET_KEY` / `ADMP_SETUP_SECRET`.
+2. `POST /admp/login` with those two values (scrape a `csrfToken` from `GET /admp` first, sent
+   back as `X-Apiker-Csrf`) — this creates the account as an admin on first use and just signs
+   it in afterwards. The response body carries a fresh `csrfToken` bound to that user; use it
+   for every subsequent request instead of the signed-out one.
+3. This is `isLocalRuntime()`-gated (see `Admin/middleware.ts`) so it can never activate on a
+   real deployment, even if the vars leak into a production `.env` by mistake.
+
+The admin whitelist (`ADMP_IP_WHITELIST`/`ISP`/`CITY`) is skipped entirely under the same local
+runtime check — it exists to fail closed on a real deployment, not to gate local testing.
+
 ## Hard rules (summary — full list in [.agents/AGENTS.md](.agents/AGENTS.md))
 
 - **No new runtime dependencies** and **no breaking changes** to the public API.
