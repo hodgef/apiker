@@ -1127,11 +1127,13 @@ body {
     stroke: var(--admp-foreground);
     stroke-width: 2;
     stroke-linejoin: round;
+    stroke-linecap: round;
 }
 
 .admp-chart__axis {
     display: flex;
     justify-content: space-between;
+    padding: 0 0.75rem;
     color: var(--admp-muted-foreground);
     font-size: 0.75rem;
 }

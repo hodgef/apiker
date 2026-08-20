@@ -49,32 +49,66 @@ const topCountries = (countries: Record<string, number> = {}) =>
         .map((code) => `${code} ${countries[code]}`);
 
 /**
- * The daily series, drawn as an area with its trend line on top.
+ * The daily series, drawn as a smooth curve with its area filled underneath.
  *
- * The stroke is kept at its drawn width so the line does not smear when the
- * fixed viewBox is stretched across the card.
+ * Points are inset from every edge of the viewBox so the line and area never
+ * touch the card's border, and the curve is a Catmull-Rom spline (rendered as
+ * cubic Beziers) rather than straight polyline segments, so it reads as one
+ * smooth trend instead of sharp, angular joints.
  */
 export const Trend: React.FC<{ days: string[]; values: number[] }> = ({ days, values }) => {
     if (!days.length) {
         return null;
     }
 
+    const width = 100;
     const height = 40;
-    const headroom = 4;
+    const padX = 4;
+    const padTop = 5;
+    const padBottom = 4;
     const max = Math.max(...values, 1);
-    const step = values.length > 1 ? 100 / (values.length - 1) : 0;
-    const y = (value: number) => (height - (value / max) * (height - headroom)).toFixed(2);
 
-    const line =
-        values.length > 1
-            ? values.map((value, index) => `${(index * step).toFixed(2)},${y(value)}`).join(" ")
-            : `0,${y(values[0])} 100,${y(values[0])}`;
+    const x = (index: number) =>
+        values.length > 1 ? padX + (index * (width - padX * 2)) / (values.length - 1) : width / 2;
+    const y = (value: number) => height - padBottom - (value / max) * (height - padTop - padBottom);
+
+    const points = values.map((value, index) => [x(index), y(value)]);
+
+    /** Catmull-Rom through the points, converted to the cubic Beziers SVG paths use. */
+    const smoothPath = (pts: number[][]) => {
+        if (pts.length < 2) {
+            const [px, py] = pts[0];
+            return `M${px},${py} L${px},${py}`;
+        }
+
+        let path = `M${pts[0][0]},${pts[0][1]}`;
+
+        for (let i = 0; i < pts.length - 1; i++) {
+            const p0 = pts[i - 1] || pts[i];
+            const p1 = pts[i];
+            const p2 = pts[i + 1];
+            const p3 = pts[i + 2] || p2;
+
+            const c1x = p1[0] + (p2[0] - p0[0]) / 6;
+            const c1y = p1[1] + (p2[1] - p0[1]) / 6;
+            const c2x = p2[0] - (p3[0] - p1[0]) / 6;
+            const c2y = p2[1] - (p3[1] - p1[1]) / 6;
+
+            path += ` C${c1x.toFixed(2)},${c1y.toFixed(2)} ${c2x.toFixed(2)},${c2y.toFixed(2)} ${p2[0].toFixed(2)},${p2[1].toFixed(2)}`;
+        }
+
+        return path;
+    };
+
+    const linePath = smoothPath(points);
+    const lastPoint = points[points.length - 1];
+    const areaPath = `${linePath} L${lastPoint[0]},${height} L${points[0][0]},${height} Z`;
 
     return (
         <div className="admp-chart">
-            <svg viewBox={`0 0 100 ${height}`} preserveAspectRatio="none" role="img" aria-label="Events per day">
-                <polygon className="admp-chart__area" points={`0,${height} ${line} 100,${height}`} />
-                <polyline className="admp-chart__line" points={line} vectorEffect="non-scaling-stroke" />
+            <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img" aria-label="Events per day">
+                <path className="admp-chart__area" d={areaPath} />
+                <path className="admp-chart__line" d={linePath} vectorEffect="non-scaling-stroke" />
             </svg>
             <div className="admp-chart__axis">
                 <span>{formatDay(days[0])}</span>
