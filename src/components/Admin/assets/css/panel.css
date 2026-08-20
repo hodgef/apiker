@@ -1116,7 +1116,7 @@ body {
 }
 
 .admp-chart__area {
-    fill: var(--admp-muted);
+    fill: rgba(9, 9, 11, 0.06);
 }
 
 .admp-chart__line {
@@ -1134,23 +1134,11 @@ body {
     font-size: 0.75rem;
 }
 
-/* A bare (card-less) block: same heading/description typography as .admp-panel__header, no box. */
+/* A bare (card-less) block: no box, no heading — just the chart itself. */
 .admp-chart-block {
     display: flex;
     flex-flow: column;
     gap: 0.75rem;
-}
-
-.admp-chart-block h2 {
-    margin: 0;
-    font-size: 0.9375rem;
-    font-weight: 600;
-}
-
-.admp-chart-block p {
-    margin: 0.125rem 0 0;
-    color: var(--admp-muted-foreground);
-    font-size: 0.8125rem;
 }
 
 .admp-beacons {

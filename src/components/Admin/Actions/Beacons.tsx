@@ -53,21 +53,27 @@ const topCountries = (countries: Record<string, number> = {}) =>
  *
  * The curve is a Catmull-Rom spline (rendered as cubic Beziers) rather than
  * straight polyline segments, so it reads as one smooth trend instead of
- * sharp, angular joints. It spans the full viewBox — only a sliver of
- * top/bottom headroom keeps the stroke itself from clipping at the peak.
+ * sharp, angular joints. Headroom on every side is generous enough to absorb
+ * the spline's natural overshoot past its control points, so a steep run
+ * never gets clipped by the viewBox.
  */
-export const Trend: React.FC<{ days: string[]; values: number[] }> = ({ days, values }) => {
+export const Trend: React.FC<{ days: string[]; values: number[]; showAxis?: boolean }> = ({
+    days,
+    values,
+    showAxis = true
+}) => {
     if (!days.length) {
         return null;
     }
 
     const width = 100;
     const height = 40;
-    const padTop = 2;
+    const padTop = 8;
+    const padBottom = 6;
     const max = Math.max(...values, 1);
 
     const x = (index: number) => (values.length > 1 ? (index * width) / (values.length - 1) : width / 2);
-    const y = (value: number) => height - (value / max) * (height - padTop);
+    const y = (value: number) => height - padBottom - (value / max) * (height - padTop - padBottom);
 
     const points = values.map((value, index) => [x(index), y(value)]);
 
@@ -107,11 +113,13 @@ export const Trend: React.FC<{ days: string[]; values: number[] }> = ({ days, va
                 <path className="admp-chart__area" d={areaPath} />
                 <path className="admp-chart__line" d={linePath} vectorEffect="non-scaling-stroke" />
             </svg>
-            <div className="admp-chart__axis">
-                <span>{formatDay(days[0])}</span>
-                <span>{`peak ${max}`}</span>
-                <span>{formatDay(days[days.length - 1])}</span>
-            </div>
+            {showAxis && (
+                <div className="admp-chart__axis">
+                    <span>{formatDay(days[0])}</span>
+                    <span>{`peak ${max}`}</span>
+                    <span>{formatDay(days[days.length - 1])}</span>
+                </div>
+            )}
         </div>
     );
 };

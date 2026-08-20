@@ -159,9 +159,7 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
     return (
         <div className="admp-dashboard">
             <div className="admp-chart-block">
-                <h2>Events trend</h2>
-                <p>Recorded events per day, over the last week.</p>
-                <Trend days={data.eventsTrend.days} values={data.eventsTrend.values} />
+                <Trend days={data.eventsTrend.days} values={data.eventsTrend.values} showAxis={false} />
             </div>
 
             <div className="admp-stats">
