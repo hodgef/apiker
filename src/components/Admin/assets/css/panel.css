@@ -1127,6 +1127,40 @@ body {
     stroke-linecap: round;
 }
 
+.admp-chart__frame {
+    position: relative;
+}
+
+/* Invisible full-height columns, one per day, so hovering anywhere above
+   that day's slice of the chart — not just its exact point on the curve —
+   reveals its tooltip. */
+.admp-chart__points {
+    position: absolute;
+    inset: 0;
+    display: flex;
+}
+
+.admp-chart__points > .admp-tooltip {
+    flex: 1;
+    height: 100%;
+}
+
+.admp-chart__point {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.admp-chart__tooltip {
+    display: flex;
+    flex-flow: column;
+    gap: 0.125rem;
+}
+
+.admp-chart__tooltip-day {
+    font-weight: 600;
+}
+
 .admp-chart__axis {
     display: flex;
     justify-content: space-between;

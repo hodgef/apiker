@@ -1,7 +1,7 @@
 import React from "react";
 import { BeaconsPageProps } from "../interfaces";
 import { getAppHelper } from "../Utils";
-import { Alert, Button, DataList, Field, InlineRow, Input, Select } from "../ui";
+import { Alert, Button, DataList, Field, InlineRow, Input, Select, Tooltip } from "../ui";
 
 interface BeaconTotal {
     name: string;
@@ -109,10 +109,31 @@ export const Trend: React.FC<{ days: string[]; values: number[]; showAxis?: bool
 
     return (
         <div className="admp-chart">
-            <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img" aria-label="Events per day">
-                <path className="admp-chart__area" d={areaPath} />
-                <path className="admp-chart__line" d={linePath} vectorEffect="non-scaling-stroke" />
-            </svg>
+            <div className="admp-chart__frame">
+                <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img" aria-label="Events per day">
+                    <path className="admp-chart__area" d={areaPath} />
+                    <path className="admp-chart__line" d={linePath} vectorEffect="non-scaling-stroke" />
+                </svg>
+                {/* One full-height hit column per day, so hovering anywhere above/below its point still shows its value. */}
+                <div className="admp-chart__points">
+                    {days.map((day, index) => {
+                        const value = values[index];
+                        return (
+                            <Tooltip
+                                key={day}
+                                label={
+                                    <span className="admp-chart__tooltip">
+                                        <span className="admp-chart__tooltip-day">{formatDay(day)}</span>
+                                        <span>{`${value} event${value === 1 ? "" : "s"}`}</span>
+                                    </span>
+                                }
+                            >
+                                <span className="admp-chart__point" />
+                            </Tooltip>
+                        );
+                    })}
+                </div>
+            </div>
             {showAxis && (
                 <div className="admp-chart__axis">
                     <span>{formatDay(days[0])}</span>
