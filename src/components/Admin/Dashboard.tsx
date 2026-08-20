@@ -158,6 +158,12 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
 
     return (
         <div className="admp-dashboard">
+            <div className="admp-chart-block">
+                <h2>Events trend</h2>
+                <p>Recorded events per day, over the last week.</p>
+                <Trend days={data.eventsTrend.days} values={data.eventsTrend.values} />
+            </div>
+
             <div className="admp-stats">
                 <Stat
                     label="Events today"
@@ -189,10 +195,6 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
                     selectLabel="Show the admin accounts"
                 />
             </div>
-
-            <Panel title="Events trend" description="Recorded events per day, over the last week.">
-                <Trend days={data.eventsTrend.days} values={data.eventsTrend.values} />
-            </Panel>
 
             <Panel title="Latest events" description="Newest first, across every logged prefix. Select an event to open its log.">
                 {data.events.length ? (

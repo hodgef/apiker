@@ -51,10 +51,10 @@ const topCountries = (countries: Record<string, number> = {}) =>
 /**
  * The daily series, drawn as a smooth curve with its area filled underneath.
  *
- * Points are inset from every edge of the viewBox so the line and area never
- * touch the card's border, and the curve is a Catmull-Rom spline (rendered as
- * cubic Beziers) rather than straight polyline segments, so it reads as one
- * smooth trend instead of sharp, angular joints.
+ * The curve is a Catmull-Rom spline (rendered as cubic Beziers) rather than
+ * straight polyline segments, so it reads as one smooth trend instead of
+ * sharp, angular joints. It spans the full viewBox — only a sliver of
+ * top/bottom headroom keeps the stroke itself from clipping at the peak.
  */
 export const Trend: React.FC<{ days: string[]; values: number[] }> = ({ days, values }) => {
     if (!days.length) {
@@ -63,14 +63,11 @@ export const Trend: React.FC<{ days: string[]; values: number[] }> = ({ days, va
 
     const width = 100;
     const height = 40;
-    const padX = 4;
-    const padTop = 5;
-    const padBottom = 4;
+    const padTop = 2;
     const max = Math.max(...values, 1);
 
-    const x = (index: number) =>
-        values.length > 1 ? padX + (index * (width - padX * 2)) / (values.length - 1) : width / 2;
-    const y = (value: number) => height - padBottom - (value / max) * (height - padTop - padBottom);
+    const x = (index: number) => (values.length > 1 ? (index * width) / (values.length - 1) : width / 2);
+    const y = (value: number) => height - (value / max) * (height - padTop);
 
     const points = values.map((value, index) => [x(index), y(value)]);
 
