@@ -84,4 +84,11 @@ export const authActions: Actions = [
         icon: "receipt_long",
         group: "Diagnostics"
     },
+    {
+        id: "rateLimitHistory",
+        displayName: "Rate Limit History",
+        description: "Every counter one request identity has added to.",
+        icon: "speed",
+        group: "Diagnostics"
+    },
 ];

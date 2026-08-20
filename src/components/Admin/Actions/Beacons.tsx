@@ -54,7 +54,7 @@ const topCountries = (countries: Record<string, number> = {}) =>
  * The stroke is kept at its drawn width so the line does not smear when the
  * fixed viewBox is stretched across the card.
  */
-const Trend: React.FC<{ days: string[]; values: number[] }> = ({ days, values }) => {
+export const Trend: React.FC<{ days: string[]; values: number[] }> = ({ days, values }) => {
     if (!days.length) {
         return null;
     }

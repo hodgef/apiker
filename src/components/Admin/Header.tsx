@@ -1,5 +1,5 @@
 import React from "react";
-import { Tooltip } from "./ui";
+import { Icon, Tooltip } from "./ui";
 
 //@ts-ignore
 import logo from "@panelAssets/images/logo.svg";
@@ -7,9 +7,10 @@ import logo from "@panelAssets/images/logo.svg";
 interface HeaderProps {
     appName?: string;
     identity?: string;
+    onLogout?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ appName = "Apiker", identity }) => {
+export const Header: React.FC<HeaderProps> = ({ appName = "Apiker", identity, onLogout }) => {
     return (
         <nav className="admp-topbar">
             <a className="admp-topbar__brand" href="/admp">
@@ -26,6 +27,13 @@ export const Header: React.FC<HeaderProps> = ({ appName = "Apiker", identity }) 
                         <span className="material-symbols-outlined" aria-hidden="true">badge</span>
                         <span className="admp-topbar__identity-value">{identity}</span>
                     </span>
+                </Tooltip>
+            )}
+            {onLogout && (
+                <Tooltip side="bottom" label="Log out">
+                    <button type="button" className="admp-topbar__logout" onClick={onLogout} aria-label="Log out">
+                        <Icon name="logout" />
+                    </button>
                 </Tooltip>
             )}
         </nav>

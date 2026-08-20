@@ -23,7 +23,12 @@
 }
 
 html, body, #app {
-    height: 100%;
+    /* min-height, not height: with a fixed height the box stops growing past one
+       viewport, so once a tall page scrolls further than that the sticky topbar's
+       containing block has already scrolled out of view and it stops sticking
+       (the sidebar is unaffected — its own containing block is .admp-layout,
+       which does grow with its content). */
+    min-height: 100%;
     margin: 0;
 }
 
@@ -107,6 +112,37 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.admp-topbar__logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity .1s ease-in-out;
+}
+
+.admp-topbar__logout:hover {
+    opacity: 1;
+}
+
+.admp-topbar__logout:active {
+    opacity: 0.5;
+}
+
+.admp-topbar__logout:focus-visible {
+    outline: none;
+    border-radius: calc(var(--admp-radius) - 0.25rem);
+    box-shadow: var(--admp-ring);
+}
+
+.admp-topbar__logout .admp-icon {
+    font-size: 22px;
 }
 
 .admp-layout {

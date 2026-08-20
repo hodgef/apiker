@@ -133,4 +133,24 @@ describe("Overview endpoint", () => {
     expect(bans).toEqual([]);
     expect(totals.events).toBe(0);
   });
+
+  it("builds a 7-day event trend with today's count in the last bucket", async () => {
+    const twoDaysAgo = Date.now() - 2 * 24 * 60 * 60 * 1000;
+    logEntries = [entry({ time: Date.now() }), entry({ time: Date.now() }), entry({ time: twoDaysAgo })];
+
+    const { eventsTrend } = await body(await overviewEndpoint(params()));
+
+    expect(eventsTrend.days).toHaveLength(7);
+    expect(eventsTrend.values).toHaveLength(7);
+    expect(eventsTrend.values[6]).toBe(2);
+    expect(eventsTrend.values.reduce((sum: number, n: number) => sum + n, 0)).toBe(3);
+  });
+
+  it("gives every day in the trend a bucket, even with no events", async () => {
+    logEntries = [];
+
+    const { eventsTrend } = await body(await overviewEndpoint(params()));
+
+    expect(eventsTrend.values.every((n: number) => n === 0)).toBe(true);
+  });
 });

@@ -2,6 +2,7 @@ import React from "react";
 import { Action, Actions, AdminPanelPageProps } from "./interfaces";
 import { getAppHelper } from "./Utils";
 import { Button, Icon, Menu, Tooltip } from "./ui";
+import { Trend } from "./Actions/Beacons";
 
 interface DashboardEvent {
     propertyName?: string;
@@ -32,6 +33,7 @@ interface OverviewData {
     events: DashboardEvent[];
     bans: DashboardEvent[];
     rateLimit: DashboardEvent[];
+    eventsTrend: { days: string[]; values: number[] };
 }
 
 const PROTECTION_LABELS: Record<string, string> = {
@@ -188,6 +190,10 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
                 />
             </div>
 
+            <Panel title="Events trend" description="Recorded events per day, over the last week.">
+                <Trend days={data.eventsTrend.days} values={data.eventsTrend.values} />
+            </Panel>
+
             <Panel title="Latest events" description="Newest first, across every logged prefix. Select an event to open its log.">
                 {data.events.length ? (
                     <div className="admp-table">
@@ -310,7 +316,34 @@ export const Dashboard: React.FC<DashboardProps> = (props) => {
                                 <span className="admp-tag">{entry.type}</span>
                                 <span className="admp-table__time">{formatTime(entry.time)}</span>
                                 <span className="admp-table__main" title={entry.pathname}>{entry.pathname}</span>
-                                <span className="admp-table__id" title={entry.id}>{entry.id}</span>
+                                <Tooltip label="Request identity: a hash of the caller's IP">
+                                    <span className="admp-table__id">{entry.id}</span>
+                                </Tooltip>
+                                <span className="admp-table__actions">
+                                    <Menu
+                                        items={[
+                                            {
+                                                id: "rateLimitHistory",
+                                                label: "Show this identity's counters",
+                                                description: "Every rate-limit entry this identity has added to.",
+                                                onSelect: () => onSelect(actionById("rateLimitHistory"), entry.id)
+                                            },
+                                            {
+                                                id: "activity",
+                                                label: "Follow this identity",
+                                                description: "Every log entry this caller produced.",
+                                                onSelect: () => onSelect(actionById("listLogs"), entry.id, "identity")
+                                            },
+                                            {
+                                                id: "ban",
+                                                label: "Ban this identity",
+                                                description: "Blocks it from reaching the API.",
+                                                destructive: true,
+                                                onSelect: () => onSelect(actionById("banUser"), entry.id)
+                                            }
+                                        ]}
+                                    />
+                                </span>
                             </div>
                         ))}
                     </div>

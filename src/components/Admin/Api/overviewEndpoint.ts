@@ -29,6 +29,36 @@ const readLog = async (objectName: string, limit: number): Promise<LogObject[]> 
 const since = (entries: LogObject[], window: number) =>
   entries.filter(({ time }) => time && Date.now() - time < window).length;
 
+const TREND_DAYS = 7;
+
+const dayKey = (time: number) => new Date(time).toISOString().slice(0, 10);
+
+/** A fixed run of the last N calendar days (UTC), so empty days still show as zero. */
+const trendOf = (entries: LogObject[], days = TREND_DAYS) => {
+  const series: string[] = [];
+  const buckets: Record<string, number> = {};
+
+  for (let i = days - 1; i >= 0; i--) {
+    const key = dayKey(Date.now() - i * DAY);
+    series.push(key);
+    buckets[key] = 0;
+  }
+
+  entries.forEach((entry) => {
+    if (!entry.time) {
+      return;
+    }
+
+    const key = dayKey(entry.time);
+
+    if (key in buckets) {
+      buckets[key]++;
+    }
+  });
+
+  return { days: series, values: series.map((key) => buckets[key]) };
+};
+
 /**
  * Everything the panel's dashboard shows, in a single round trip: what the
  * deployment is running, what it has been doing, and where it is unprotected.
@@ -36,7 +66,8 @@ const since = (entries: LogObject[], window: number) =>
  * Environment variables are reported as booleans only, never as their values.
  *
  * @returns `deployment` (configuration and protections), `totals` (counts per time
- * window), and the latest `events`, `bans` and `rateLimit` entries.
+ * window), the latest `events`, `bans` and `rateLimit` entries, and `eventsTrend`
+ * (a 7-day daily count, for the overview's trend chart).
  */
 export const overviewEndpoint: Handler = async ({ state }) => {
   const adminIds = (await state(OBN.COMMON).get("adminIds")) || [];
@@ -94,6 +125,8 @@ export const overviewEndpoint: Handler = async ({ state }) => {
     },
     events: withType(events.slice(0, 25)),
     bans: withType(bans.slice(0, 10)),
-    rateLimit: withType(rateLimit.slice(0, 10))
+    rateLimit: withType(rateLimit.slice(0, 10)),
+    /** Built from the same indexed events above — recent history only, not all of it. */
+    eventsTrend: trendOf(events)
   });
 };

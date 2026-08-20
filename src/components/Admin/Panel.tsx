@@ -21,6 +21,7 @@ import { SendEmail } from "./Actions/SendEmail";
 import { UpdateUser } from "./Actions/UpdateUser";
 import { DeleteUser } from "./Actions/DeleteUser";
 import { ListLogs } from "./Actions/ListLogs";
+import { RateLimitHistory } from "./Actions/RateLimitHistory";
 import { Beacons } from "./Actions/Beacons";
 import { AddAdmin } from "./Actions/AddAdmin";
 import { ListUsers } from "./Actions/ListUsers";
@@ -50,6 +51,7 @@ const actionsComponent = {
     unbanUser: UnbanUser,
     searchBans: SearchBans,
     listLogs: ListLogs,
+    rateLimitHistory: RateLimitHistory,
     beacons: Beacons,
     sendEmail: SendEmail,
     updateUser: UpdateUser,
@@ -57,10 +59,16 @@ const actionsComponent = {
 };
 
 export const AdminPanelPage: React.FC<AdminPanelPageProps> = (props) => {
-    let { userSignedIp, isAdminLoggedIn, isSetup, action, dialog, pageName = "", appName, presetValue, presetFilter, history = [] } = props;
+    let { userSignedIp, isAdminLoggedIn, isSetup, action, dialog, pageName = "", csrfToken = "", appName, presetValue, presetFilter, history = [] } = props;
     const { setProps } = getAppHelper(pageName);
     const actions = isAdminLoggedIn ? authActions : defaultActions;
     const ActionComponent = action ? actionsComponent[action.id] : null;
+
+    /** Clears the session cookie, then reloads so the server re-renders the signed-out page. */
+    const onLogout = () => {
+        fetch("/admp/logout", { method: "post", headers: { "X-Apiker-Csrf": csrfToken } })
+            .finally(() => window.location.reload());
+    };
 
     const onSelectAction = (selected?: Action, nextPresetValue?: string, nextPresetFilter?: string) => {
         setProps({
@@ -116,7 +124,7 @@ export const AdminPanelPage: React.FC<AdminPanelPageProps> = (props) => {
 
     return (
         <>
-            <Header appName={appName} identity={userSignedIp} />
+            <Header appName={appName} identity={userSignedIp} onLogout={onLogout} />
             <div className="admp-layout">
                 <Sidebar actions={actions} action={action} onSelect={onSelectAction} />
                 <Content
