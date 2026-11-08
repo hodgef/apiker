@@ -28,6 +28,18 @@ describe("Validation", () => {
       const local = "a".repeat(60);
       expect(isEmail(`${local}@example.com`)).toBe(false);
     });
+
+    it("allows an explicit maximum without widening the default", () => {
+      const email = `member@${"a".repeat(60)}.${"b".repeat(60)}.${"c".repeat(60)}.${"d".repeat(60)}.com`;
+      expect(email).toHaveLength(254);
+      expect(isEmail(email)).toBe(false);
+      expect(isEmail(email, 254)).toBe(true);
+      expect(isEmail(`x${email}`, 254)).toBe(false);
+    });
+
+    it("rejects non-string values even if they have a plausible length", () => {
+      expect(isEmail({ length: 15, toString: () => "a@example.com" } as any, 254)).toBe(false);
+    });
   });
 
   describe("isRequiredLength", () => {

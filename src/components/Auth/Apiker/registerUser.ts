@@ -29,7 +29,8 @@ export const registerUser: Handler = async ({ body }) => {
 
 export const registerUserAction = async (email: string, password: string, extraParams = {} as any): Promise<User | undefined> => {
   const { state } = apiker.requestParams;
-  if(!isEmail(email) || !isRequiredLength(password)) {
+  // Registration accepts long credentials without changing other validators' defaults.
+  if(!isEmail(email, 254) || typeof password !== "string" || !isRequiredLength(password, 5, 1024)) {
     return;
   }
 

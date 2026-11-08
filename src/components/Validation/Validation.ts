@@ -1,15 +1,16 @@
 import { MAX_STR_LEN, MIN_STR_LEN } from "./constants";
 
 /**
- * Checks whether a string is a plausible email address (3–50 chars and a
+ * Checks whether a string is a plausible email address (3–50 chars by default and a
  * `local@domain.tld` shape). Intended as a lightweight guard, not full RFC 5322
  * validation.
  *
  * @param email Value to validate.
+ * @param maxLength Maximum length; defaults to 50. Registration may opt into 254.
  * @returns `true` when the value looks like a valid email address.
  */
-export const isEmail = (email: string) => {
-    return !!email && isRequiredLength(email, 3, 50) && /\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/.test(email);
+export const isEmail = (email: string, maxLength = 50) => {
+    return typeof email === "string" && isRequiredLength(email, 3, maxLength) && /\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/.test(email);
 };
 
 /**
